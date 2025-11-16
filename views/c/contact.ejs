@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | mintoSpeed</title>
+    <meta name="description" content="contact to mintoSpeed Team.">
+    <meta name="keywords" content="contact us, groceries">
+    <meta name="author" content="mintoSpeed">
+
+    <%- include('../partials/headTagContent') %>
+</head>
+
+<body>
+    <!-- navbar -->
+    <%- include('../partials/navbar') %>
+
+        <!-- content container -->
+        <div class="contentContainer">
+            <h1 class="contentTitle">contact us</h1>
+            <p>Welcome to <strong>mintoSpeed</strong>!</p> 
+            
+            <p>We value your feedback and welcome your any questions or inquiries you may have. Please feel free to reach out to us using the contact information provided below:
+            </p>
+            <br />
+            <p>Email: ivlog.site@gmail.com.</p>
+            <p>Phone: +91 6269651201</p>
+            <br />
+
+            <p>Alternatively, you can use the feedback form on this page to send us a message directly. Simply fill out the required fields and include your message. We strive to respond to all inquiries within 24-48 hours.</p>
+            <p>We also encourage you to connect with us on social media platforms such as Facebook, Twitter, and Instagram. Follow us for the latest updates, news, and engaging discussions.</p>
+
+           <br />
+            <p><strong>Team mintoSpeed</strong></p>
+        </div>
+
+        <style>
+            div.contentContainer {
+                width: 70%;
+                padding: 20px;
+                margin-top: 20px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .contentTitle {
+                font-size: 21px;
+                padding-bottom: 9px;
+                border-bottom: 2px solid rgb(175, 175, 175);
+                margin-bottom: 40px;
+            }
+
+            div.contentContainer h2{
+                margin-top: 20px;
+                font-size: 18px;
+                margin-bottom: 13px;
+            }
+            div.contentContainer li{
+                margin-bottom: 13px;
+            }
+
+            @media screen and (max-width: 950px) {
+                div.contentContainer {
+                    width: 85%;
+                }
+            }
+
+            @media screen and (max-width: 550px) {
+                div.contentContainer {
+                    width: 100%;
+                }
+            }
+        </style>
+
+        <!-- footer -->
+        <%- include('../partials/footer') %>
+</body>
+
+</html>

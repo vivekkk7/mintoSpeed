@@ -1,0 +1,285 @@
+.hidden{
+    display: none;
+}
+
+.cftitle{
+    color: rgb(227, 5, 1);
+    font-size: 16px;
+    font-weight: 700;
+    margin: 6px 0 0 0;
+    text-transform: capitalize;
+}
+
+.star-rating {
+    display: flex;
+    gap: 5px;
+    font-size: 25px;
+    margin: 2px 0;
+}
+
+.star {
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.2s;
+}
+
+.golden{
+    color: #ff9800;
+}
+
+section.section_con {
+    padding: 30px;
+    padding-top: 20px;
+    /* background-color: rgb(248, 249, 250); */
+}
+
+.info_h4 {
+    font-size: 17px;
+    margin: 20px 0 20px 0;
+}
+
+.content_container{
+    padding-top: 5px;
+}
+
+div.mega_container {
+    margin: 20px 0;
+    padding: 10px 5px 5px 10px;
+    border-radius: 7px;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgba(0, 0, 0, .125);
+}
+
+/* .mega_container:nth-child(even) {
+    background-color: rgb(249, 250, 251);
+} */
+
+.mega_head_img {
+    margin: 5px 1px 5px 5px;
+    height: 34px;
+    width: 34px;
+    border-radius: 50%;
+    background-color: rgb(207, 207, 207);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+}
+
+.op-7 {
+    opacity: 0.7;
+}
+
+.mega_head {
+    padding: 4px 0;
+}
+
+.mega_head_1 {
+    padding-left: 12px;
+}
+
+.mega_head_title {
+    font-size: 14px;
+    margin: 0;
+    margin-top: 2px;
+    font-weight: 600;
+}
+.cf_title{
+    text-transform: none;
+}
+
+.mega_head_subtitle {
+    font-size: 13px;
+    margin: 4px 0;
+}
+
+.tabs {
+    margin: 5px 0;
+}
+
+.tabBtns1, .tab2Btns1 {
+    margin-bottom: 10px;
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.tab2Btns1{
+margin-bottom: 0px;
+}
+
+.tabBtns1::-webkit-scrollbar, .tab2Btns1::-webkit-scrollbar {
+    display: none;
+}
+
+/* Optional: Improve touch scrolling */
+.tabBtns1, .tab2Btns1 {
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+}
+
+.tabBtn,
+.tab2Btn {
+    cursor: pointer;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    margin: 3px 12px;
+    padding: 5px 3px;
+    font-weight: 600;
+    font-size: 15px;
+}
+.tab2Btn{
+    font-size: 14px;
+}
+.activetab, .activetab2 {
+    border-bottom: 3px solid rgb(69, 69, 69);
+}
+
+.pfOderDiv .subDivCon {
+    max-width: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 400px;
+    margin-left: 30px;
+}
+
+.tabsDiv,
+.orderstabsDiv {
+    padding: 3px 7px;
+}
+
+.profile-tabsDiv p,
+.profile-tabsDiv2 p,
+.ordersDiv p {
+    font-size: 14px;
+}
+
+.profile-tabsDiv>p>span,
+.profile-tabsDiv2>p>span,
+.ordersDiv>p>span {
+    font-weight: 600;
+}
+
+.profile-tabsDiv, .profile-tabsDiv2 {
+    padding: 0 15px 5px 15px;
+    border-radius: 7px;
+    border: 1px solid rgba(0, 0, 0, .125);
+}
+.profile-tabsDiv2{
+    border: none;
+}
+
+.cf_id_name{
+    font-size: 13px;
+    font-style: italic;
+}
+
+.metaDiv{
+    margin: 7px 10px;
+}
+
+.metaDiv_p1{
+    font-size: 13px;
+    color: rgb(91, 91, 91);
+    margin-bottom: 5px;
+}
+
+.metaDiv_p2{
+    margin-top: 0;
+    margin-left: 1px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.status_td {
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 9px 5px 9px;
+    color: white;
+    text-transform: capitalize;
+}
+
+.greenBack {
+    background-color: green;
+}
+
+.redBack {
+    background-color: red;
+}
+
+.blackBack {
+    background-color: black;
+}
+
+input[type="datetime-local"] {
+    padding: 7px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+}
+
+.buttons {
+    margin: 17px 5px 5px 5px;
+    display: flex;
+    justify-content: right;
+    gap: 10px;
+}
+
+@media screen and (max-width: 800px) {
+    .pfOderDiv .subDivCon {
+        margin-left: 5px;
+    }
+
+    .profile-tabsDiv {
+        padding: 0 7px 5px 7px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    div.mega_container {
+        padding: 7px;
+    }
+
+    section.section_con {
+        padding: 30px 10px;
+        padding-top: 20px;
+    }
+}
+
+
+/* table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 5px 0px;
+    margin-top: 30px;
+}
+
+.table td,
+.table th {
+    word-wrap: break-word;
+    padding: 7px 4px;
+    border: 1px solid #c0c0c0;
+    text-align: center;
+    font-size: 14px;
+    background-color: #f9f5f5;
+}
+
+.status_td {
+    text-transform: capitalize;
+}
+
+.table th {
+    font-size: 13px;
+    padding: 7px 4px;
+    background-color: rgb(148, 211, 130);
+    color: #000000;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #ececec;
+}

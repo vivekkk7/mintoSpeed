@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - mintoSpeed</title>
+    <meta name="description" content="Search item in mintoSpeed!">
+    <meta name="keywords" content="groceries, grocery delivery, fresh produce, online shopping, grocery store">
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="index, follow">
+
+    <%- include('partials/headTagContent') %>
+
+        <!-- card css -->
+        <link rel="stylesheet" href="../public/css/itemCard.css" />
+        <!-- scroll -->
+        <script nonce="<%-nonce%>" src="../public/js/srollForSectionAndCategory.js"></script>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+        <section class="similarItemSec grocery">
+            <h2 class="grocery_head"><span id="backBtn" style="margin-right: 7px; padding: 0 4px; cursor: pointer;"><i
+                        class="fa-solid fa-arrow-left"></i></span>Search Results</h2>
+
+            <div class="grocery_items" id="grocery_items">
+
+            </div>
+        </section>
+
+        <style>
+            .navitem{
+                display: none;
+            }
+            .search-box {
+                height: 38px;
+            }
+            #navSearch{
+                width: calc(100vw - 410px);
+                min-width: calc(100vw - 410px);
+                margin-right: 20px;
+            }
+        </style>
+
+        <script nonce="<%-nonce%>">
+            document.getElementById('backBtn')?.addEventListener('click', () => window.history.back());
+        
+            const groceryItemsContainer = document.getElementById('grocery_items');
+        
+            const client = algoliasearch('08VH7S7TWO', '05dc5ebdec6372f37a566074b14f4a47');
+            const index = client.initIndex('items_search');
+        
+            // Search
+            document.querySelectorAll('.search-box').forEach((searchBox) => {
+                searchBox.removeEventListener('click', originalClickHandler);
+
+                const searchInput = searchBox.querySelector('.searchInput');
+                searchInput.removeAttribute('readonly');
+                searchInput.focus();
+
+
+                let timeout;
+        
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(timeout);
+                    const query = e.target.value.trim();
+        
+                    // Validate input (disallow <, >, /)
+                    if (!/^[^<>/]*$/.test(query)) {
+                        return;
+                    }
+        
+                    if (query.length === 0) {
+                        groceryItemsContainer.innerHTML = '';
+                        return;
+                    } else if (query.length < 3) {
+                        return;
+                    }
+        
+                    timeout = setTimeout(() => {
+                        if (query !== searchInput.value.trim()) return; // Ensure the query is still relevant
+                        performSearch(query);
+                    }, 500); 
+                });
+            });
+        
+            // Perform the search and populate results
+            async function performSearch(query) {
+                groceryItemsContainer.innerHTML = '';
+                let newItemElements1 = [];
+                let newItemElements2 = [];
+        
+                try {
+                    const results = await index.search(query, { hitsPerPage: 20 });
+        
+                    if (results.hits.length === 0) {
+                        groceryItemsContainer.innerHTML = '';
+                        return;
+                    }
+        
+                    results.hits.forEach(item => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.classList.add('grocery_item');
+                        itemDiv.setAttribute('data-packed', item.packed);
+                        itemDiv.setAttribute('data-itemCategory', item.category);
+                        itemDiv.setAttribute('data-itemSubCategory', item.subcategory);
+                        console.log(JSON.stringify(item, null, 2)); // Pretty-print with 2 spaces for indentation
+                        const options = JSON.parse(item.options || '[]'); // Ensure proper JSON parsing for options
+        
+                        itemDiv.innerHTML = `
+                            <div class="infoBB ${item.replaceSelect === 'true' ? 'show' : 'hidden'}">
+                                <div class="infoB">Item can be replaced. <a style="color: rgb(51, 122, 254);" href="/c/terms-and-conditions">Know more</a></div>
+                                <div class="infoBBtn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+                            </div>
+                            <div class="item_img">
+                                <img src="${item.img}" alt="img" />
+                            </div>
+                            <p class="item_stock ${!item.stock ? 'hidden' : item.stock == '0' ? 'c_red' : item.stock == 'x' ? 'hidden' : 'd_block'}">
+                                                    ${
+                                                      item.stock == '0' 
+                                                        ? 'Stock is unavailable' 
+                                                        : item.stock != 'x' 
+                                                          ? 'Stock : ' + item.stock + ' left' 
+                                                          : '' 
+                                                    }
+                                                </p>
+                            <p class="item_name_p"><a class="item_name" href="/item?c=${encodeURIComponent(item.category)}&s=${encodeURIComponent(item.subcategory)}&i=${encodeURIComponent(item.objectID)}">${item.objectID}</a></p>
+                            <p class="item_min_volume">${item.min}</p>
+                            <p class="item_max_volume">${item.max}</p>
+                            <div class="item_volume">
+                                <p class="item_weight" style="margin: 0;">${item.qty}</p>
+                                <div class="item_volume_options">
+                                    ${item.packed 
+                                        ? `<!-- item is packed -->`
+                                        : options.map(option => `
+                                            <div class="item_volume_option">
+                                                <p class="item_option_weight">${option.weight}</p>
+                                                <p class="item_option_price_p">
+                                                    <span class="item_option_price">${option.price}</span>
+                                                    <span class="market_price">${option.priceMRP && option.priceMRP.trim() !== '' ? '₹ ' + option.priceMRP : ''}</span>
+                                                </p>
+                                            </div>
+                                        `).join('')}
+                                    <div class="item_volume_custom_option">
+                                        <p class="item_volume_custom_option_head">Custom</p>
+                                        <div class="item_volume_custom_option_input_div">
+                                            ${item.packed 
+                                                ? `<input type="number" class="item_volume_input_number" placeholder="Qty" min="0" step="1" />
+                                                   <div class="item_volume_custom_option_for_pieces">pcs</div>`
+                                                : `<input type="number" class="item_volume_input_number" placeholder="Qty" min="0" />
+                                                   <div class="item_volume_custom_option_for_kggm">
+                                                       <label><input type="radio" name="kggm" checked value="kg"> kg</label>
+                                                       <label><input type="radio" name="kggm" value="gm"> gm</label>
+                                                   </div>`}
+                                        </div>
+                                        <p class="item_volume_input_price">0</p>
+                                        <button class="item_volume_custom_option_done_btn">Done</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="item_price_p">
+                                <span class="item_price">${item.price}</span>
+                                <span class="market_price">${item.popularMRP && item.popularMRP.trim() !== '' ? '₹ ' + item.popularMRP : ''}</span>
+                            </p>
+                            <button class="item_add_btn">Add</button>
+                        `;
+                        groceryItemsContainer.appendChild(itemDiv);
+                        newItemElements1.push(itemDiv.querySelector('.item_volume')); // Store new item_volume divs
+                        newItemElements2.push(itemDiv.querySelector('.item_add_btn')); // Store new item_volume divs
+                    });
+        
+                    if (newItemElements1.length > 0) {
+                        attachVolumeOptionListeners(newItemElements1); // Attach listeners to new items
+                        attachAddButtonListeners(newItemElements2); // Re-attach add button listeners to all items
+                    }
+                } catch (error) {
+                    console.error('Error fetching search results:', error);
+                    groceryItemsContainer.innerHTML = '';
+                    return;
+                }
+            }
+        </script>
+        <script nonce="<%-nonce%>" src="../public/js/addToCartAndVolumeListener.js"></script>
+        
+</body>
+
+</html>

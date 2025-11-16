@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | mintoSpeed</title>
+  <meta name="description" content="Signup in mintoSpeed">
+  <meta name="keywords" content="signup">
+  <meta name="author" content="mintoSpeed">
+  <meta name="robots" content="index, follow">
+
+  <%- include('partials/headTagContent') %>
+
+    <!-- Firebase JS SDK -->
+    <script nonce="<%-nonce%>" src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app-compat.js"></script>
+    <script nonce="<%-nonce%>" src="https://www.gstatic.com/firebasejs/9.12.1/firebase-auth-compat.js"></script>
+
+    <script nonce="<%-nonce%>" src="../public/js/getAddressByLocation.js"></script>
+</head>
+
+<body>
+  <!-- alertboxAndLoader -->
+  <%- include('partials/alertboxAndLoader') %>
+    <%- include('partials/popupBox') %>
+
+      <section class="container">
+
+        <div class="container2">
+          <header>Create Account</header>
+          <div class="logo"><span style=" font-size: 13px;">on</span>&nbsp;<a href="/">minto<span>Speed</span></a></div>
+
+          <!--  -->
+          <div class="formDiv">
+            <div class="input-box">
+              <label>Full Name</label>
+              <input type="text" id="fullName" placeholder="Enter full name" required />
+            </div>
+
+            <div class="column" style="flex-wrap: nowrap;">
+              <div class="input-box">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="Enter Email Address" required />
+              </div>
+
+            </div>
+
+            <div class="column" style="flex-wrap: nowrap;">
+              <div class="input-box">
+                <label>Phone Number</label>
+                <input type="tel" id="phone" placeholder="Enter phone number" required />
+              </div>
+            </div>
+
+            <div class="column" style="flex-wrap: nowrap;">
+              <div class="input-box">
+                <label>Create Password</label>
+                <input type="password" id="passwordInput" placeholder="Create password" />
+              </div>
+              <div>
+                <p style="width: 30px; padding-top: 36px;" id="togglePassword" class="togBtn"
+                  style="background-color: transparent;"><i class="fa-solid fa-eye-slash"></i></p>
+              </div>
+            </div>
+
+            <div class="input-box address" id="addressCon">
+              <label>Address</label>
+              <input type="text" id="streetAddress" placeholder="Enter street address" readonly required />
+              <div class="column">
+                <input type="text" id="city" placeholder="Enter your city" readonly required />
+                <input type="number" id="pincode" value="211019" placeholder="Enter pincode" readonly required />
+              </div>
+            </div>
+
+
+            <div id="recaptcha-container"></div>
+
+            <p style="font-size: 11px; margin-top: 25px;">*Currently, We accept 211019 pincode. If you are not from this
+              area please wait, we will reach to your location soon.</p>
+            <button class="orderBtn" id="submitBtn">Send OTP</button>
+            <p style="text-align: center; font-size: 14px; margin-top: 20px;">Already have an account? <a
+                href="/auth/login" style="text-decoration: none;">Login</a></p>
+            </formDiv>
+
+          </div>
+
+      </section>
+
+      <script nonce="<%-nonce%>">
+        document.addEventListener("DOMContentLoaded", async () => {
+          const modal = document.getElementById('messageBoxid01');
+          const messageBoxHead = document.querySelector('.messageBoxHead');
+          const messageBoxModelContent = document.querySelector('.messageBoxModel-content');
+          const messageBoxP = document.querySelector('.messageBoxP');
+          const actionButtons = document.querySelector('.btnBoxContainer');
+          document.getElementById('messageBoxClose').style.display = 'none';
+          messageBoxModelContent.style.maxWidth = '500px';
+
+          let latitude = null;
+          let longitude = null;
+
+          //
+          const passwordInput = document.getElementById("passwordInput");
+          const togglePassword = document.getElementById("togglePassword");
+
+          togglePassword.addEventListener("click", () => {
+            const isPassword = passwordInput.getAttribute("type") === "password";
+            passwordInput.setAttribute("type", isPassword ? "text" : "password");
+            togglePassword.innerHTML = isPassword
+              ? '<i class="fa-solid fa-eye"></i>' // Show password icon
+              : '<i class="fa-solid fa-eye-slash"></i>'; // Hide password icon
+          });
+
+
+          // for address
+          document.getElementById("addressCon").addEventListener("click", () => {
+            messageBoxHead.innerHTML = `<i style="margin-right: 10px" class="fa-solid fa-map-location-dot"></i>Your Address`;
+
+            messageBoxP.innerHTML = `<br />
+                            <form action="#" class="form2">
+                            <label><input type="radio" name="addressOption" value="current">&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-location-dot"></i>&nbsp;&nbsp;Use Current Location</label>
+                            <br /><br />
+                            <label><input type="radio" name="addressOption" value="manually">&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-pen"></i>&nbsp;&nbsp;Enter Manually</label>
+                            <br />
+
+
+                            <div class="input-box address1" style="display: none;">
+                              <label>Address</label>
+                              <input type="text" id="streetAddress1" placeholder="Enter street address" required />
+                              <div class="column">
+                                <input type="text" id="city1" placeholder="Enter your city" required />
+                                <input type="number" id="pincode1" value="211019" placeholder="Enter pincode" readonly required />
+                              </div>
+                            </div>
+                            </form>
+                        `;
+            actionButtons.style.marginTop = "20px";
+            actionButtons.innerHTML = `<button type="button" class="messageBoxBtn" id = "closeOK" style="background-color: green; color: white;">OK</button>`;
+
+            messageBoxHead.style.color = "#04711a";
+            document.getElementById("messageBoxClose").style.display = "none";
+            modal.style.display = 'flex';
+
+            const radioButtons = document.querySelectorAll('input[name="addressOption"]');
+
+            // Add event listeners to each radio button
+            radioButtons.forEach(radio => {
+              radio.addEventListener("change", function () {
+                handleRadioSelection(this.value);
+              });
+            });
+
+            // Function to handle radio button selection
+            async function handleRadioSelection(value) {
+
+              if (value == "current") {
+                document.getElementById("loader_container").style.display = "flex";
+                document.querySelector(".address1").style.display = "none";
+
+                const data = await getLocationAddress();
+
+                if (data.status) {
+                  if (data.msg.error) {
+                    showAlert(data.msg.error, "negative");
+                    return;
+                  }
+                  latitude = data.lat || '';
+                  longitude = data.lon || ''
+                  document.getElementById("streetAddress1").value = data.msg.address;
+                  document.getElementById("city1").value = data.msg.city;
+
+                  document.querySelector(".address1").style.display = "block";
+                }
+                else {
+                  showAlert(data.msg, "negative");
+                }
+                document.getElementById("loader_container").style.display = "none";
+              }
+              else {
+                document.getElementById("city1").value = "";
+                document.getElementById("streetAddress1").value = "";
+                document.querySelector(".address1").style.display = "block";
+              }
+            }
+
+            //
+            document.getElementById("closeOK").addEventListener("click", () => {
+              document.getElementById("streetAddress").value = document.getElementById("streetAddress1").value.trim();
+              document.getElementById("city").value = document.getElementById("city1").value.trim();
+              modal.style.display = 'none';
+            });
+          });
+
+
+          //
+          const firebaseConfig = {
+            apiKey: "AIzaSyDFgvcbxCbPKwSxkzdIBYe0CJGCeqhQO2Q",
+            authDomain: "mintospeed-web.firebaseapp.com",
+            projectId: "mintospeed-web",
+            messagingSenderId: "494958498311",
+            appId: "1:494958498311:web:da56215a676c72ec7390a2",
+            measurementId: "G-G0671NCF1W"
+          };
+
+          // Initialize Firebase
+          const app = firebase.initializeApp(firebaseConfig);
+          const auth = firebase.auth();
+          let user;
+
+          // Function to initialize reCAPTCHA
+          async function initializeRecaptcha() {
+            if (!window.recaptchaVerifier) {
+              window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                size: 'invisible',
+                callback: (response) => {
+                  console.log('Recaptcha solved.');
+                },
+                'expired-callback': () => {
+                  console.warn('Recaptcha expired. Reinitializing...');
+                  resetRecaptcha();
+                },
+              });
+
+              try {
+                await window.recaptchaVerifier.render();
+              } catch (error) {
+                console.error("Error rendering Recaptcha:", error.message);
+                showAlert("Failed to render Recaptcha. Please refresh and try again.", "negative");
+              }
+            }
+          }
+
+          async function resetRecaptcha() {
+            if (window.recaptchaVerifier) {
+              window.recaptchaVerifier.clear(); // Clear existing verifier
+              window.recaptchaVerifier = null; // Remove reference
+            }
+            await initializeRecaptcha(); // Reinitialize Recaptcha
+          }
+
+
+
+          // ////
+          document.getElementById("submitBtn").onclick = async function () {
+
+            let isValid = true;
+
+            const fullName = document.getElementById("fullName").value.trim();
+            const email = document.getElementById("email").value.trim();
+            let phone = document.getElementById("phone").value.trim();
+            const password = document.getElementById("passwordInput").value;
+            const streetAddress = document.getElementById("streetAddress").value.trim();
+            const city = document.getElementById("city").value.trim();
+            const pincode = document.getElementById("pincode").value.trim();
+
+            let validateInput = (input) => 
+    typeof input === 'string' && /^[a-zA-Z0-9_\- &,./]+$/.test(input) && input.length > 3;
+            let validateNumberInput = (input, length) => typeof input === 'string' && /^\d+$/.test(input) && input.length === length;
+            let validateEmail = (input) => typeof input === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
+
+
+            // Full Name Validation
+            if (!validateInput(fullName)) {
+              showAlert("Full Name is required and contain valid characters.", "negative");
+              document.getElementById("loader_container").style.display = "none";
+              return isValid = false;
+            }
+
+
+            // Email Validation
+            if (!validateEmail(email)) {
+              showAlert("Please enter a valid email address and contain valid characters.", "negative");
+              document.getElementById("loader_container").style.display = "none";
+              return isValid = false;
+            }
+
+            const phoneRegex = /^(\+91)?[6-9]\d{9}$/;
+            if (!phoneRegex.test(phone)) {
+              showAlert("Phone number is incorrect!", "negative");
+              document.getElementById("loader_container").style.display = "none";
+              return isValid = false;
+            }
+
+            if (password.trim() === "" || password.length < 6) {
+              showAlert("Password cannot be empty and should be of 6 digit long.", "negative");
+              document.getElementById("loader_container").style.display = "none";
+              return isValid = false;
+            }
+
+            // Address Validation
+            if (!validateInput(streetAddress) || streetAddress.length < 5) {
+              showAlert("Street address is required and contain valid characters.", "negative");
+              document.getElementById("loader_container").style.display = "none";
+              return isValid = false;
+            }
+
+            if (!validateInput(city) || city.length < 3) {
+              showAlert("City is required and contain valid characters.", "negative");
+              document.getElementById("loader_container").style.display = "none";
+              return isValid = false;
+            }
+
+            // Pincode Validation (6 digits)
+            if (!validateNumberInput(pincode, 6)) {
+              showAlert("Please enter a valid 6-digit pincode", "negative");
+              document.getElementById("loader_container").style.display = "none";
+              return isValid = false;
+            }
+
+            if (pincode != 211019) {
+              showAlert("Sorry, Our service is currently working in 211019 pincode area. We will reach to your location soon.", "negative");
+              document.getElementById("loader_container").style.display = "none";
+              return isValid = false;
+            }
+
+
+            if (isValid) {
+
+              if (!phone.startsWith('+91')) {
+                phone = '+91' + phone;
+              }
+
+              try {
+                this.disabled = true;
+                document.getElementById("loader_container").style.display = "flex";
+
+                if (!window.recaptchaVerifier) {
+                  await initializeRecaptcha();
+                }
+
+                const appVerifier = window.recaptchaVerifier;
+
+                const confirmationResult = await auth.signInWithPhoneNumber(phone, appVerifier);
+                window.confirmationResult = confirmationResult;
+
+                showAlert("OTP sent to your number.", "positive");
+                document.getElementById("loader_container").style.display = "none";
+
+                //verify
+                actionButtons.innerHTML = `<button style="width: 100%;" class="orderBtn" id="verifyOtpBtn">Verify OTP</button>`;
+                modal.style.display = 'flex';
+                actionButtons.style.float = "none";
+
+                messageBoxHead.textContent = `OTP sent to your phone number`;
+                messageBoxHead.style.color = 'green';
+                messageBoxP.innerHTML = `
+                  <p>Verify your phone number to create account by entering the OTP that is sent to ${phone}</p>
+                  <div class="formDiv">
+                  <div class="column" id="otpSection">
+                    <div class="input-box">
+                      <label>Enter OTP </label>
+                      <input type="text" id="phoneOtp" placeholder="Enter OTP..." autofocus required />
+                    </div>
+                  </div>          
+                  </div>          
+                  `;
+                document.getElementById("verifyOtpBtn").onclick = async function () {
+                  this.disabled = true;
+                  document.getElementById("verifyOtpBtn").classList.add("disabled");
+                  const otp = document.getElementById("phoneOtp").value.trim();
+                  if (otp.length < 6) {
+                    this.disabled = false;
+                    document.getElementById("verifyOtpBtn").classList.remove("disabled");
+                    showAlert("Invalid OTP. OTP should be 6 digit long.", "negative");
+                    return;
+                  }
+                  try {
+                    const result = await window.confirmationResult.confirm(otp);
+                    user = result.user;
+
+                    if (user && user.phoneNumber && user.uid) {
+                      // const hashedPassword = CryptoJS.SHA256(password).toString();
+
+                      const formData = {
+                        user, fullName, email, streetAddress, city, pincode, password, latitude, longitude
+                      };
+
+                      try {
+                        const response = await fetch('/auth/signup', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify(formData)
+                        });
+
+                        const result = await response.json();
+
+                        if (result.type == "negative") {
+                          showAlert(result.message, "negative");
+                          modal.style.display = 'none';
+                          document.getElementById("loader_container").style.display = "none";
+                        }
+                        else if (result.type == "positive") {
+                          showAlert("Account created successfull!", "positive");
+                          const redirectLink = sessionStorage.getItem('redirect_link');
+                          if (redirectLink) {
+                            window.location.href = redirectLink; // Redirect to the saved link
+                          } else {
+                            window.location.href = '/profile';
+                          }
+                          return;
+                        }
+                      } catch (error) {
+                        console.error('Error:', error);
+                        modal.style.display = 'none';
+                        document.getElementById("loader_container").style.display = "none";
+                        showAlert('An error occurred. Please refresh page and try again.', "negative");
+                        return;
+                      }
+
+                    }
+                    else {
+                      document.getElementById("loader_container").style.display = "none";
+                      showAlert('Please verify phone number by clicking on send OTP button.', "negative");
+                      return;
+                    }
+
+                  } catch (error) {
+                    this.disabled = false;
+                    document.getElementById("verifyOtpBtn").classList.remove("disabled");
+
+                    console.error('Error verifying OTP:', error.message);
+                    if (error.code === 'auth/invalid-verification-code') {
+                      showAlert("Invalid OTP entered. Please check and try again.", "negative");
+                    } else if (error.code === 'auth/code-expired') {
+                      showAlert("The OTP has expired. Refresh page and try again.", "negative");
+                    } else if (error.code === 'auth/too-many-requests') {
+                      showAlert("Too many request. Please try later", "negative");
+                    } else {
+                      showAlert("Failed to verify OTP. Refresh page and try again.", "negative");
+                    }
+                    return;
+                  }
+                };
+
+              } catch (error) {
+                this.disabled = false;
+                if (error.code === "auth/invalid-app-credential") {
+                  showAlert("Invalid Recaptcha. Please refresh and try again.", "negative");
+                } else if (error.code === "auth/too-many-requests") {
+                  showAlert("Too many requests. Please try again later.", "negative");
+                } else {
+                  console.error("Error sending code:", error.message);
+                  showAlert("Failed to send OTP. Please try again.", "negative");
+                }
+                document.getElementById("loader_container").style.display = "none";
+                return;
+              }
+            }
+            else {
+              document.getElementById("loader_container").style.display = "none";
+              showAlert('You entered an invalid input.', "negative");
+              return;
+            }
+          };
+
+        });
+      </script>
+
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Open Sans', sans-serif;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+          background-color: rgb(243, 243, 243);
+        }
+
+        .disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+
+        div.logo {
+          margin: 5px;
+          text-align: center;
+        }
+
+        div.logo>a {
+          text-decoration: none;
+          color: #0bb744;
+          font-weight: 800;
+          font-size: 15px;
+        }
+
+        div.logo>a span {
+          color: rgb(19, 19, 19);
+        }
+
+        .container {
+          position: fixed;
+          width: 100%;
+          height: 100vh;
+          display: flex;
+          justify-content: center;
+          overflow: auto;
+          padding-bottom: 30px;
+        }
+
+        .container2 {
+          max-width: 550px;
+          width: 550px;
+          height: fit-content;
+          background: #fff;
+          padding: 20px;
+          margin: 10px;
+          margin-bottom: 80px;
+          border-radius: 8px;
+          box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .container2 header {
+          font-size: 1.1rem;
+          color: #424242;
+          font-weight: 700;
+          text-align: center;
+          padding: 5px 10px 0 10px;
+        }
+
+        .container2 .formDiv {
+          margin-top: 10px;
+        }
+
+        .formDiv .input-box, .form2 .input-box {
+          width: 100%;
+          margin-top: 20px;
+        }
+
+        .input-box label {
+          color: #333;
+          font-size: 13px;
+        }
+
+        .formDiv :where(.input-box input, .select-box, .input-box select),
+        .form2 :where(.input-box input, .select-box, .input-box select) {
+          position: relative;
+          height: 40px;
+          width: 100%;
+          outline: none;
+          font-size: 13px;
+          color: #6b6b6b;
+          margin-top: 5px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          padding: 0 10px;
+          background-color: #fafafa;
+        }
+
+        .input-box input:focus {
+          box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .formDiv .column, .form2 .column {
+          display: flex;
+          column-gap: 15px;
+        }
+
+        .address :where(input, .select-box) {
+          margin-top: 15px;
+        }
+
+        .select-box select {
+          height: 100%;
+          width: 100%;
+          outline: none;
+          border: none;
+          color: #525252;
+          font-size: .9rem;
+          background-color: #f6f6f6;
+        }
+
+        .orderBtn,
+        .verifyOtpBtn,
+        .timer,
+        .togBtn {
+          height: 51px;
+          width: 100%;
+          color: #fff;
+          font-size: .9rem;
+          font-weight: 400;
+          margin-top: 20px;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          background: rgb(77, 215, 67);
+        }
+
+        .togBtn {
+          background-color: transparent;
+          color: black;
+        }
+
+        .verifyOtpBtn,
+        .timer {
+          margin-top: 32px;
+          height: 38px;
+          width: 100px;
+        }
+
+        .timer {
+          background-color: transparent;
+          color: black;
+          border: none;
+        }
+
+        .formDiv button:hover {
+          background: rgb(19, 172, 40);
+        }
+
+        .hidden {
+          display: none !important;
+        }
+
+        .visible {
+          display: block;
+        }
+
+        .visible-flex {
+          display: flex !important;
+        }
+
+        /*Responsive*/
+        @media screen and (max-width: 400px) {
+          .formDiv .column {
+            flex-wrap: wrap;
+          }
+
+          .container2 {
+            padding: 20px 15px;
+          }
+        }
+      </style>
+</body>
+
+</html>

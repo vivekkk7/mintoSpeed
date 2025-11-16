@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - mintoSpeed</title>
+    <meta name="description" content="Profile of user.">
+    <meta name="keywords" content="profile">
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="noindex, nofollow">
+
+    <%- include('partials/headTagContent') %>
+</head>
+
+<body>
+    <!-- navbar -->
+    <%- include('partials/navbar') %>
+
+        <!-- profile con -->
+
+        <section class="pf_con">
+            <div class="pf1">
+                <h2 class="pf_name">
+                    <%=userData.fullName%>
+                </h2>
+                <p class="pf_email">
+                    <%=userData.email%>
+                </p>
+                <p>
+                    <%=userData.phone%>
+                </p>
+
+                <p>
+                    <%=userData.streetAddress%>,&nbsp;<%=userData.city%>,&nbsp;<%=userData.pincode%>
+                </p>
+
+                <div class="lgbtn" id="lgbtn1">Logout</div>
+            </div>
+
+            <div class="pf11">
+                <div class="pf2 flex align-center">
+                    <div class="pf21" id="pfCart">
+                        <h3 class="pf21_h3">Your Cart</h3>
+                        <p class="pf21_p">View now</p>
+                    </div>
+
+                    <div class="pf21" id="pfTrack">
+                        <h3 class="pf21_h3">Track Order</h3>
+                        <p class="pf21_p">Track now</p>
+                    </div>
+
+                    <div class="pf21" id="pfOrders">
+                        <h3 class="pf21_h3">Your Orders</h3>
+                        <p class="pf21_p">View now</p>
+                    </div>
+
+                    <div class="pf21" id="pfComplaint">
+                        <h3 class="pf21_h3">Write Complaint</h3>
+                        <p class="pf21_p">Write now</p>
+                    </div>
+
+                    <div class="pf21" id="pfFeedback">
+                        <h3 class="pf21_h3">Give Feedback</h3>
+                        <p class="pf21_p">Write now</p>
+                    </div>
+                </div>
+
+            </div>
+            <!--info container -->
+
+            <div class="info_con">
+                <div class="statusdiv">
+                    <% if (pendingOrders && pendingOrders.length> 0) { %>
+
+                        <h2 class="info_h2">pending orders (<%= pendingOrders.length %>)</h2>
+                        <div class="tbcon">
+                            <table class="table">
+                                <thead>
+                                    <th>Order on</th>
+                                    <th>OrderId</th>
+                                    <th>Total Items</th>
+                                    <th>Total Price</th>
+                                    <th>Delivery on</th>
+                                    <th>Status</th>
+                                    <th>View Detail</th>
+                                </thead>
+                                <tbody>
+                                    <% pendingOrders.forEach(order=> { %>
+                                        <tr>
+                                            <td data-label="Order on">
+                                                <%= order.orderTime %>
+                                            </td>
+                                            <td data-label="orderId">
+                                                <%= order.orderId %>
+                                            </td>
+                                            <td data-label="Total Items">
+                                                <%= order.totalItems %>
+                                            </td>
+                                            <td data-label="Total Price">₹<%= order.totalPrice %>
+                                            </td>
+                                            <td data-label="Delivery on">
+                                                <%= order.deliveryTime %> &nbsp;
+                                            </td>
+                                            <td data-label="Status"><span
+                                                    class="status_td <%= order.status === 'cancelled' ? 'redBack' : order.status === 'completed' ? 'greenBack' : 'blackBack' %>">
+                                                    <%= order.status %>
+                                                </span></td>
+                                            <td data-label="View Detail"><a
+                                                    href="/order-details?orderId=<%= order.orderId %>">Click here</a>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <% } %>
+                </div>
+            </div>
+
+            <div class="pf3 lgbtn">Logout</div>
+            <br />
+            <br />
+        </section>
+
+
+        <script nonce="<%-nonce%>">
+            $(document).ready(function () {
+                $('#pfCart').click(function () {
+                    window.location.href = '/cart';
+                });
+                $('#pfTrack').click(function () {
+                    window.location.href = '/track';
+                });
+                $('#pfOrders').click(function () {
+                    window.location.href = '/orders';
+                });
+                $('#pfComplaint').click(function () {
+                    window.location.href = '/complaint';
+                });
+
+                $('#pfFeedback').click(function () {
+                    window.location.href = '/feedback';
+                });
+
+                $('.lgbtn').click(async function () {
+                    document.getElementById("loader_container").style.display = "flex";
+
+                    try {
+                        const response = await fetch('/auth/logout', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                        });
+
+                        const result = await response.json();
+
+                        if (result.type == "positive") {
+                            window.location.href = '/auth/login';
+                        } else if (result.type == "negative") {
+                            showAlert("Something went wrong. Please try again.", "negative");
+                            document.getElementById("loader_container").style.display = "none";
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        document.getElementById("loader_container").style.display = "none";
+                        showAlert('Something went wrong. Please try again.', "negative");
+                    }
+                });
+            });
+        </script>
+
+        <style>
+            td[data-label="View Detail"] a {
+                color: rgb(1, 95, 217);
+            }
+
+            td[data-label="View Detail"] a:hover {
+                opacity: 0.5;
+                ;
+            }
+
+            div.info_con {
+                margin-top: 90px;
+                padding: 20px;
+            }
+
+            .tbcon {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            .info_h2 {
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .table td,
+            .table th {
+                word-wrap: break-word;
+                padding: 12px 15px;
+                border: 1px solid #c0c0c0;
+                text-align: center;
+                font-size: 13px;
+            }
+
+            .table td,
+            .table th {
+                min-width: 50px;
+                max-width: 250px;
+            }
+
+            .table th {
+                font-size: 13px;
+                background-color: rgb(148, 211, 130);
+                color: #000000;
+            }
+
+            .table tbody tr:nth-child(even) {
+                background-color: #ececec;
+            }
+
+            .status_td {
+                border-radius: 5px;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 4px 9px 5px 9px;
+                color: white;
+                text-transform: capitalize;
+            }
+
+            .greenBack {
+                background-color: green;
+            }
+
+            .redBack {
+                background-color: red;
+            }
+
+            .blackBack {
+                background-color: black;
+            }
+
+
+
+            @media (max-width: 700px) {
+                .table thead {
+                    display: none;
+                }
+
+                .table td,
+                .table th {
+                    min-width: 150px;
+                    max-width: 100%;
+                }
+
+                .table tr,
+                .table td {
+                    display: block;
+                    width: 100%;
+                }
+
+                .table tr {
+                    margin-bottom: 15px;
+                    background-color: white;
+                }
+
+                .table tbody tr:nth-child(even) {
+                    background-color: white;
+                }
+
+                .table td {
+                    padding-left: 40%;
+                    text-align: left;
+                    position: relative;
+                }
+
+                .table td::before {
+                    content: attr(data-label);
+                    position: absolute;
+                    left: 0;
+                    width: 40%;
+                    padding-left: 15px;
+                    font-size: 13px;
+                    font-weight: 700;
+                    text-align: left;
+                    font-family: 'Open Sans', sans-serif;
+                }
+            }
+
+            section.pf_con {
+                position: relative;
+                width: 100%;
+                height: fit-content;
+                overflow-x: hidden;
+            }
+
+            div.pf1 {
+                position: relative;
+                display: block;
+                padding: 45px 60px;
+                height: 300px;
+                background-image: linear-gradient(117deg, rgb(141, 220, 119) 39.2%, rgb(209, 245, 202) 156.2%);
+            }
+
+            .lgbtn {
+                cursor: pointer;
+                padding: 10px 35px;
+                color: white;
+                background-color: black;
+                font-weight: 700;
+                border-radius: 10px;
+            }
+
+            #lgbtn1 {
+                position: absolute;
+                top: 80px;
+                right: 50px;
+            }
+
+            .pf_name {
+                font-size: 31px;
+                margin: 10px 0;
+            }
+
+            .pf1>p {
+                margin: 8px 0;
+                font-size: 14px;
+            }
+
+            div.pf11 {
+                width: 100%;
+                position: absolute;
+                top: 230px;
+                left: 0;
+            }
+
+            div.pf2 {
+                flex-wrap: wrap;
+                width: 100%;
+            }
+
+            div.pf21 {
+                user-select: none;
+                cursor: pointer;
+                position: relative;
+                padding: 15px 27px 25px 27px;
+                height: 110px;
+                width: calc(18% - 34px);
+                min-width: 250px;
+                margin: 0 12px 30px;
+                background-color: rgb(255, 255, 255);
+                border-radius: 30px;
+                box-shadow: 0 5px 4px -4px rgba(57, 76, 96, .15);
+            }
+
+            div.pf21::after {
+                position: absolute;
+                top: 35px;
+                right: 25px;
+                font-size: 15px;
+                content: "\f078";
+                font-family: "Font Awesome 6 Free";
+                font-weight: 700;
+                color: rgb(70, 70, 70);
+            }
+
+            .pf21_p {
+                margin: 0px 5px;
+                font-size: 13px;
+                color: rgb(70, 70, 70);
+            }
+
+            .pf21_h3 {
+                margin-left: 5px;
+                font-weight: 700;
+                font-size: 16px;
+            }
+
+            div.pf3 {
+                display: none;
+                margin: 50px 20px 20px;
+                text-align: center;
+            }
+
+            @media screen and (max-width: 1435px) {
+                div.pf21 {
+                    width: calc(20% - 34px);
+                }
+            }
+
+            @media screen and (max-width: 1135px) {
+                div.pf21 {
+                    width: calc(30% - 34px);
+                }
+
+                div.info_con {
+                    margin-top: 190px;
+                }
+            }
+
+            @media screen and (max-width: 850px) {
+                div.pf3 {
+                    display: block;
+                }
+
+                #lgbtn1 {
+                    display: none;
+                }
+
+                div.pf1 {
+                    padding: 40px 30px;
+                }
+
+                div.pf21 {
+                    width: calc(100% - 30px);
+                    margin: 0 15px;
+                    border-radius: 0px;
+                    height: 90px;
+                    padding: 4px 20px;
+                }
+
+                div.pf21:nth-child(1) {
+                    border-radius: 20px 20px 0 0;
+                }
+
+                div.pf21:last-child {
+                    border-radius: 0 0 20px 20px;
+                }
+
+                div.info_con {
+                    margin-top: 400px;
+                }
+            }
+
+            @media screen and (max-width: 550px) {
+                .pf_name {
+                    font-size: 21px;
+                }
+
+                div.pf1 p {
+                    font-size: 13px;
+                }
+
+                div.info_con {
+                    margin-top: 400px;
+                    padding: 10px;
+                }
+
+                div.pf1 {
+                    display: block;
+                    padding: 30px 0 30px 5%;
+                    height: 250px;
+                }
+
+                div.pf11 {
+                    top: 200px;
+                }
+
+                div.pf21::after,
+                .pf21_h3 {
+                    font-size: 15px;
+                }
+
+                .pf21_p {
+                    margin: 8px 5px;
+                    font-size: 13px;
+                }
+            }
+        </style>
+
+
+
+</body>
+
+</html>

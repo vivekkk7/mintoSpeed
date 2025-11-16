@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - mintoSpeed</title>
+    <meta name="description" content="View your cart added in mintoSpeed.">
+    <meta name="keywords" content="cart, mintoSpeed">
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="index, follow">
+
+    <%- include('partials/headTagContent') %>
+
+</head>
+
+<body>
+    <!-- navbar -->
+    <%- include('partials/navbar') %>
+
+            <!-- cart items -->
+            <section class="cart_section">
+                <% if (typeof cartDetails !== 'undefined' && cartDetails.length> 0) { %>
+                    <h2>Your items (<span class="total_cart_item_no"><%-totalCart%></span>)</h2>
+
+                    <!-- total -->
+                    <div class="cart_top">
+                        <div class="cart_top1">
+                            <p class="cart_top_total_item">Total items : <span id="total_cart_item_no">0</span></p>
+                            <p class="cart_top_total_price">Total price : <span class="cart_total_price">0</span></p> 
+                        </div>
+
+                        <div class="pay_button">Order Now</div>
+                    </div>
+
+                    <!-- <p style="font-size: 13px;">*Previous 7 days cart added shown here. Cart before 7 days auto deleted.
+                    </p> -->
+
+                    <div class="cart_box">
+
+                        <!-- head -->
+                        <div class="cart_item">
+                            <div class="cart_item_checkbox">
+                                <input type="checkbox" id="select_all_item" />
+                            </div>
+                            <div class="cart_item_img">
+                                <p class="cart_p_head">&nbsp;</p>
+                            </div>
+
+                            <div class="cart_item_info">
+                                <p class="cart_p_head">Product</p>
+                            </div>
+
+                            <div class="cart_item_sub_total">
+                                <p class="cart_p_head">Sub Total</p>
+                            </div>
+                            <div class="cart_item_three_dot">
+                                <p class="cart_p_head">&nbsp;</p>
+                                <div class="cart_item_three_dot" style="display: none;">
+                                    <p class="cart_item_three_dot_p"><i class="fa-solid fa-ellipsis-vertical"></i></p>
+                                    <div class="cart_item_delete_box hidden">
+                                        <button class="delete_cart_item_btn">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- items -->
+                        <div class="cart_items">
+                            <% cartDetails.forEach(item=> { %>
+                                <div class="cart_item" data-cartItemPacked="<%= item.packed %>"
+                                    data-cartItemCategory="<%= item.category %>"
+                                    data-cartItemSubCategory="<%= item.subCategory %>" data-date="<%= item.date %>"
+                                    data-cartItemId="<%= item.cartItemId %>">
+                                    <div class="cart_item_checkbox">
+                                        <input type="checkbox" class="select_item" />
+                                    </div>
+
+                                    <div class="cart_item_img">
+                                        <img src="<%= item.imageUrl %>" alt="<%= item.name %>">
+                                    </div>
+
+                                    <div class="cart_item_info">
+                                        <p class="cart_item_name_p"><a class="cart_item_name" href="/item?c=<%= encodeURIComponent(item.category) %>&s=<%= encodeURIComponent(item.subCategory) %>&i=<%= encodeURIComponent(item.name) %>"><%= item.name %></a></p>
+
+                                        <p class="cart_item_min_volume">
+                                            <%= item.minVolume %>
+                                        </p>
+                                        <p class="cart_item_max_volume">
+                                            <%= item.maxVolume %>
+                                        </p>
+
+
+                                        <!--  -->
+                                        <div class="cart_item_volume">
+                                            <p class="cart_item_weight" style="margin: 0; text-align: left;">
+                                                <%= item.volume %>
+                                            </p>
+                                            <div class="cart_item_volume_options">
+                                                <% if (item.packed) { %>
+                                                <!-- item is packed -->
+                                                <% } else { %>
+                                                    <% item.options.forEach(option=> { %>
+                                                        <div class="cart_item_volume_option">
+                                                            <p class="cart_item_option_weight">
+                                                                <%= option.weight %>
+                                                            </p>
+                                                            <p class="cart_item_option_price">
+                                                                <%= option.price %>
+                                                            </p>
+                                                        </div>
+                                                    <% }) %>
+                                                <% } %>
+                                            <!-- custom option -->
+                                            <div class="item_volume_custom_option">
+                                                <p class="item_volume_custom_option_head">Custom
+                                                </p>
+                                            <div class="item_volume_custom_option_input_div">
+                                            <% if (item.packed) { %>
+                                                <!-- If item is packed, show text "pieces" -->
+                                                <input type="number"
+                                                    class="item_volume_input_number"
+                                                    placeholder="Qty" min="0"
+                                                    max="<%= item.maxVolume %>"
+                                                    step="1" />
+                                                <div
+                                                    class="item_volume_custom_option_for_pieces">
+                                                    pcs</div>
+                                                <% } else { %>
+                                                    <input type="number"
+                                                        class="item_volume_input_number"
+                                                        placeholder="Qty" min="0" />
+                                                    <div
+                                                        class="item_volume_custom_option_for_kggm">
+                                                        <label><input type="radio"
+                                                                name="kggm" checked
+                                                                value="kg"> kg</label>
+                                                        <label><input type="radio"
+                                                                name="kggm" value="gm">
+                                                            gm</label>
+                                                    </div>
+                                                    <% } %>
+                                                        </div>
+                                                        <p class="item_volume_input_price">0</p>
+                                                        <button
+                                                            class="item_volume_custom_option_done_btn">Done</button>
+                                                    </div>
+                                            </div>
+                                        </div>
+
+                                        <!--  -->
+                                        <p class="cart_item_price">
+                                            <%= item.price %>
+                                        </p>
+                                    </div>
+
+                                    <div class="cart_item_sub_total">
+                                        <p class="cart_item_price cart_item_sub_total_price"><%= (item.price * item.qty).toFixed(2) %></p>
+                                    </div>
+
+                                    <div class="cart_item_three_dot">
+                                        <p class="cart_item_three_dot_p"><i class="fa-solid fa-trash"></i></p>   
+                                        <!-- <i class="fa-solid fa-ellipsis-vertical"></i> -->
+                                        <div class="cart_item_delete_box hidden">
+                                            <button class="delete_cart_item_btn">Delete Cart Item</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                        <!-- <p style="font-size: 11px; margin: 30px 10px;">*Delivery charge apply below ₹99 order (₹20 delivery charge) and above ₹99 (Free Delivery)</p> -->
+                    </div>
+            <% } else { %>
+                <p style="text-align: center; margin-top: 150px; margin-bottom: 200px;">Your cart is empty.</p>
+            <% } %>
+
+            <% if (typeof message !== 'undefined' && message.length> 1) { %>
+                <p id="initialErrorMsg" style="display: none;">
+                    <%= message %>
+                </p>
+            <% } %>
+            </section>
+
+            <style>
+                .cart_item_delete_box {
+                    position: absolute;
+                    right: 15px;
+                    top: 50%;
+                    background-color: white;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    z-index: 1000;
+                    padding: 5px;
+                    display: flex;
+                    flex-direction: column;
+                    transform: translateY(-50%);
+                }
+
+                .cart_item_delete_box.hidden {
+                    display: none;
+                }
+
+                .delete_cart_item_btn {
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-weight: 600;
+                    background-color: transparent;
+                    color: red;
+                    border: none;
+                    padding: 5px 12px;
+                    text-align: center;
+                }
+
+                .delete_cart_item_btn:hover {
+                    opacity: 0.7;
+                }
+
+                .cart_section {
+                    margin-top: 2px;
+                    width: 100%;
+                    padding: 30px 5% 20px 5%;
+                    background-color: rgb(250, 250, 250);
+                }
+
+                .cart_section h2 {
+                    margin-left: 6px;
+                    font-size: 19px;
+                }
+
+                .cart_box {
+                    background-color: whitesmoke;
+                    height: fit-content;
+                    max-width: 100%;
+                    width: 100%;
+                    padding: 15px;
+                    border-radius: 0px;
+                }
+
+
+                .cart_items {
+                    position: relative;
+                    padding-bottom: 200px;
+                }
+
+                .cart_items::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .cart_top {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    z-index: 10000;
+                    width: 100%;
+                    padding: 20px;
+                    margin: 15px 0;
+                    border-radius: 10px;
+                    /* padding: 10px; */
+                    height: fit-content;
+                    background-color: rgb(222, 228, 221);
+                }
+
+                .cart_top1 p {
+                    font-size: 14px;
+                    font-weight: 600;
+                    margin: 5px;
+                }
+
+                .pay_button {
+                    height: fit-content;
+                    cursor: pointer;
+                    padding: 10px 35px;
+                    /* padding: 5px 7px; */
+                    border-radius: 10px;
+                    font-size: 15px;
+                    /* font-size: 12px; */
+                    text-align: center;
+                    font-weight: 600;
+                    color: white;
+                    background-color: rgb(0, 172, 0);
+                }
+
+                .cart_item {
+                    position: relative;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 7px 3px;
+                    margin-bottom: 7px;
+                    background-color: rgb(255, 255, 255);
+                }
+
+                .cart_item_sub_total_price,
+                .cart_item_img,
+                .cart_item_checkbox {
+                    text-align: center;
+                }
+
+                .cart_item_checkbox {
+                    width: 50px;
+                    /* background-color: #25d25f; */
+                }
+                .cart_item_img {
+                    width: 20%;
+                    margin-right: 10px;
+                    /* background-color: #25d25f; */
+                }
+                .cart_item_info {
+                    margin-right: 10px;
+                    width: calc(100% - 40% - 110px);
+                    /* background-color: #4f5f55; */
+                }
+
+
+                .cart_item_sub_total {
+                    width: 20%;
+                    text-align: center;
+                    margin-right: 5px;
+                    /* background-color: #698472; */
+                }
+                .cart_item_sub_total>p{
+                    text-align: center;
+                }
+                
+                .cart_item_three_dot{
+                    width: 40px;
+                    text-align: center;
+                    /* background-color: aqua; */
+                }
+                .cart_item_three_dot_p{
+                    font-size: 13px;
+                    cursor: pointer;
+                    padding: 7px;
+                    color: rgb(84, 62, 62);
+                }
+
+                .cart_item_img img {
+                    max-height: 80px;
+                    max-width: 100%;
+                }
+
+                .cart_item_sub_total {
+                    margin: 0;
+                }
+
+                .cart_item_min_volume,
+                .cart_item_max_volume {
+                    display: none !important;
+                }
+
+               
+                .cart_p_head {
+                    font-weight: 700;
+                    font-size: 13px;
+                    /* font-size: 10px; */
+                }
+
+                .cart_item_name_p {
+                    text-transform: capitalize;
+                    /* font-size: 11px; */
+                    font-size: 13px;
+                    font-weight: 600;
+                    padding: 0;
+                    margin: 0px 0;
+                    font-family: 'Khula';
+                }
+
+                .cart_item_volume,
+                .cart_item_volume_options {
+                    cursor: pointer;
+                    width: 85%;
+                    position: relative;
+                    background-color: rgb(252, 250, 250);
+                    border: 1px solid rgb(219, 219, 219);
+                    margin: 0px 0;
+                    padding: 3px 5px;
+                    font-size: 13px;
+                    /* font-size: 10px; */
+                    border-radius: 3px;
+                }
+                .cart_item_volume{
+                    margin-top: 5px;
+                }
+
+                .cart_item_volume_options {
+                    display: none;
+                    z-index: 100000;
+                    width: 100%;
+                    position: absolute;
+                    top: 0px;
+                    left: 0;
+                    padding: 0;
+                }
+
+                .cart_item_volume_options.show {
+                    display: block;
+                }
+
+                .cart_item_volume_option {
+                    cursor: pointer;
+                    background-color: white;
+                    padding: 3px 4px;
+                    margin: 2px;
+                }
+
+                .cart_item_volume::after {
+                    position: absolute;
+                    font-family: 'Font Awesome 5 Free';
+                    content: '\f078';
+                    font-weight: 900;
+                    font-size: 8px;
+                    right: 7px;
+                    top: 30%;
+                }
+
+                .cart_item_price,
+                .cart_item_option_weight,
+                .cart_item_option_price,
+                .cart_item_sub_total {
+                    margin: 5px 0 0 5px;
+                    /* margin: 3px 0 0 3px; */
+                    font-size: 13px;
+                    /* font-size: 10px; */
+                    position: relative;
+                    text-align: left;
+                    font-weight: 600;
+                }
+
+                .cart_item_option_weight {
+                    font-weight: 500;
+                    font-size: 13px;
+                    /* font-size: 9px; */
+                }
+
+                .cart_item_option_price {
+                    font-size: 13px;
+                    /* font-size: 9px; */
+                    margin: 5px 0 0 5px;
+                    /* margin: 2px 0 0 2px; */
+                }
+
+                .cart_item_price::before,
+                .cart_item_option_price::before,
+                .cart_total_price::before,
+                .delivery_charge::before,
+                .item_volume_input_price::before {
+                    content: "₹";
+                }
+
+                .item_volume_custom_option {
+                    padding: 3px 7px;
+                    font-size: 13px;
+                    cursor: default;
+                }
+
+                .item_volume_custom_option p {
+                    margin: 6px 0;
+                }
+
+                .item_volume_custom_option_head {
+                    font-size: 13px;
+                    font-weight: 600;
+                    padding-bottom: 3px;
+                }
+
+                .item_volume_custom_option_input_div {
+                    display: flex;
+                    align-items: center;
+                }
+
+                .item_volume_input_number {
+                    padding: 2px;
+                    font-size: 12px;
+                    width: 50px;
+                    height: 20px;
+                }
+
+                .item_volume_input_number::placeholder {
+                    font-size: 11px;
+                    padding: 2px;
+                }
+
+                /* Chrome, Safari, Edge, Opera */
+                input[type="number"]::-webkit-outer-spin-button,
+                input[type="number"]::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+
+                .item_volume_custom_option_for_pieces {
+                    font-size: 13px;
+                    margin-left: 5px;
+                }
+
+
+                .item_volume_custom_option_for_kggm {
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: nowrap;
+                }
+
+                .item_volume_custom_option_for_kggm input {
+                    height: 10px;
+                    width: 10px;
+                    margin: 4px 2px 0 5px;
+                }
+
+                .item_volume_custom_option_for_kggm label {
+                    font-size: 12px;
+                    margin-left: 5px;
+                }
+
+                .item_volume_custom_option_done_btn {
+                    font-size: 11px;
+                    padding: 7px 10px;
+                    border-radius: 5px;
+                    font-weight: 600;
+                    margin: 6px 0 3px 1px;
+                }
+
+
+                @media screen and (max-width: 550px) {
+                    .cart_section {
+                        margin-top: 7px;
+                        padding: 7px 8px 15px 8px;
+                        background-color: rgb(245, 243, 243);
+                    }
+
+                    .cart_section h2 {
+                        font-size: 16px;
+                    }
+
+                    .cart_box {
+                        padding: 5px;
+                        max-width: 100%;
+                    }
+
+                    .cart_top {
+                        padding: 20px 10px;
+                        margin: 0px;
+                        margin-bottom: 15px;
+                    }
+
+                    .cart_top1 p {
+                        font-size: 13px;
+                        margin: 6px;
+                    }
+
+                    .pay_button {
+                        padding: 10px 28px;
+                        font-size: 13px;
+                    }
+
+                   
+                    
+                    .cart_item_option_weight, .cart_item_option_price {
+                        font-size: 11px;
+                    }
+
+                    .cart_item_volume,
+
+                    .cart_item_volume_options,
+                    .cart_p_head {
+                        font-size: 12px;
+                    }
+
+                    
+
+                    .cart_item_price,
+                    .cart_item_option_weight,
+                    .cart_item_option_price,
+                    .cart_item_sub_total {
+                        margin: 3px 0 0 3px;
+                        font-size: 12px;
+                    }
+
+                    .cart_item_name_p, .cart_item_sub_total_price {
+                        font-size: 13px;
+                    }
+
+                    .cart_item_checkbox {
+                    width: 30px;
+                }
+       
+                .cart_item_info {
+                    width: calc(100% - 40% - 65px);
+                }
+                
+                .cart_item_three_dot{
+                    width: 20px;
+                }
+            }
+            </style>
+
+
+
+            <script nonce="<%-nonce%>">
+                document.addEventListener('DOMContentLoaded', function () {
+                    //initial error msg
+                    const initialErrorMsgP = document.getElementById('initialErrorMsg');
+                    if (initialErrorMsgP) {
+                        const initialErrorMsgPText = initialErrorMsgP.textContent;
+                        console.log("initial msg : " + initialErrorMsgPText);
+                        // showAlert(initialErrorMsgPText, 'negative');
+                    }
+
+                    // Function to handle volume dropdown logic
+                    attachVolumeOptionListeners(document.querySelectorAll('.cart_item_volume'));
+
+                    function attachVolumeOptionListeners(itemVolumes) {
+                        itemVolumes.forEach(function (itemVolume) {
+                            const packed = itemVolume.parentElement.parentElement.getAttribute('data-cartItemPacked');
+                            const dropdown = itemVolume.querySelector('.cart_item_volume_options');
+                            const customOption = dropdown.querySelector('.item_volume_custom_option');
+                            const doneButton = customOption.querySelector('.item_volume_custom_option_done_btn');
+                            const volumeOptions = dropdown.querySelectorAll('.cart_item_volume_option');
+                            const minVolume = itemVolume.parentElement.querySelector('.cart_item_min_volume');
+                            const maxVolume = itemVolume.parentElement.querySelector('.cart_item_max_volume');
+                            const itemPrice = itemVolume.parentElement.querySelector('.cart_item_price');
+                            const itemWeight = itemVolume.parentElement.querySelector('.cart_item_weight');
+                            const inputPrice = customOption.querySelector('.item_volume_input_price');
+                            const inputWeightElement = customOption.querySelector('.item_volume_input_number');
+                            const radioButtonKggm = customOption.querySelectorAll('input[name="kggm"]');
+
+                            // Toggle dropdown visibility on item_volume click
+                            itemVolume.addEventListener('click', function (event) {
+                                closeAllDropdowns();
+                                dropdown.classList.toggle('show');
+                                event.stopPropagation(); // Prevent the click from bubbling up
+                            });
+
+                            // Close dropdown when selecting a predefined option
+                            volumeOptions.forEach(function (option) {
+                                option.addEventListener('click', function (event) {
+                                    const selectedPrice = option.querySelector('.cart_item_option_price').textContent;
+                                    const selectedWeight = option.querySelector('.cart_item_option_weight').textContent;
+
+                                    // Update price and weight elements
+                                    itemPrice.textContent = selectedPrice;
+                                    itemWeight.textContent = selectedWeight;
+                                    updateCart();
+
+                                    dropdown.classList.remove('show');
+                                    event.stopPropagation(); // Prevent bubbling
+                                });
+                            });
+
+                            // Prevent dropdown from closing when interacting with the custom option
+                            customOption.addEventListener('click', function (event) {
+                                event.stopPropagation(); // Prevent closing
+                            });
+
+                            // Close dropdown when clicking the done button inside the custom option
+                            doneButton.addEventListener('click', function (event) {
+                                updateCart();
+                                dropdown.classList.remove('show'); // Close the dropdown
+                                event.stopPropagation(); // Prevent event bubbling
+                            });
+
+                            inputWeightElement.addEventListener('input', function (event) {
+                                const value = parseFloat(event.target.value.trim());
+
+                                // Check if the value is negative
+                                if (value < 0) {
+                                    event.target.value = 0; // Reset to 0 if the value is negative
+                                }
+
+                                getClosestWeightAndPrice(event.target.value.trim(), true, this);
+                            });
+
+                            radioButtonKggm.forEach(function (radioButton) {
+                                radioButton.addEventListener('change', function (event) {
+                                    getClosestWeightAndPrice(inputWeightElement.value.trim(), false, this);
+                                });
+                            });
+
+                            function getClosestWeightAndPrice(inputData, flag, context) {
+                                if (inputData.length == 0) {
+                                    inputPrice.textContent = 0;
+                                    return;
+                                }
+
+                                if (packed == "false") {
+                                    const selectedKggm = customOption.querySelector('input[name="kggm"]:checked');
+                                    const minVol = convertToGrams(getSafeTextContent(minVolume));
+                                    const maxVol = convertToGrams(getSafeTextContent(maxVolume));
+
+                                    console.log(inputData + ", " + selectedKggm.value.trim() + ", " + minVol + ", " + maxVol);
+
+                                    const weight = inputData + " " + selectedKggm.value.trim();
+                                    const targetWeight = convertToGrams(weight);
+                                    const weightElements = dropdown.querySelectorAll('.cart_item_option_weight');
+                                    const priceElements = dropdown.querySelectorAll('.cart_item_option_price');
+
+                                    let closestWeight = null;
+                                    let closestPrice = null;
+                                    let closestDifference = Infinity;
+
+                                    // Loop through all the weights and prices
+                                    weightElements.forEach((weightElement, index) => {
+                                        const weightText = weightElement.textContent;
+                                        let weight = convertToGrams(weightText); // Convert text like "100 gm" to a number in grams
+
+                                        // Calculate the difference between the target weight and the current weight
+                                        let difference = Math.abs(targetWeight - weight);
+
+                                        // If this is the closest weight so far, update the closest weight and price
+                                        if (difference < closestDifference) {
+                                            closestDifference = difference;
+                                            closestWeight = weight; // Store weight in grams for calculation
+                                            closestPrice = parseFloat(priceElements[index].textContent); // Get the corresponding price
+                                        }
+                                    });
+
+                                    let rate = closestPrice / closestWeight;
+                                    let newPrice = (rate * targetWeight).toFixed(2);
+                                    console.log("Closest weight: " + closestWeight + " grams");
+
+
+                                    if (targetWeight >= minVol && targetWeight <= maxVol) {
+                                        inputPrice.textContent = newPrice;
+                                        itemPrice.textContent = newPrice;
+                                        itemWeight.textContent = weight;
+                                        console.log(targetWeight + ", " + minVol + ", " + maxVol);
+                                    }
+
+                                    else {
+                                        inputPrice.textContent = 0;
+                                        showAlert(`Item should be in range from ${getSafeTextContent(minVolume)} to ${getSafeTextContent(maxVolume)}.`, 'negative');
+                                        return;
+                                    }
+                                }
+                                else if (packed == "true") {
+                                    let inputDataVal = inputData.split('.')[0];
+                                    if (flag) {
+                                        context.value = inputDataVal;
+                                    }
+                                    inputData = inputDataVal;
+                                    const minVol = parseInt(getSafeTextContent(minVolume));
+                                    const maxVol = parseInt(getSafeTextContent(maxVolume));
+                                    const itemQty = parseInt(getSafeTextContent(itemWeight));
+                                    const itemPriceforQty = parseFloat(itemPrice.textContent);
+                                    const rate = itemPriceforQty / itemQty;
+                                    let newPrice = (rate * inputData).toFixed(2);
+                                    console.log(itemQty + ", " + minVol + ", " + maxVol + ", " + itemPriceforQty + ", " + rate + ", " + newPrice);
+
+
+                                    if (inputData >= minVol && inputData <= maxVol) {
+                                        inputPrice.textContent = newPrice;
+                                        itemPrice.textContent = newPrice;
+                                        itemWeight.textContent = inputData;
+                                        console.log(newPrice + ", " + minVol + ", " + maxVol);
+                                    }
+                                    else {
+                                        inputPrice.textContent = 0;
+                                        showAlert(`Item should be in range from ${getSafeTextContent(minVolume)} to ${getSafeTextContent(maxVolume)}.`, 'negative');
+                                        return;
+                                    }
+                                }
+                                else {
+                                    showAlert("Something went wrong to calculate price.", "negative");
+                                }
+                            }
+
+                        });
+
+                        // Attach a global document listener to close dropdowns when clicking outside
+                        document.addEventListener('click', function (event) {
+                            // Check if the click is outside all dropdowns
+                            closeAllDropdowns();
+                        });
+                    }
+
+                    // Helper function to close all open dropdowns
+                    function closeAllDropdowns() {
+                        document.querySelectorAll('.cart_item_volume_options.show').forEach(function (dropdown) {
+                            dropdown.classList.remove('show');
+                        });
+                    }
+
+
+
+                    // select all checkbox
+                    const selectAllCheckbox = document.getElementById('select_all_item');
+                    const itemCheckboxes = document.querySelectorAll('.select_item');
+
+                    function checkAllCheckboxes() {
+                        selectAllCheckbox.checked = true;
+
+                        itemCheckboxes.forEach(function (checkbox) {
+                            checkbox.checked = true;
+                        });
+                    }
+
+                    selectAllCheckbox.addEventListener('change', function () {
+                        itemCheckboxes.forEach(function (checkbox) {
+                            checkbox.checked = selectAllCheckbox.checked;
+                            updateCart();
+                        });
+                    });
+
+
+                    itemCheckboxes.forEach(function (checkbox) {
+                        checkbox.addEventListener('change', function () {
+                            if (!checkbox.checked) {
+                                selectAllCheckbox.checked = false;
+                                updateCart();
+                            }
+                            else if (Array.from(itemCheckboxes).every(cb => cb.checked)) {
+                                selectAllCheckbox.checked = true;
+                                updateCart();
+                            }
+                        });
+                    });
+                    checkAllCheckboxes();
+
+
+                    // update cart
+                    function updateCart() {
+                        let totalItems = 0;
+                        let totalPrice = 0;
+
+                        document.querySelectorAll('.cart_item').forEach(function (cartItem, index) {
+                            const checkbox = cartItem.querySelector('.select_item');
+                            const itemPriceElement = cartItem.querySelector('.cart_item_price');
+                            const subTotalElement = cartItem.querySelector('.cart_item_sub_total_price');
+
+
+                            // Ensure all elements are found
+                            if (!checkbox || !itemPriceElement || !subTotalElement) {
+                                console.error(`Missing elements in cart item ${index}`);
+                                return;
+                            }
+
+                            const newSubTotal = parseFloat(itemPriceElement.textContent);
+                            subTotalElement.textContent = newSubTotal.toFixed(2);
+
+                            if (checkbox.checked) {
+                                totalItems += 1;
+                                totalPrice += newSubTotal;
+                            }
+                        });
+
+                        // const deliveryCharge = document.querySelector('.delivery_charge');
+                        // totalPrice < 99 ? deliveryCharge.textContent = 20 : deliveryCharge.textContent = 0;
+                        document.querySelector('#total_cart_item_no').textContent = totalItems;
+                        document.querySelector('.cart_total_price').textContent = totalPrice.toFixed(2);
+                    }
+
+           
+                    document.querySelectorAll('.select_item').forEach(function (checkbox, index) {
+                        checkbox.addEventListener('change', function () {
+                            console.log(`Checkbox changed on item ${index}`);
+                            updateCart();
+                        });
+                    });
+
+                    //delete cart
+                const cartItems = document.querySelectorAll('.cart_item');
+
+                cartItems.forEach(cartItem => {
+                    const threeDotP = cartItem.querySelector('.cart_item_three_dot_p');
+                    const deleteBox = cartItem.querySelector('.cart_item_delete_box');
+                    const deleteButton = deleteBox.querySelector('.delete_cart_item_btn');
+
+                    // Toggle the delete box when the three-dot menu is clicked
+                    threeDotP.addEventListener('click', (event) => {
+                        event.stopPropagation(); // Prevent triggering the document click
+                        closeAllDeleteBoxes(); // Close any other open delete boxes
+                        deleteBox.classList.toggle('hidden');
+                    });
+                
+                    // Handle delete button click
+                    deleteButton.addEventListener('click', () => {
+                        const cartItemId = cartItem.dataset.cartitemid;
+                        document.getElementById("loader_container").style.display = "flex";
+                    
+                        // Send a POST request to delete the cart item
+                        fetch('/cart/delete-cart-item', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ cartItemId }),
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    let flag = false;
+                                    document.getElementById("loader_container").style.display = "none";
+                                    showAlert('Cart item deleted', 'positive');
+                                    cartItem.remove();
+                                    const cartNo = document.querySelectorAll('.total_cart_item_no');
+                                    cartNo.forEach(c => {
+                                        let n = parseInt(c.textContent) - 1
+                                        c.textContent = n;
+                                        flag = n == 0 ? true : false;
+                                    });
+                                    const cartNoNav = document.querySelector('.cart_item_no');
+                                    cartNoNav.textContent = parseInt(cartNoNav.textContent) - 1;
+                                
+                                    if(flag){
+                                        document.querySelector('.cart_section').innerHTML = '<p style="text-align: center; margin-top: 150px; margin-bottom: 200px;">Your cart is empty.</p>';
+                                        return;
+                                    }
+                                    updateCart();
+                                    return;
+                                
+                                } else {
+                                    document.getElementById("loader_container").style.display = "none";
+                                    showAlert(data.message, 'negative');
+                                    return;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error deleting the item:', error);
+                                document.getElementById("loader_container").style.display = "none";
+                                showAlert('Something went wrong to delete cart item.', 'negative');
+                                return;
+                            });
+                        
+                        // Hide the delete box
+                        deleteBox.classList.add('hidden');
+                    });
+                });
+
+                // Close all delete boxes when clicking outside
+                document.addEventListener('click', () => {
+                    closeAllDeleteBoxes();
+                });
+
+                // Helper function to close all delete boxes
+                function closeAllDeleteBoxes() {
+                    document.querySelectorAll('.cart_item_delete_box').forEach(box => {
+                        box.classList.add('hidden');
+                    });
+                }
+
+                    updateCart();
+                });
+
+                
+
+                // Utility to convert kg/gm to grams
+                function convertToGrams(value) {
+                    if (typeof value === 'string' && value.includes('kg')) {
+                        return parseFloat(value) * 1000;
+                    } else {
+                        return parseInt(value);
+                    }
+                }
+
+                function getSafeTextContent(element) {
+                    if (element && typeof element.textContent === 'string') {
+                        // Sanitize text content but allow &, -, ( )
+                        const sanitizedText = element.textContent
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+
+                        return sanitizedText;
+                    } else {
+                        showAlert('Invalid input. Please try again.', 'negative');
+                        return '';
+                    }
+                }
+            </script>
+
+            <!-- update and proceed cart -->
+            <script nonce="<%-nonce%>">
+                const idRegex = /^[a-zA-Z0-9]+$/;
+                const weightRegex = /^(\d+(\.\d+)?)(\s?(kg|gm|KG|GM))?$/;
+                // Store modified items
+                const modifiedItems = new Map();
+
+                document.addEventListener('DOMContentLoaded', function () {
+
+                    // Track changes to weight and store modifications
+                    document.querySelectorAll('.cart_item').forEach(function (cartItem) {
+                        let itemWeight = cartItem.querySelector('.cart_item_weight');
+                        let cartItemId = cartItem.getAttribute('data-cartItemId');
+
+
+                        if (itemWeight && !weightRegex.test(itemWeight.textContent.trim())) {
+                            document.getElementById("loader_container").style.display = "none";
+                            showAlert("Item weight is invalid.", "negative");                        
+                            return;
+                        }
+                    
+
+                        if (itemWeight && weightRegex.test(itemWeight.textContent.trim())) {
+                            const observer = new MutationObserver(() => {
+                                saveModification(cartItemId, 'weight', itemWeight.textContent.trim());
+                            });
+
+                            // Observe only text content changes
+                            observer.observe(itemWeight, { characterData: true, childList: true, subtree: true });
+                        }
+
+                    });
+
+                    // Save item modifications to the modifiedItems Map
+                    function saveModification(cartItemId, field, value) {
+                        if (!cartItemId || !idRegex.test(cartItemId)) {
+                            showAlert("Cart Id is invalid.", "negative"); 
+                            document.getElementById("loader_container").style.display = "none";
+                            return;          
+                        }
+                        if (!modifiedItems.has(cartItemId)) {
+                            modifiedItems.set(cartItemId, { id: cartItemId });
+                        }
+                        modifiedItems.get(cartItemId)[field] = value;
+                        console.log("modified items : ", modifiedItems);
+                    }
+
+                    // Handle the "Pay" button click
+                    document.querySelector('.pay_button').addEventListener('click', function () {
+                        document.getElementById("loader_container").style.display = "flex";
+                        let changesArray;
+                        if (modifiedItems.size === 0) {
+                            // showAlert('No changes to update.', 'neutral');
+                            changesArray = null;
+                        }
+                        else {
+                            changesArray = Array.from(modifiedItems.values());
+                        }
+
+                        // Gather selected cart item IDs
+                        const selectedCartItemIds = Array.from(document.querySelectorAll('.cart_item input.select_item:checked'))
+                            .map(item => item.closest('.cart_item').getAttribute('data-cartItemId'));
+
+                        if (selectedCartItemIds.length === 0) {
+                            showAlert('Please select at least one item.', 'negative');
+                            document.getElementById("loader_container").style.display = "none";
+                            return;
+                        }
+                        else {
+                            fetch('/cart/proceed-cart-items', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ items: changesArray, selectedCartItemIds: selectedCartItemIds })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success == "positive") {
+                                        modifiedItems.clear(); // Clear modifications after successful update
+                                        if (data.redirectUrl) {
+                                            window.location.href = data.redirectUrl; // Redirect to delivery details page
+                                        }
+                                        else {
+                                            showAlert(data.message, data.success);
+                                            document.getElementById("loader_container").style.display = "none";
+                                        }
+                                        return;
+                                    }
+                                    else if(data.success == "redirect"){
+                                        showAlert(data.message, "negative");
+                                        window.location.href = "/auth/login";
+                                        return;
+                                    }
+                                    else {
+                                        document.getElementById("loader_container").style.display = "none";
+                                        showAlert(data.message, data.success);
+                                    }
+
+                                })
+                                .catch(error => {
+                                    console.error('Error updating cart:', error);
+                                    document.getElementById("loader_container").style.display = "none";
+                                    showAlert('Something went wrong. Please try again..', 'negative');
+                                });
+                        }
+
+                    });
+                });
+
+        
+        </script>
+
+
+
+            <!-- footer -->
+            <%- include('partials/footer') %>
+
+</body>
+
+</html>

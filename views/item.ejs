@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= itemName %> - Shop on mintoSpeed</title>
+    <meta name="description" content="<%= itemName %> is available on mintoSpeed. Shop now!">
+    <meta name="keywords" content="<%= itemName %> delivery">
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="index, follow">
+
+    <!-- card css -->
+    <link rel="stylesheet" href="../public/css/itemCard.css" />
+
+    <%- include('partials/headTagContent') %>
+    <!-- scroll -->
+    <script nonce="<%-nonce%>" src="../public/js/srollForSectionAndCategory.js"></script>
+</head>
+
+<body>
+     <!-- navbar -->
+     <%- include('partials/navbar') %>
+
+     <!-- main content -->
+    <% if (item) { %>
+    <section class="mainItemCon">
+        <h2 class="grocery_head"><span id="backBtn" style="margin-right: 7px; padding: 0 4px; cursor: pointer;"><i
+                    class="fa-solid fa-arrow-left"></i></span><%= item.id %></h2>
+        <div class="mainItemCon1">
+            <div class="mainItem">
+                <div class="mainItemImgCon"><img src="<%= item.image_url %>" alt="Item image" /></div>
+            </div>
+            <div class="grocery_item mainItem2" data-packed="<%= item.packed %>" data-itemCategory="<%= category %>"
+                data-itemSubCategory="<%= subcategory %>">
+
+                <p class="item_loc_p"><span><a href="/items?c=<%= encodeURIComponent(category) %>"><%= category %></a></span> / <span><a href="/items?c=<%= encodeURIComponent(category) %>&s=<%= encodeURIComponent(subcategory) %>"><%= subcategory %></a></span></p>
+                <p class="item_name item_name_p" id="mainItemId"><%= item.id %></p>
+                <p class="item_deliveryP">Delivery in 15 minutes</p>
+                <p class="item_min_volume"><%= item.minVol %></p>
+                <p class="item_max_volume"><%= item.maxVol %></p>
+
+                <p class="item_stock <%= !item.stock ? 'hidden' : item.stock == '0' ? 'c_red' : item.stock == 'x' ? 'hidden' : 'd_block' %>">
+                    <%= 
+                      item.stock == '0' 
+                        ? 'Stock is unavailable' 
+                        : item.stock != 'x' 
+                          ? 'Stock : ' + item.stock + ' left' 
+                          : '' 
+                    %>
+                </p>
+                <div class="item_volume">
+                    <p class="item_weight" style="margin: 0;"><%= item.volume %></p>
+                    <div class="item_volume_options">
+                        <% if (item.packed) { %>
+                            <!-- item is packed -->
+                        <% } else { %>
+                                <% item.options.forEach(option=> { %>
+                                    <div class="item_volume_option">
+                                        <p class="item_option_weight"><%= option.weight %></p>
+                                        <p class="item_option_price_p">
+                                            <span class="item_option_price"><%= option.price %></span>
+                                            <% if (option.priceMRP && option.priceMRP.length > 0) { %>
+                                                <span class="market_price">₹&nbsp;<%= option.priceMRP %></span>
+                                            <% } %>
+                                        </p>                                                                        
+                                    </div>
+                                <% }) %>
+                        <% } %>
+
+                        <!-- custom option -->
+                        <div class="item_volume_custom_option">
+                            <p class="item_volume_custom_option_head">Custom</p>
+                            <div
+                                class="item_volume_custom_option_input_div">
+                                <% if (item.packed) { %>
+                                    <!-- If item is packed, show text "pieces" -->
+                                    <input type="number"
+                                        class="item_volume_input_number"
+                                        placeholder="Qty"
+                                        min="0" step="1" />
+                                    <div
+                                        class="item_volume_custom_option_for_pieces">
+                                        pcs</div>
+                                <% } else { %>
+                                    <input type="number"
+                                        class="item_volume_input_number"
+                                        placeholder="Qty"
+                                        min="0" />
+                                    <div
+                                        class="item_volume_custom_option_for_kggm">
+                                        <label><input
+                                                type="radio"
+                                                name="kggm"
+                                                checked
+                                                value="kg">kg</label>
+                                        <label><input
+                                                type="radio"
+                                                name="kggm"
+                                                value="gm">gm</label>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <p class="item_volume_input_price">0</p>
+                            <button class="item_volume_custom_option_done_btn">Done</button>
+                        </div>
+                    </div>
+                </div>  
+
+                <p class="item_price_p">
+                    <span class="item_price"><%= item.price %></span>
+                </p>
+                <p class="item_typeD">Item type : <span style="font-weight: 600;"><%= item.packed ? 'Packed' : 'Unpacked' %></span></p>
+                <button class="item_add_btn">Add To Cart</button>
+            </div>
+        </div>
+
+        <!-- extra -->
+        <div class="mainItemCon2">
+            <h3 class="itemh3">Can item be replace?&nbsp;<span><%= item.replaceSelect == 'true' ? 'Yes' : 'No' %></span></h3>
+            <div class="itemInfoD itemReplacementData">
+                <ul>
+                    <li>Replacement is applicable only for selected grocery items as specified during the purchase.</li>
+                    <li>The request must be initiated within 24 hours of delivery.</li>
+                    <li>The replacement will be processed only if the product meets the eligibility criteria after
+                        inspection.</li>
+                    <li>Items once replaced cannot be replaced again for the same order.</li>
+                </ul>
+                <p>Know more about replacement policy. <a href="/c/terms-and-conditions">Click here</a></p>
+            </div>
+
+            <h3 class="itemh3">About Item</h3>
+            <div class="itemInfoD itemDescription"><%= item.itemAbout %></div>
+       
+            <!-- feedback -->
+            <form action="#" class="feedform">
+                <h3 class="itemh3">Give Feedback -</h3>
+                <div class="star-rating">
+                    <span data-value="1" class="star">&#9733;</span>
+                    <span data-value="2" class="star">&#9733;</span>
+                    <span data-value="3" class="star">&#9733;</span>
+                    <span data-value="4" class="star">&#9733;</span>
+                    <span data-value="5" class="star">&#9733;</span>
+                </div>
+                <% if (user && user=='false' ) { %>
+                <input type="email" id="email" placeholder="Enter your email" required />
+                <% } %>
+                <div class="ffed2 flex">
+                    <textarea id="feedback-text" placeholder="Write your feedback here..."></textarea>
+                    <button type="submit" class="submitBtn" data-itemCategory="<%= category %>"
+                        data-itemSubCategory="<%= subcategory %>">Send</button>
+                </div>
+            </form>
+        </div>
+    </section>
+    <% } %>
+
+    <script nonce="<%-nonce%>">
+        document.getElementById('backBtn')?.addEventListener('click', () => window.history.back());
+    </script>
+    <style>
+        /*  */
+        
+        .feedform{
+            margin-top: 60px;
+            max-width: 550px;
+            width: 550px;
+        }
+
+        .star-rating {
+            display: flex;
+            /* justify-content: center; */
+            gap: 8px;
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        .star {
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.2s;
+        }
+
+        .star.hovered,
+        .star.selected {
+            color: #ff9800;
+        }
+
+        #email,
+        #feedback-text {
+            position: relative;
+            height: 40px;
+            width: 100%;
+            outline: none;
+            font-size: 0.9rem;
+            color: #707070;
+            margin: 5px 10px 15px 0px;
+            border: none;
+            border-bottom: 1px solid #ddd;
+            padding: 3px 10px;
+            background-color: transparent;
+        }
+
+        #feedback-text {
+            /* min-height: 100px; */
+            resize: none;
+        }
+
+        #email:focus,
+        #feedback-text:focus {
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .submitBtn {
+            width: 70px;
+            height: 35px;
+            padding: 3px;
+            border: none;
+            border-radius: 5px;
+            font-size: 13px;
+            margin-top: 5px;
+            background: rgb(91, 216, 114);
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submitBtn:hover {
+            background: rgb(51, 143, 68);
+        }
+        /*  */
+
+
+        section.mainItemCon {
+            margin-top: 2px;
+            padding: 10px 10px 50px 10px;
+            background-color: rgb(247, 247, 247);
+        }
+
+        .mainItemCon .grocery_head {
+            margin-left: 10px;
+        }
+
+        .mainItem {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .mainItemCon1 {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .mainItemCon1>div {
+            width: 50%;
+        }
+
+        .mainItemImgCon img {
+            max-width: 400px;
+            width: 300px;
+            height: fit-content;
+        }
+
+        .mainItem2 {
+            max-width: 550px;
+            min-width: 300px;
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .mainItem2 .item_loc_p {
+            font-size: 13px;
+            text-transform: capitalize;
+        }
+
+        .mainItem2 .item_name_p {
+            font-size: 25px;
+            font-weight: 700;
+            margin: 5px 0 0px 0;
+            cursor: default;
+        }
+
+        .mainItem2 .item_deliveryP {
+            font-size: 14px;
+            font-weight: 600;
+            color: green;
+            margin-bottom: 20px;
+        }
+
+        .mainItem2 .item_volume,
+        .mainItem2 .item_volume_options {
+            padding: 4px 10px;
+            font-size: 15px;
+        }
+
+        .mainItem2 .item_volume {
+            margin-bottom: 20px !important;
+        }
+
+        .mainItem2 .item_price_p,
+        .mainItem2 .item_typeD,
+        .mainItem2 .item_option_price_p,
+        .mainItem2 .item_option_weight {
+            font-size: 16px;
+        }
+
+        .mainItem2 .item_price_p {
+            margin-bottom: 20px;
+        }
+
+        .mainItem2 .item_add_btn {
+            font-size: 16px;
+            height: 40px;
+        }
+
+        .mainItemCon2 {
+            padding: 0 5%;
+        }
+
+        .itemh3 {
+            margin-top: 30px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .itemInfoD {
+            margin-bottom: 10px;
+        }
+
+        @media screen and (max-width: 650px) {
+            .mainItemCon1>div {
+                width: 100%;
+            }
+
+            .mainItemCon2 {
+                padding: 0 12px;
+            }
+
+        .mainItem2 .item_name_p {
+            font-size: 21px;
+        }
+
+        .mainItem2 .item_deliveryP {
+            font-size: 13px;
+        }
+
+        .mainItem2 .item_volume, .mainItem2 .item_typeD,
+        .mainItem2 .item_volume_options {
+            font-size: 14px;
+        }
+
+        }
+    </style>
+
+    <% if (similarItems && similarItems.length> 0) { %>
+    <% similarItems.forEach(similarCategory => { %>
+
+    <section class="similarItemSec grocery">
+        <h2 class="grocery_head">Similar Items</h2>
+
+        <div class="grocery_items" id="grocery_items_<%= subcategory %>" data-subCategory="<%= subcategory %>">
+            <% similarCategory.items.items.forEach(item=> { %>
+                <%- include('partials/grocery_item_con', { item: item }) %>
+            <% }) %>
+        </div>
+    </section>
+    <% }) %>
+    <% } %>
+
+    <style>
+        .similarItemSec {
+            background-color: #c9d7cb;
+            margin: 50px 0;
+        }
+        .similarItemSec .grocery_head{
+            padding-bottom: 5px;
+            padding-top: 23px;
+            font-size: 17px!important;
+        }
+    </style>
+
+
+     <!-- categories -->
+     <section class="content">
+        <% if (typeof categoryNames !== 'undefined' && categoryNames.length> 0) { %>
+        <div class="">
+            <h2 class="content_head">select product by categories</h2>
+
+            <div class="content1">
+                <!-- leftright btn -->
+                <div class="left_btn" id="leftContentBtn"><i class="fa-solid fa-chevron-left"></i></div>
+                <div class="right_btn" id="rightContentBtn"><i class="fa-solid fa-chevron-right"></i></div>
+                <div class="content2">
+                    <!-- contact list -->
+                    <div class="content3">
+                        <% categoryNames.forEach(category=> { %>
+                        <div class="grocery_type">
+                            <a href="/items?c=<%= category.value %>">
+                                <img src="https://storage.googleapis.com/groscool-49709.appspot.com/images%2F8d8ad9d2-d295-4835-a095-ff6dcdf11bab-g1.png" alt="img" />
+                                <p><%= category.key %></p>
+                            </a>
+                        </div>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </section>
+
+    <script nonce="<%-nonce%>">
+        document.querySelector(".submitBtn").addEventListener("click", handleSubmit);
+
+        const stars = document.querySelectorAll('.star');
+        let selectedRating = 0;
+
+        function updateStars(rating) {
+            stars.forEach((star, index) => {
+                star.classList.toggle('selected', index < rating);
+            });
+        }
+
+        stars.forEach((star, index) => {
+            star.addEventListener('mouseover', () => {
+                updateStars(index + 1); 
+            });
+
+            star.addEventListener('mouseleave', () => {
+                updateStars(selectedRating);
+            });
+
+            star.addEventListener('click', () => {
+                selectedRating = index + 1; 
+                updateStars(selectedRating); 
+            });
+        });
+
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const itemSubCategory = this.getAttribute('data-itemSubCategory').trim();
+            const itemCategory = this.getAttribute('data-itemCategory').trim();
+
+            let email = document.getElementById('email');
+            let mainItemId = document.getElementById('mainItemId').textContent.trim();
+            let feedbackText = document.getElementById('feedback-text').value.trim();
+
+            if (email) {
+                email = email.value.trim();
+                if (!/\S+@\S+\.\S+/.test(email)) {
+                    return showAlert('Please enter a valid email.', 'negative');
+                }
+                email = email.toLowerCase();
+            }
+            else {
+                email = null;
+            }
+            console.log("rating : " + selectedRating, "Type:", typeof selectedRating);
+            // Basic validation
+            if (selectedRating === 0 || !(/^\d+$/.test(String(selectedRating)))) {
+                return showAlert('Please select a star rating.', 'negative');
+            }
+            if (!feedbackText) return showAlert('Please write your feedback.', 'negative');
+            if (/[<>]/.test(feedbackText) || feedbackText.length < 1) {
+                return showAlert('Blank or Input contains < > invalid characters.', 'negative');
+            }
+            if (/[<>]/.test(mainItemId) || mainItemId.length < 1) {
+                return showAlert('Something went wrong .', 'negative');
+            }
+            if (/[<>]/.test(itemCategory) || itemCategory.length < 1) {
+                return showAlert('Something went wrong .', 'negative');
+            }
+            if (/[<>]/.test(itemSubCategory) || itemSubCategory.length < 1) {
+                return showAlert('Something went wrong .', 'negative');
+            }
+            if (feedbackText.length > 4999) {
+                return showAlert('Feedback length should be less than 5000 characters.', 'negative');
+            }
+
+            // Data to send
+            const data = {
+                category: itemCategory,
+                subcategory: itemSubCategory,
+                itemId: mainItemId,
+                email: email,
+                rating: selectedRating,
+                feedback: feedbackText.toLowerCase()
+            };
+
+            // Sending data to the backend
+            document.getElementById("loader_container").style.display = "flex";
+
+            fetch('/item/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(response => {
+                    showAlert(response.message, response.type);
+
+                    if (response.type == "positive") {
+                        document.getElementById('feedback-text').value = '';
+                        updateStars(0);
+                        document.getElementById("loader_container").style.display = "none";
+
+                    } else {
+                        document.getElementById("loader_container").style.display = "none";
+                    }
+                    return;
+                })
+                .catch(error => {
+                    console.error('Error submitting feedback:', error);
+                    showAlert('Failed to submit feedback. Please try again.', 'negative');
+                    document.getElementById("loader_container").style.display = "none";
+                    return;
+                });
+        }
+
+    </script>
+
+    <!-- footer -->
+    <%- include('partials/footer') %>
+
+    <!--addToCartAndVolumeListener  -->
+    <script nonce="<%-nonce%>" src="../public/js/addToCartAndVolumeListener.js"></script>
+
+</body>
+
+</html>

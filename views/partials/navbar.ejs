@@ -1,0 +1,1002 @@
+<!-- nav 1 -->
+<nav class="nav1">
+  <ul class="nav1_ul2">
+    <li><i class="fa-solid fa-phone" style="padding-top: 2px;"></i>&nbsp;&nbsp;<a href="tel:918601065457"><span
+          class="nav1_icon_head">Call&nbsp;:&nbsp;</span>+91 8601065457</a></li>
+    <li><i class="fa-regular fa-envelope" style="padding-top: 2px;"></i>&nbsp;&nbsp;<a
+        href="mailto:help.mintospeed@gmail.com"><span
+          class="nav1_icon_head">Email&nbsp;:&nbsp;</span><span>help.mintospeed@gmail.com</span></a></li>
+  </ul>
+
+  <ul class="nav1_ul3">
+    <li><a href="https://www.instagram.com/mintospeed.in?utm_source=qr&igsh=OTh6M2thNHBkMmUw"><i class="fa-brands fa-instagram"></i></a></li>
+    <li><a href="https://x.com/_mintoSpeed"><i class="fa-brands fa-x-twitter"></i>
+    <li><a href="https://www.linkedin.com/company/mintospeed/"><i class="fa-brands fa-linkedin"></i></a></li>
+  </ul>
+</nav>
+<style>
+  .nav1 ul,
+  .nav1 ul li,
+  .nav1 {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .nav1_ul3::before {
+    content: "|";
+    padding-right: 3px;
+  }
+
+  .nav1_ul2 li {
+    padding: 0 10px;
+  }
+
+  .nav1_ul3 li {
+    padding: 0 5px;
+    font-size: 11px;
+    /* font-size: 9px; */
+  }
+</style>
+<!-- nav 2 -->
+<nav class="nav2 <%= activePage === 'home' ? '' : 'nav_box_shadow' %>">
+  <div class="nav20 flex align-center">
+    <i class="fa-solid fa-bars menu_btn"></i>
+    <!-- logo -->
+    <div class="logo"><a href="/">minto<span>Speed</span></a></div>
+
+    <div class="navitem">
+      <ul>
+        <li><a class="<%= activePage === 'home' ? 'nav_page_active' : '' %>" href="/">Home</a></li>
+        <li><a href="javascript:void(0)" id="navCatBtn">Categories&nbsp;&nbsp;&nbsp;<i
+              class="fa-solid fa-caret-down"></i></a>
+          <ul class="category_nav_ul">
+            <li class="subul_head">Categories</li>
+          </ul>
+        </li>
+        <li id="navli3"><a href="/track" class="<%= activePage === 'track' ? 'nav_page_active' : '' %>">Track</a>
+        </li>
+        <li id="navli4"><a href="/orders" class="<%= activePage === 'orders' ? 'nav_page_active' : '' %>">Orders</a>
+        </li>
+        <!-- <li id="navli5"><a href="/complaint" class="<%= activePage === 'complaint' ? 'nav_page_active' : '' %>">Complaint</a></li> -->
+
+      </ul>
+    </div>
+  </div>
+  <!-- nav con -->
+  <div class="flex align-center" style="flex-wrap: nowrap;">
+
+    <!-- search -->
+    <div class="search-box" id="navSearch">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" class="searchInput" placeholder="Search item, category..." />
+      <!-- <div class="search_content_box">
+        <ul class="search_content_ul"></ul>
+      </div> -->
+    </div>
+
+    <!-- cart -->
+    <div class="navopt" id="cart">
+      <a href="/cart" class="<%= activePage === 'cart' ? 'nav_page_active' : '' %>" title="Your selected items"
+        style="display: flex; align-items: center; flex-wrap: nowrap;"><i class="fa-solid fa-cart-shopping"></i>
+        <!-- <p class="cart_item_no"><%-totalCart%></p> -->
+        <p class="cart_item_no" style="margin: 0; margin-left: 2px;"><%-totalCart%></p>
+      </a>
+    </div>
+    <!-- pooja store -->
+    <!-- <div class="navopt">
+      <a href="/javascript:void(0)" title="View Plant items" style="display: flex; align-items: center;">
+        <i class="fa-solid fa-fire-flame-simple"></i>
+        <p class="sub_navopt pooja_store_sub_navopt">
+          Plant<br />Store</p>
+      </a>
+    </div> -->
+
+    <!-- bulk order
+      <div class="navopt">
+        <a href="/" title="Order in bulk" style="display: flex; align-items: center;">
+          <i class="fa-solid fa-layer-group"></i>
+          <p class="sub_navopt pooja_store_sub_navopt">
+            Bulk<br />Order</p>
+        </a>
+      </div> -->
+
+    <!-- signup -->
+    <div id="authBtnNav" class="signup_btn <%= user === 'false' ? 'show' : 'hidden' %>">
+      <p>SignUp</p>
+      <p>&&nbsp;Login</p>
+    </div>
+    <!-- user btn -->
+    <div class="navopt <%= user === 'true' ? 'show' : 'hidden' %>">
+      <a href="/profile" title="Profile">
+        <i class="fa-solid fa-user <%= activePage === 'profile' ? 'nav_page_active' : '' %>"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- sidebar -->
+  <div class="sidebar">
+    <div style="display: flex; flex-wrap: nowrap; height: 40px; align-items: center; margin: 5px 15px;">
+      <i class="fa-solid fa-bars menu_btn"></i>
+      <!-- logo -->
+      <div class="logo" style="margin-left: 15px;"><a href="/">minto<span>Speed</span></a></div>
+    </div>
+
+    <div class="sidebar-content">
+      <ul class="sidebarLists">
+        <li class="sidebarList">
+          <a href="/" class="nav-sidebarLink">
+            <i class="fa-solid fa-house icon"></i>
+            <span class="sidebarLink">Home</span>
+          </a>
+        </li>
+
+        <li class="sidebarList">
+          <a href="/track" class="nav-sidebarLink">
+            <i class="fa-regular fa-paper-plane icon"></i>
+            <span class="sidebarLink">Track</span>
+          </a>
+        </li>
+        <li class="sidebarList">
+          <a href="/orders" class="nav-sidebarLink">
+            <i class="fa-solid fa-layer-group icon"></i>
+            <span class="sidebarLink">Orders</span>
+          </a>
+        </li>
+        <li class="sidebarList">
+          <a href="/complaint" class="nav-sidebarLink">
+            <i class="fa-solid fa-pen-to-square icon"></i>
+            <span class="sidebarLink">Complaint</span>
+          </a>
+        </li>
+        <li class="sidebarList">
+          <a href="/feedback" class="nav-sidebarLink">
+            <i class="fa-solid fa-star-half-stroke icon"></i>
+            <span class="sidebarLink">Feedback</span>
+          </a>
+        </li>
+
+        <li class="sidebarList" id="sidebarCat">
+          <a href="javascript:void(0)" class="nav-sidebarLink">
+            <i class="fa-solid fa-table-list icon"></i>
+            <span class="sidebarLink">Categories</span>
+          </a>
+          <ul class="category_sidebar_ul">
+
+          </ul>
+        </li>
+      </ul>
+
+      <div class="bottom-cotent" style="padding-bottom: 35px;">
+        <li class="sidebarList  <%= user === 'true' ? 'show' : 'hidden' %>">
+          <a href="/profile" class="nav-sidebarLink">
+            <i class="fa-solid fa-user icon"></i>
+            <span class="sidebarLink">Profile</span>
+          </a>
+        </li>
+        <li class="sidebarList  <%= user === 'true' ? 'show' : 'hidden' %>">
+          <a href="javascript:void(0)" id="navLogout" class="nav-sidebarLink">
+            <i class="fa-solid fa-right-from-bracket icon"></i>
+            <span class="sidebarLink">Logout</span>
+          </a>
+        </li>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<nav class="nav3">
+  <!-- search -->
+  <div class="search-box">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" class="searchInput" placeholder="Search item, category..." />
+    <!-- <div class="search_content_box">
+      <ul class="search_content_ul"></ul>
+    </div> -->
+  </div>
+</nav>
+<section class="sidebarOverlay"></section>
+
+<style>
+  .hidden {
+    display: none;
+  }
+
+  .show {
+    display: block;
+  }
+
+  .nav1 {
+    width: 100%;
+    height: 40px;
+    padding: 10px 20px 0 20px;
+    font-size: 11px;
+    font-weight: 500;
+    overflow: hidden;
+    justify-content: right;
+    /* background-color: #afbfc8; */
+  }
+
+  nav {
+    width: 100%;
+    z-index: 1000000;
+  }
+
+
+
+  .nav2,
+  .nav3 {
+    display: flex;
+    top: 40px;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    height: 65px;
+    padding: 0 20px;
+  }
+
+  .nav_box_shadow {
+    box-shadow: 0px 2px 3px rgba(100, 100, 100, 0.16);
+  }
+
+  .nav3 {
+    display: none;
+  }
+
+  .menu_btn {
+    cursor: pointer;
+    padding: 5px 5px 2px;
+    margin-left: 3px;
+    font-size: 16px;
+  }
+
+  div.logo {
+    margin-left: 13px;
+  }
+
+  div.logo>a {
+    color: #0bb744;
+    font-weight: 800;
+    font-size: 22px;
+  }
+
+  div.logo>a span {
+    color: rgb(19, 19, 19);
+  }
+
+  .navitem>ul {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+  }
+
+  .navitem>ul>li {
+    position: relative;
+  }
+
+  .navitem>ul>li>a,
+  .category_nav_ul>li>a,
+  .subcategory_nav_ul>li>a {
+    color: rgb(75, 75, 75);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 17px;
+    line-height: 1;
+    margin: 0 2px;
+    font-family: 'Khula';
+    text-transform: capitalize;
+  }
+
+  .category_nav_ul>li>a {
+    font-weight: 700;
+  }
+
+  .category_nav_ul>li>a,
+  .subcategory_nav_ul>li>a {
+    padding: 10px 10px;
+  }
+
+  .category_nav_ul {
+    display: none;
+    position: absolute;
+    top: 30px;
+    width: 280px;
+    max-height: 500px;
+    padding: 7px 5px;
+    background-color: white;
+    box-shadow: 4px 4px 8px 2px rgba(57, 76, 96, .15);
+    border-radius: 7px;
+    z-index: 1000000;
+    overflow: auto;
+    scrollbar-width: none;
+    /* Hides scrollbar in Firefox */
+    -ms-overflow-style: none;
+    /* Hides scrollbar in IE 10+ */
+  }
+
+  .category_nav_ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category_nav_ul>li {
+    padding: 6px 3px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .category_nav_ul>li:not(:first-child)::after,
+  .category_sidebar_ul>li::after,
+  .subcategory_nav_ul>li::before,
+  .category_sidebar_ul>li>ul>li::before {
+    font-family: 'Font Awesome 5 Free';
+    content: '\f078';
+    font-weight: 600;
+    font-size: 12px;
+    position: absolute;
+    top: 11px;
+    right: 10px;
+  }
+
+
+  .subcategory_nav_ul>li {
+    padding: 4px 10px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .subcategory_nav_ul>li::before,
+  .category_sidebar_ul>li>ul>li::before {
+    left: 10px;
+    font-size: 11px;
+    right: auto;
+    content: '\f105';
+  }
+
+  .category_sidebar_ul>li>ul>li::before {
+    left: 0;
+  }
+
+  .category_sidebar_ul>li :hover,
+  .category_nav_ul>li :hover,
+  .subcategory_nav_ul>li :hover,
+  .navitem>ul>li>a:hover {
+    color: rgb(18, 186, 9);
+  }
+
+  .nav_page_active {
+    color: rgb(18, 186, 9) !important;
+  }
+
+  .subul_head {
+    font-size: 15px;
+    margin-left: 7px;
+    margin-bottom: 0px;
+    font-weight: 700;
+  }
+
+  #cart {
+    display: flex;
+    align-items: center;
+  }
+
+  #cart p {
+    padding-left: 4px;
+  }
+
+  .signup_btn,
+  .threedot,
+  .navopt {
+    cursor: pointer;
+    padding: 10px 14px;
+    margin: 1px;
+    font-weight: 600;
+    border-radius: 5px;
+  }
+
+
+  .navopt i {
+    font-size: 16px;
+    /* font-size: 14px; */
+  }
+
+  .navopt>a:hover,
+  .signup_btn:hover,
+  .threedot:hover,
+  .navopt:hover {
+    color: rgb(28, 177, 8);
+  }
+
+  .signup_btn>p:nth-child(1) {
+    font-size: 9px;
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
+  }
+
+  .signup_btn>p:nth-child(2) {
+    font-size: 11px;
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pooja_store_sub_navopt {
+    font-size: 11px;
+    /* font-size: 10px; */
+    font-weight: 600;
+    line-height: 1;
+    margin-left: 8px;
+  }
+
+  @media screen and (max-width: 1200px) {
+    #navli4 {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 1030px) {
+    .navitem>ul {
+      margin-left: 15px;
+    }
+
+    .navitem>ul>li>a {
+      padding: 10px 15px;
+    }
+
+
+    #navli3 {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 920px) {
+    .navitem {
+      display: none;
+    }
+
+    div.logo {
+      margin-left: 7px;
+    }
+
+  }
+
+
+  @media screen and (max-width: 720px) {
+
+    .nav1,
+    .nav2,
+    .nav3 {
+      padding-left: 7px !important;
+      padding-right: 7px !important;
+    }
+
+    .nav1 {
+      height: 30px;
+    }
+
+    .nav2 {
+      top: 30px;
+      height: 55px
+    }
+
+    .nav3 {
+      display: flex;
+      justify-content: center;
+      top: 85px;
+      height: 46px;
+      box-shadow: 0px 2px 3px rgba(100, 100, 100, 0.16);
+      padding-bottom: 7px;
+    }
+
+    #navSearch {
+      display: none;
+    }
+
+    .search-box {
+      min-width: 280px;
+      height: 43px;
+      margin: 0;
+    }
+
+    .nav_box_shadow {
+      box-shadow: none;
+    }
+  }
+
+  @media screen and (max-width: 550px) {
+    .nav1_icon_head {
+      display: none;
+    }
+
+    .navopt i {
+      font-size: 15px;
+    }
+
+    div.logo {
+      margin-left: 5px;
+    }
+
+    .menu_btn {
+      font-size: 15px;
+    }
+
+    .pooja_store_sub_navopt {
+      font-size: 10px;
+      margin-left: 6px;
+    }
+
+    .signup_btn,
+    .threedot,
+    .navopt {
+      padding: 10px;
+    }
+  }
+
+  @media screen and (max-width: 430px) {
+
+    .nav1,
+    .nav1_ul3 li {
+      font-size: 9px;
+    }
+
+    .signup_btn,
+    .threedot,
+    .navopt {
+      padding: 10px 9px;
+    }
+
+    .signup_btn>p:nth-child(1),
+    .pooja_store_sub_navopt {
+      font-size: 9px;
+    }
+
+    .signup_btn>p:nth-child(2) {
+      font-size: 10px;
+    }
+  }
+</style>
+<style>
+  nav .sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100%;
+    width: 300px;
+    padding: 20px 0;
+    z-index: 10000000000000;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 5px 1px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+  }
+
+  nav.sidebarOpe .sidebar {
+    left: 0;
+  }
+
+  .sidebar .sidebar-content {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 12px;
+  }
+
+  .sidebar-content .sidebarList {
+    list-style: none;
+  }
+
+  .sidebarList .nav-sidebarLink {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    padding: 7px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+
+  .sidebarLists .nav-sidebarLink:hover {
+    background-color: #46b86e;
+  }
+
+  .nav-sidebarLink .icon {
+    margin-right: 20px;
+    font-size: 16px;
+    color: #707070;
+  }
+
+  .nav-sidebarLink .sidebarLink {
+    font-size: 16px;
+    color: #707070;
+    font-weight: 400;
+  }
+
+  .sidebarLists .nav-sidebarLink:hover .icon,
+  .sidebarLists .nav-sidebarLink:hover .sidebarLink {
+    color: #fff;
+  }
+
+  #sidebarCat {
+    padding-bottom: 20px;
+  }
+
+  #sidebarCat>a {
+    text-transform: capitalize;
+    padding-bottom: 0px;
+  }
+
+  .category_sidebar_ul {
+    padding-left: 40px;
+  }
+
+  .category_sidebar_ul>li {
+    position: relative;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 0;
+    text-transform: capitalize;
+  }
+
+  .category_sidebar_ul>li>ul>li {
+    cursor: pointer;
+    position: relative;
+    padding: 6px 0;
+    text-transform: capitalize;
+  }
+
+  .sidebarOverlay {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 1000vh;
+    width: 200%;
+    opacity: 0;
+    z-index: 1000000000000;
+    pointer-events: none;
+    transition: all 0.4s ease;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  nav.sidebarOpe~.sidebarOverlay {
+    opacity: 1;
+    left: 300px;
+    pointer-events: auto;
+  }
+</style>
+
+<!-- search -->
+<style>
+  .search-box {
+    /* display: none; */
+    position: relative;
+    height: 35px;
+    z-index: 1000000000;
+    max-width: 700px;
+    min-width: 350px;
+    width: 100%;
+    background: #ffffff;
+    margin: 0 10px;
+    border-radius: 8px;
+    border: 1px solid rgb(201, 201, 201);
+    /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); */
+  }
+
+  .search_content_box {
+    display: none;
+    position: absolute;
+    top: 26px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: #ffffff;
+    padding: 10px 7px 5px;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid rgb(201, 201, 201);
+    border-top: none;
+  }
+
+  .search_content_box>ul {
+    max-height: 500px;
+    overflow: auto;
+    margin: 0;
+    scrollbar-width: none;
+    /* Hides scrollbar in Firefox */
+    -ms-overflow-style: none;
+    /* Hides scrollbar in IE 10+ */
+  }
+
+  .search_content_box>ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  .search_content_box>ul>li {
+    overflow: hidden;
+    padding: 5px 3px;
+    margin: 3px 0px;
+    /* background: #f5f5f5; */
+  }
+
+  .search_content_box>ul>li>a {
+    width: 100%;
+    font-size: 13px;
+    padding: 5px 20px 5px 3px;
+    text-transform: capitalize;
+    cursor: pointer;
+  }
+
+  .search_content_box>ul>li>a::after {
+    content: var(--after-content);
+    color: rgb(91, 91, 91);
+    margin-left: 10px;
+    font-size: 12px;
+  }
+
+  .search_content_box>ul>li>a::before {
+    font-family: 'Font Awesome 5 Free';
+    content: '\f054';
+    font-weight: 600;
+    font-size: 10px;
+    padding-right: 8px;
+    padding-bottom: 2px;
+  }
+
+  .search_content_box>ul>li>a:hover {
+    opacity: 0.7;
+  }
+
+  .search-box i,
+  .search-box .button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .search-box i {
+    left: 12px;
+    font-size: 15px;
+    color: #707070;
+  }
+
+  .search-box input {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    font-size: 14px;
+    font-weight: 400;
+    border: none;
+    padding: 0 10px 0 38px;
+    background-color: transparent;
+  }
+</style>
+
+
+<script nonce="<%-nonce%>">
+  //
+  document.getElementById("navLogout").addEventListener("click", async () => {
+    document.getElementById("loader_container").style.display = "flex";
+    try {
+      const response = await fetch('/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.type == "positive") {
+        window.location.href = '/auth/login';
+      } else if (result.type == "negative") {
+        showAlert("Something went wrong. Please try again.", "negative");
+        document.getElementById("loader_container").style.display = "none";
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      document.getElementById("loader_container").style.display = "none";
+      showAlert('Something went wrong. Please try again.', "negative");
+    }
+  });
+
+  //
+  const currentPageLink = window.location.href;
+  sessionStorage.setItem('redirect_link', currentPageLink);
+  document.getElementById('authBtnNav').addEventListener('click', () => {
+    window.location.href = '/auth/login';
+  });
+
+  //sidebar
+  const navBarSide = document.querySelector(".nav2"),
+    sidebarOPenBtns = document.querySelectorAll(".menu_btn"),
+    overlaySidebar = document.querySelector(".sidebarOverlay");
+
+  sidebarOPenBtns.forEach((menuBtn) => {
+    menuBtn.addEventListener("click", () => {
+      navBarSide.classList.toggle("sidebarOpe");
+    });
+  });
+
+  overlaySidebar.addEventListener("click", () => {
+    navBarSide.classList.remove("sidebarOpe");
+  });
+
+
+  //search
+  function originalClickHandler(e) {
+    window.location.href = '/search';
+  }
+
+  document.querySelectorAll('.search-box').forEach((searchBox) => {
+    const searchInput = searchBox.querySelector('.searchInput');
+    searchInput.setAttribute('readonly', true);
+
+    searchBox.addEventListener('click', originalClickHandler);
+  });
+
+
+
+  //load category or subcategories names
+  const navCatBtn = document.getElementById('navCatBtn');
+  const sidebarCat = document.getElementById('sidebarCat');
+  const categoryNav = document.querySelector('.category_nav_ul');
+  const categorySidebar = document.querySelector('.category_sidebar_ul');
+  const fetchedCategoriesNav = new Set();
+  const fetchedSubcategoriesNav = new Map();
+  const fetchedCategoriesSidebar = new Set();
+  const fetchedSubcategoriesSidebar = new Map();
+
+  let isNavCatActive = false;
+  let isSidebarCatActive = false;
+
+  navCatBtn.addEventListener('click', async function (event) {
+    event.stopPropagation();
+    await fetchAllCatNames("nav");
+    categoryNav.style.display = "block";
+    isNavCatActive = true;
+  });
+
+  sidebarCat.addEventListener('click', async function (event) {
+    event.stopPropagation();
+    await fetchAllCatNames("sidebar");
+    categorySidebar.style.display = "block";
+    sidebarCat.style.backgroundColor = "whitesmoke";
+    isSidebarCatActive = true;
+  });
+
+  document.addEventListener('click', (event) => {
+    if (isNavCatActive && !categoryNav.contains(event.target) && event.target !== navCatBtn) {
+      categoryNav.style.display = "none";
+      isNavCatActive = false;
+    }
+
+    if (isSidebarCatActive && !categorySidebar.contains(event.target) && event.target !== sidebarCat) {
+      categorySidebar.style.display = "none";
+      sidebarCat.style.backgroundColor = "transparent";
+      isSidebarCatActive = false;
+    }
+  });
+
+
+  async function fetchCategorOrSubcategories(type, category = null) {
+    document.getElementById("loader_container").style.display = "flex";
+    try {
+      const response = await fetch('/api/fetchCategorOrSubcategories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ t: type, cat: category }),
+      });
+
+      const { documents } = await response.json();
+      document.getElementById("loader_container").style.display = "none";
+      return documents;
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      document.getElementById("loader_container").style.display = "none";
+      return [];
+    }
+  }
+
+  // Populate categories
+  async function fetchAllCatNames(flag) {
+
+    if (flag == "sidebar") {
+      if (fetchedCategoriesSidebar.size > 0) return; // Already fetched
+
+      const categories = await fetchCategorOrSubcategories('cat');
+      categories.forEach((category) => {
+        if (!fetchedCategoriesSidebar.has(category)) {
+          fetchedCategoriesSidebar.add(category);
+          // Create navItem for categorySidebar
+          const navItemSidebar = document.createElement('li');
+          navItemSidebar.innerHTML = `<a href="/items?c=${encodeURIComponent(category)}">${category}</a>`;
+
+          const sublistSidebar = document.createElement('ul');
+          sublistSidebar.className = 'subcategory_nav_ul';
+          sublistSidebar.style.display = 'none';
+
+          navItemSidebar.addEventListener('click', (event) => {
+            event.stopPropagation();
+            fetchAllSubCatNames(category, sublistSidebar, "sidebar");
+          });
+          navItemSidebar.appendChild(sublistSidebar);
+          categorySidebar.appendChild(navItemSidebar);
+        }
+      });
+    }
+    else if (flag == "nav") {
+      if (fetchedCategoriesNav.size > 0) return; // Already fetched
+
+      const categories = await fetchCategorOrSubcategories('cat');
+      categories.forEach((category) => {
+        if (!fetchedCategoriesNav.has(category)) {
+          fetchedCategoriesNav.add(category);
+          // Create navItem for categoryNav
+          const navItemNav = document.createElement('li');
+          navItemNav.innerHTML = `<a href="/items?c=${encodeURIComponent(category)}">${category}</a>`;
+
+          const sublistNav = document.createElement('ul');
+          sublistNav.className = 'subcategory_nav_ul';
+          sublistNav.style.display = 'none';
+
+          navItemNav.addEventListener('click', (event) => {
+            event.stopPropagation();
+            fetchAllSubCatNames(category, sublistNav, "nav");
+          });
+          navItemNav.appendChild(sublistNav);
+          categoryNav.appendChild(navItemNav);
+        }
+      });
+    }
+
+  }
+
+
+  // Populate subcategories
+  async function fetchAllSubCatNames(category, sublist, flag) {
+    if (flag == "nav") {
+      if (fetchedSubcategoriesNav.has(category)) {
+        toggleSublistVisibility(sublist);
+        return; // Already fetched
+      }
+
+      const subcategories = await fetchCategorOrSubcategories('subcat', category);
+      fetchedSubcategoriesNav.set(category, subcategories);
+
+      subcategories.forEach((subcategory) => {
+        const subItem = document.createElement('li');
+        subItem.innerHTML = `<a href="/items?c=${encodeURIComponent(category)}&s=${encodeURIComponent(subcategory)}">${subcategory}</a>`;
+        sublist.appendChild(subItem);
+      });
+
+      sublist.style.display = 'block';
+    }
+    else if (flag == "sidebar") {
+      if (fetchedSubcategoriesSidebar.has(category)) {
+        toggleSublistVisibility(sublist);
+        return; // Already fetched
+      }
+
+      const subcategories = await fetchCategorOrSubcategories('subcat', category);
+      fetchedSubcategoriesSidebar.set(category, subcategories);
+
+      subcategories.forEach((subcategory) => {
+        const subItem = document.createElement('li');
+        subItem.innerHTML = `<a href="/items?c=${encodeURIComponent(category)}&s=${encodeURIComponent(subcategory)}">${subcategory}</a>`;
+        sublist.appendChild(subItem);
+      });
+
+      sublist.style.display = 'block';
+    }
+  }
+
+  // Toggle visibility of sublist
+  function toggleSublistVisibility(sublist) {
+    sublist.style.display = sublist.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // Initialize categories when the page loads
+  // document.addEventListener('DOMContentLoaded', fetchAllCatNames);
+</script>
+
+
+<%- include('alertboxAndLoader') %>

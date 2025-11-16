@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | mintoSpeed</title>
+    <meta name="description" content="Know about mintoSpeed! Fastest growing delivery site.">
+    <meta name="keywords" content="about us, groceries">
+    <meta name="author" content="mintoSpeed">
+
+    <%- include('../partials/headTagContent') %>
+    
+</head>
+
+<body>
+    <!-- navbar -->
+    <%- include('../partials/navbar') %>
+    
+
+        <!-- content container -->
+        <div class="contentContainer">
+            <h1 class="contentTitle">about us</h1>
+            <p>Welcome to <strong>mintoSpeed</strong>!</p> 
+            
+            <p>We are here to make your grocery shopping easy and convenient. With MintoSpeed, you can order everything you need from the comfort of your home, and we’ll deliver it to your doorstep.</p>
+            
+
+            <p>We offer a wide range of products, including fresh fruits, vegetables, rice, dals, spices, packaged foods, beverages, personal care items, and meats. Whether you’re looking for daily essentials or something special, we have it all at the best prices.</p>
+            <br />
+
+            <h2>Why Choose MintoSpeed?</h2>
+            <ul>
+                <li><strong>Wide Variety: </strong> We have a big collection of products from top brands and local favorites.</li>
+                <li><strong>Best Quality: </strong> Every product is checked to ensure it is fresh and of high quality.</li>
+                <li><strong>Affordable Prices: </strong> We offer great deals and discounts so you can save more.</li>
+                <li><strong>Easy Delivery: </strong> Easy to order and your order reaches you on time.</li>
+            </ul>
+    
+            <br />
+            <h2>Payment Made Simple</h2>
+            <p>We accept only <strong>Cash on Delivery</strong>. Pay for your order when it arrives – it’s that easy!</p>
+    
+            <p>At mintoSpeed, we work hard to bring you the best shopping experience. With on-time delivery and quality products, we aim to be your favorite online grocery store.</p>
+            <br />
+            <p>We are working in Jhushi now and working to reach accross all the part of india. If you are not from that place, please wait, we will reach to your loaction soon.</p>
+
+            <p>Start shopping with mintoSpeed today and enjoy a hassle-free experience!</p>
+            <br />
+            <p><strong>Team mintoSpeed</strong></p>
+        </div>
+
+        <style>
+            div.contentContainer {
+                width: 70%;
+                padding: 20px;
+                margin-top: 20px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .contentTitle {
+                font-size: 21px;
+                padding-bottom: 9px;
+                border-bottom: 2px solid rgb(175, 175, 175);
+                margin-bottom: 40px;
+            }
+
+            div.contentContainer h2{
+                margin-top: 20px;
+                font-size: 18px;
+                margin-bottom: 13px;
+            }
+            div.contentContainer li{
+                margin-bottom: 13px;
+            }
+
+            @media screen and (max-width: 950px) {
+                div.contentContainer {
+                    width: 85%;
+                }
+            }
+
+            @media screen and (max-width: 550px) {
+                div.contentContainer {
+                    width: 100%;
+                }
+            }
+        </style>
+
+        <!-- footer -->
+        <%- include('../partials/footer') %>
+</body>
+
+</html>

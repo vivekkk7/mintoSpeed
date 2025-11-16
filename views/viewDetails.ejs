@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - mintoSpeed</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- fav icon -->
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+
+    <!-- google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <!-- google icon -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,700,0,0" />
+    <!--Font awesome icon-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <script nonce="<%-nonce%>" src="https://kit.fontawesome.com/6ac775d87f.js" crossorigin="anonymous"></script>
+
+    <script nonce="<%-nonce%>" src="/socket.io/socket.io.js"></script>
+
+    <script nonce="<%-nonce%>"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJQRMDgijh3v9fuz8tqRnyi_vacUVQB9E&loading=async&map_ids=fc7c975c4b2f75e&libraries=places,marker&callback=initMap"
+        async defer></script>
+    <style>
+        #mapDiv {
+            width: 100%;
+            border-radius: 10px;
+            padding-bottom: 20px;
+            padding-top: 10px;
+        }
+
+        #map {
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+    <style>
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+            font-family: 'Open Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            position: relative;
+            padding: 0;
+            margin: 0;
+            background-color: rgb(243, 243, 243);
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            text-transform: capitalize;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .align-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .justify-around {
+            justify-content: space-around;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            padding: 8px 18px;
+            font-size: 12px;
+            background-color: rgb(0, 0, 0);
+            color: white;
+            border-radius: 8px;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        button a {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/alertboxAndLoader') %>
+        <%- include('partials/popupBox') %>
+
+            <% if (typeof orders !=='undefined' && orders.length> 0) { %>
+                <div id="dataContainer">
+                    <div class="userDataContainer">
+                        <h3 class="info_h4"><span id="backBtn"
+                                style="margin-right: 7px; padding: 0 4px; cursor: pointer;"><i
+                                    class="fa-solid fa-arrow-left"></i></span>Order Details</h3>
+                        <hr />
+                        <% orders.forEach(order=> { %>
+                            <!-- map -->
+                            <div id="mapDiv">
+                                <p class="subheadp">Order arrives in : <span id="arriveTime">15 mins</span></p>
+                                <div id="map"></div>
+                            </div>
+                            <!-- info -->
+                            <p class="subheadp">Personal details :</p>
+
+                            <div class="user-info">
+                                <p style="text-transform: capitalize;"><span class="user-info-span">Name:
+                                    </span>
+                                    <%= order.fullName %>
+                                </p>
+                                <p><span class="user-info-span">OrderId: </span>
+                                    <%= order.orderId %>
+                                </p>
+                                <p><span class="user-info-span">Phone: </span>
+                                    <%= order.phone %>
+                                </p>
+                                <p><span class="user-info-span">Email: </span>
+                                    <%= order.email %>
+                                </p>
+                                <p><span class="user-info-span">OrderTime: </span>
+                                    <%= order.orderTime %>
+                                </p>
+                                <p><span class="user-info-span">Address: </span>
+                                    <%= order.streetAddress %>
+                                </p>
+                                <p><span class="user-info-span">City: </span>
+                                    <%= order.city %>
+                                </p>
+                                <p><span class="user-info-span">Pincode: </span>
+                                    <%= order.pincode %>
+                                </p>
+                                <p><span class="user-info-span">Delivery On: </span>
+                                    <%= order.deliverTime %>
+                                </p>
+                                <p><span class="user-info-span" id="order_status">Status: </span>
+                                    <span
+                                        class="status_td <%= order.orderStatus === 'cancelled' ? 'redBack' : order.orderStatus === 'completed' ? 'greenBack' : 'blackBack' %>">
+                                        <%= order.orderStatus %>
+                                    </span>
+                                </p>
+                            </div>
+
+
+                            <p class="subheadp">Item details :</p>
+
+                            <div class="table-section">
+                                <table class="table">
+                                    <thead>
+                                        <th>Img</th>
+                                        <th>Item name</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                    </thead>
+                                    <tbody>
+                                        <% order.orderItems.forEach(item=> { %>
+                                            <tr>
+                                                <td>
+                                                    <% if (item.img) { %>
+                                                        <img style="height: 35px;" src="<%= item.img %>" alt="img" />
+                                                        <% } %>
+                                                </td>
+                                                <td style="text-transform: capitalize;">
+                                                    <%= item.name %>
+                                                </td>
+                                                <td>
+                                                    <%= item.qty %>
+                                                </td>
+                                                <td>₹<%= item.price %>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" style="text-align: right;">Subtotal</td>
+                                            <td>
+                                                ₹<%= order.orderTotalPrice %> <br />(<%= order.orderTotalItems %>
+                                                        &nbsp;items)</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+                            <div class="actions">
+
+                                <div class="buttons">
+                                    <% if (order.isUnderMinutes) { %>
+                                        <button style="background-color: red;" id="cancelBtn"
+                                            data-cancelTime="<%= order.inputTime %>"
+                                            data-orderId="<%= order.orderId %>">Cancel Order</button>
+                                        <% } %>
+                                            <button><a href="/complaint"><i
+                                                        class="fa-solid fa-pen-to-square icon"></i>&nbsp;Complaint</a></button>
+                                            <button><a href="/feedback"><i
+                                                        class="fa-solid fa-star-half-stroke icon"></i>&nbsp;Give
+                                                    Feedback</a></button>
+                                </div>
+
+                            </div>
+                            <!-- <p style="font-size: 11px; margin: 10px 10px;">*Delivery charge apply below ₹99 order (₹20 delivery charge) and above ₹99 (Free Delivery)</p> -->
+                            <% }) %>
+                    </div>
+                </div>
+
+                <% } else { %>
+                    <p style="text-align: center; margin-top: 80px; margin-bottom: 100px;">No order found or Something
+                        went wrong.</p>
+                    <% } %>
+
+                        <script nonce="<%-nonce%>">
+                            document.getElementById('backBtn')?.addEventListener('click', () => window.history.back());
+
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const currentPageLink = window.location.href;
+                                sessionStorage.setItem('redirect_link', currentPageLink);
+
+                                const cancelBtn = document.getElementById("cancelBtn");
+                                const status = document.getElementById('order_status').textContent.trim().toLowerCase();
+                                if (status == "cancelled" || status == "completed") {
+                                    cancelBtn.style.display = "none";
+                                    return;
+                                }
+
+                                if (cancelBtn) {
+                                    try {
+                                        const inputTimeStr = cancelBtn.getAttribute('data-cancelTime');
+                                        const inputTime = new Date(inputTimeStr);
+
+                                        function hideButtonIfNeeded() {
+                                            const currentTime = new Date();
+                                            const timeDifference = currentTime - inputTime;
+
+                                            if (timeDifference > 10 * 60 * 1000) {
+                                                cancelBtn.style.display = "none";
+                                                return;
+                                            }
+                                        }
+                                        hideButtonIfNeeded();
+                                        setInterval(hideButtonIfNeeded, 1000);
+
+                                        cancelBtn.addEventListener('click', function () {
+                                            const orderId = cancelBtn.getAttribute('data-orderId');
+                                            if (!orderId || !/^[a-zA-Z0-9]+$/.test(orderId)) {
+                                                showAlert("Invalid or missing orderId.", "negative");
+                                                return;
+                                            }
+
+                                            const modal = document.getElementById('messageBoxid01');
+                                            const messageBoxHead = document.querySelector('.messageBoxHead');
+                                            const messageBoxP = document.querySelector('.messageBoxP');
+                                            const actionButtons = document.querySelector('.btnBoxContainer');
+
+                                            messageBoxHead.innerHTML = `<i style="margin-right: 10px" class="fa-regular fa-paper-plane"></i>Do you want to cancel your order?`;
+                                            messageBoxP.innerHTML = `<p>Are you sure you want to cancel your order? Click Yes to proceed.</p>`;
+                                            actionButtons.innerHTML = `
+                                    <button type="button" id="noBtn" class="messageBoxBtn" style="background-color: #cecece; color: black;">No</button> 
+                                    <button type="button" class="messageBoxBtn" id="yesBtn" style="background-color: red; color: white;">Yes</button>`;
+
+                                            modal.style.display = 'flex';
+
+                                            document.getElementById('noBtn').addEventListener('click', function () {
+                                                modal.style.display = "none";
+                                            });
+
+                                            document.getElementById('yesBtn').addEventListener('click', function () {
+                                                document.getElementById("loader_container").style.display = "flex";
+
+                                                fetch('/order-details/cancel-order', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({ orderId })
+                                                })
+                                                    .then(response => response.json())
+                                                    .then(response => {
+                                                        document.getElementById("loader_container").style.display = "none";
+                                                        if (response.type === "positive") {
+                                                            showAlert("Order cancelled successfully.", "positive");
+                                                            location.reload();
+
+                                                        } else {
+                                                            showAlert(response.message, response.type);
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error during order cancellation:', error);
+                                                        showAlert('Failed to cancel the order. Please try again.', 'negative');
+                                                        document.getElementById("loader_container").style.display = "none";
+                                                    });
+                                            });
+                                        });
+                                    } catch (err) {
+                                        showAlert("Something went wrong", "negative");
+                                        console.error("Error initializing cancel button:", err);
+                                    }
+                                }
+                            });
+                        </script>
+
+
+                        <!-- map -->
+                        <script nonce="<%-nonce%>">
+                            let statusCheckInterval;
+                            const latitude = <%=latitude%>;
+                            const longitude = <%=longitude%>;
+                            const orderId = "<%=orderId%>";
+
+                            let map;
+                            let userMarker, deliveryMarker;
+                            let userLocation, deliveryLocation;
+                            let distanceDisplay;
+                            let directionsService, directionsRenderer;
+
+                            function initMap() { 
+                                userLocation = { lat: latitude, lng: longitude };
+                                map = new google.maps.Map(document.getElementById("map"), {
+                                    center: { lat: 25.434612, lng: 81.894528 }, // Default location (San Francisco)
+                                    zoom: 15,
+                                    mapId: "fc7c975c4b2f75e"
+                                });
+
+                                // Initialize Google Maps Directions Service
+                                directionsService = new google.maps.DirectionsService();
+                                directionsRenderer = new google.maps.DirectionsRenderer({
+                                    map: map,
+                                    suppressMarkers: true // Hide default markers
+                                });
+
+                                //User's Location
+                                const { AdvancedMarkerElement } = google.maps.marker;
+
+                                userMarker = new AdvancedMarkerElement({
+                                    map,
+                                    position: userLocation,
+                                    title: "Your Location"
+                                });
+
+                                map.setCenter(userLocation);
+
+                                addDeliveryLocation(25.434612, 81.894528);
+                            }
+
+                            function addDeliveryLocation(latitude, longitude) {
+                                deliveryLocation = { lat: latitude, lng: longitude };
+
+                                const { AdvancedMarkerElement } = google.maps.marker;
+
+                                const deliveryWrapper = document.createElement("div");
+                                deliveryWrapper.style.width = "50px";
+                                deliveryWrapper.style.height = "50px";
+
+                                const deliveryIcon = document.createElement("img");
+                                deliveryIcon.src = "https://firebasestorage.googleapis.com/v0/b/mintospeed-web.firebasestorage.app/o/FCMImages%2Fmslocation.png?alt=media&token=d83bb8e0-96bb-432b-a8c2-67332b2eed94";
+                                deliveryIcon.style.width = "100%";
+                                deliveryIcon.style.height = "100%";
+
+                                deliveryWrapper.appendChild(deliveryIcon);
+
+                                deliveryMarker = new AdvancedMarkerElement({
+                                    map: map,
+                                    position: deliveryLocation,
+                                    title: "Delivery Boy",
+                                    content: deliveryWrapper
+                                });
+
+                                showDirections();
+                            }
+
+
+                            // 📌 Show Road Directions from User to Delivery Boy
+                            function showDirections() {
+                                const request = {
+                                    origin: userLocation,
+                                    destination: deliveryLocation,
+                                    travelMode: google.maps.TravelMode.DRIVING
+                                };
+
+                                directionsService.route(request, (result, status) => {
+                                    if (status === "OK") {
+                                        directionsRenderer.setDirections(result);
+
+                                        // 📌 Get Estimated Time
+                                        const duration = result.routes[0].legs[0].duration.text;
+                                        document.getElementById("arriveTime").textContent = duration;
+                                        // alert("Estimated Delivery Time: " + duration);
+                                    } else {
+                                        console.error("Error fetching directions:", status);
+                                    }
+                                });
+                            }
+
+                            // Load Map on Page Load
+                            if (latitude && longitude && latitude != undefined) {
+                                window.onload = initMap;
+
+                                //live update data
+                                const socket = io("https://mintospeed.in", {
+                                    transports: ["websocket"],
+                                    withCredentials: true
+                                });
+                                
+                                // Initial call to getStatus
+                                getStatus();
+                            }
+                            else {
+                                document.getElementById("mapDiv").style.display = "none";
+                            }
+
+
+                            function getStatus() {
+                                fetch('/getOrderStaus', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ orderId })
+                                })
+                                    .then(response => response.json())
+                                    .then(response => {
+                                        if (response.status) {
+                                            // Call getStatus every 1 minute
+                                            statusCheckInterval = setInterval(getStatus, 60000);
+
+                                            // If status is true, ensure socket listener is active
+                                            if (!socket.hasListeners("updatelatlng")) {
+                                                socket.on("updatelatlng", (metaData) => {
+                                                    addDeliveryLocation(metaData.latitude, metaData.longitude);
+                                                });
+                                            }
+                                        } else if(response.type = "cancel") {
+                                            // Stop checking status if response.status is false
+                                            document.getElementById("mapDiv").style.display = "none";
+                                            clearInterval(statusCheckInterval);
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error submitting:', error);
+                                    });
+                            }
+
+                        </script>
+
+
+                        <style>
+                            .userDataContainer {
+                                margin: 20px;
+                                background: #fff;
+                                border-radius: 8px;
+                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                                padding: 20px;
+                                box-sizing: border-box;
+                            }
+
+                            .info_h4 {
+                                font-size: 18px;
+                                font-weight: 700;
+                                text-align: left;
+                                margin: 10px 0 15px 0;
+                            }
+
+                            .subheadp {
+                                margin: 12px 0 10px 0;
+                                font-size: 15px;
+                                font-weight: 600;
+                            }
+
+                            .user-info {
+                                margin-bottom: 20px;
+                                display: flex;
+                                flex-wrap: wrap;
+                            }
+
+                            .user-info p {
+                                min-width: 50%;
+                                margin: 5px 0;
+                                font-size: 14px;
+                                color: #3a3a3a;
+                            }
+
+                            .user-info-span {
+                                color: #727272;
+                                font-size: 12px;
+                            }
+
+                            .table-section {
+                                margin-bottom: 20px;
+                            }
+
+                            .actions {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 10px;
+                            }
+
+                            input[type="datetime-local"] {
+                                padding: 7px;
+                                font-size: 14px;
+                                border: 1px solid #ccc;
+                                border-radius: 4px;
+                                outline: none;
+                            }
+
+                            .actions .buttons {
+                                margin-top: 15px;
+                                display: flex;
+                                justify-content: right;
+                                gap: 10px;
+                            }
+
+                            .table {
+                                width: 100%;
+                                border-collapse: collapse;
+                            }
+
+                            .table td,
+                            .table th {
+                                word-wrap: break-word;
+                                word-break: break-all;
+                                padding: 8px 1px;
+                                border: 1px solid #c0c0c0;
+                                text-align: center;
+                                font-size: 13px;
+                                background-color: #f9f5f5;
+                            }
+
+
+                            .table th {
+                                font-size: 12px;
+                                padding: 10px 1px;
+                                background-color: rgb(148, 211, 130);
+                                color: #000000;
+                            }
+
+                            .table tbody tr:nth-child(even) {
+                                background-color: #ececec;
+                            }
+
+                            .status_td {
+                                border-radius: 5px;
+                                font-size: 12px;
+                                font-weight: 600;
+                                padding: 4px 9px 5px 9px;
+                                color: white;
+                                text-transform: capitalize;
+                            }
+
+                            .greenBack {
+                                background-color: green;
+                            }
+
+                            .redBack {
+                                background-color: red;
+                            }
+
+                            .blackBack {
+                                background-color: black;
+                            }
+
+
+
+                            @media screen and (max-width: 600px) {
+                                .userDataContainer {
+                                    padding: 20px 11px;
+                                    margin: 15px 10px;
+                                }
+                            }
+                        </style>
+
+</body>
+
+</html>

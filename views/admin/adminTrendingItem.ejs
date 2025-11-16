@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Trending Items - mintoSpeed</title>
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="noindex, nofollow">
+
+    <%- include('../partials/headTagContent') %>
+        <style>
+            .container {
+                max-width: 900px;
+                margin: auto;
+                background: #fff;
+                padding: 10px;
+            }
+
+            .search-box {
+                /* display: none; */
+                position: relative;
+                height: 35px;
+                z-index: 1000000000;
+                max-width: 800px;
+                min-width: 320px;
+                width: 100%;
+                background: #ffffff;
+                margin: 10px;
+                border-radius: 8px;
+                border: 1px solid rgb(201, 201, 201);
+                /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); */
+            }
+
+            .search-box i,
+            .search-box .button {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .search-box i {
+                left: 12px;
+                font-size: 15px;
+                color: #707070;
+            }
+
+            .search-box input {
+                height: 100%;
+                width: 100%;
+                outline: none;
+                font-size: 14px;
+                font-weight: 400;
+                border: none;
+                padding: 0 10px 0 38px;
+                background-color: transparent;
+            }
+
+            .item-card {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin: 5px;
+                background: #fff;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                overflow: hidden;
+                padding: 7px 11px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }
+
+            .item-image {
+                max-width: 100%;
+                height: 70px;
+                object-fit: cover;
+            }
+
+            .item-details {
+                text-align: left;
+            }
+
+            .item-details h3 {
+                margin: 10px 0 0px;
+                font-size: 13px;
+                color: #333;
+            }
+
+            .item-meta {
+                font-size: 11px;
+                color: #666;
+            }
+
+            .stock-input {
+                width: 60px;
+                height: 30px;
+                padding: 8px;
+                font-size: 15px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
+
+            .remove-btn {
+                background-color: red;
+            }
+        </style>
+</head>
+
+<body>
+    <%- include('../partials/alertboxAndLoader') %>
+
+        <div class="container">
+            <h3><span id="backBtn" style="margin-right: 7px; padding: 0 4px; cursor: pointer;"><i class="fa-solid fa-arrow-left"></i></span>Add Trending Items</h3>
+            <div class="search-box" id="navSearch">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="searchInput" placeholder="Search item, category..." />
+
+            </div>
+
+            <div id="itemsContainer"></div>
+
+
+            <br />
+            <h4>Trending Items</h4>
+
+            <div id="trendingDiv">
+                <% if (typeof items !=='undefined' && items && Array.isArray(items) && items.length> 0) { %>
+                    <% items.forEach(item=> { %>
+                        <% if (item && item.subcategory && item.category && item.id) { %>
+                            <div class="item-card" data-itemSubCategory="<%= item.subcategory %>"
+                                data-itemCategory="<%= item.category %>" data-id="<%= item.id %>">
+
+                                <div class="item-img">
+                                    <img src="<%=item.img%>" alt="<%=item.id%>" class="item-image">
+                                </div>
+
+                                <div class="item-details">
+                                    <h3>
+                                        <%= item.id %>
+                                    </h3>
+                                    <p class="item-meta">
+                                        <%=item.qty%> | ₹<%=item.price%> | Packed : <%=item.packed%>
+                                    </p>
+                                </div>
+
+                                <button class="remove-btn">Remove</button>
+                            </div>
+                            <% } %>
+                                <% }); %>
+                                    <% } %>
+            </div>
+        </div>
+
+        <script nonce="<%-nonce%>">
+            document.getElementById('backBtn')?.addEventListener('click', () => window.history.back());
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const client = algoliasearch('08VH7S7TWO', '05dc5ebdec6372f37a566074b14f4a47');
+                const index = client.initIndex('items_search');
+                const container = document.getElementById("itemsContainer");
+                const trendingContainer = document.getElementById("trendingDiv");
+
+                //adding ids of all
+                const itemCardsId = document.querySelectorAll(".item-card[data-id]");
+                let existingIds = Array.from(itemCardsId).map(item => item.getAttribute("data-id"));
+
+                function addDataId(newId) {
+                    if (!existingIds.includes(newId)) {
+                        existingIds.push(newId);
+                        console.log("Updated IDs:", existingIds);
+                    } else {
+                        console.log("ID already exists!");
+                    }
+                }
+
+                function removeDataId(idToRemove) {
+                    const index = existingIds.indexOf(idToRemove);
+                    if (index !== -1) {
+                        existingIds.splice(index, 1);  // Remove from array
+                        console.log(`ID ${idToRemove} removed. Updated IDs:`, existingIds);
+                    } else {
+                        console.log(`ID ${idToRemove} not found.`);
+                    }
+                }
+
+
+                //search
+                const searchInput = document.querySelector('.searchInput');
+                searchInput.focus();
+
+
+                let timeout;
+
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(timeout);
+                    const query = e.target.value.trim();
+
+                    // Validate input (disallow <, >, /)
+                    if (!/^[^<>/]*$/.test(query)) {
+                        return;
+                    }
+
+                    if (query.length === 0) {
+                        container.innerHTML = '';
+                        return;
+                    } else if (query.length < 3) {
+                        return;
+                    }
+
+
+                    timeout = setTimeout(() => {
+                        if (query !== searchInput.value.trim()) return; // Ensure the query is still relevant
+                        performSearch(query);
+                    }, 500);
+
+                });
+
+
+                // Perform the search and populate results
+                async function performSearch(query) {
+                    container.innerHTML = '';
+                    let newItemElements1 = [];
+                    let newItemElements2 = [];
+
+                    try {
+                        const results = await index.search(query, { hitsPerPage: 15 });
+
+                        if (results.hits.length === 0) {
+                            container.innerHTML = '';
+                            return;
+                        }
+
+                        results.hits.forEach(item => {
+                            if (existingIds.includes(item.objectID)) {
+                                return;
+                            }
+
+                            const itemElement = document.createElement("div");
+                            itemElement.classList.add("item-card");
+                            itemElement.setAttribute("data-id", item.objectID);
+                            itemElement.setAttribute('data-itemCategory', item.category);
+                            itemElement.setAttribute('data-itemSubCategory', item.subcategory);
+
+                            itemElement.innerHTML = `
+                            <div class="item-img">
+                              <img src="${item.img}" alt="${item.objectID}" class="item-image">
+                            </div>
+                            <div class="item-details">
+                              <h3>${item.objectID}</h3>
+                              <p class="item-meta">${item.qty} | ₹${item.price} | Packed : ${item.packed}</p>
+                            </div>
+                            <button class="add-btn">Add</button>
+                            `;
+
+                            container.appendChild(itemElement);
+                            newItemElements1.push(itemElement.querySelector('.add-btn'));
+                        });
+                        if (newItemElements1.length > 0) {
+                            attchBtnListner(newItemElements1);
+                        }
+                        if (newItemElements2.length > 0) {
+                            attchBtnListner2(newItemElements2);
+                        }
+                    }
+                    catch (err) {
+                        console.log("Something went wrong.");
+                        showAlert("Something went wrong", "negative");
+                        return;
+                    }
+                }
+
+                // Function to handle stock updates
+                async function updateTrendingItems(itemId, category, subcategory, flag) {
+
+                    console.log("update data : " + itemId + category + subcategory + flag);
+                    try {
+
+                        document.getElementById("loader_container").style.display = "flex";
+                        const response = await fetch('/dashboard/api/update-trending-items', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                itemName: itemId,
+                                category, subcategory,
+                                flag,
+                            }),
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            showAlert('Item updated successfully', 'positive');
+                            document.querySelectorAll(`[data-id="${itemId}"]`).forEach(element => {
+                                element.remove();
+                            });
+                            removeDataId(itemId);
+
+                            let newItemElements1 = [];
+
+                            if (flag == "update") {
+                                const itemElement = document.createElement("div");
+                                itemElement.classList.add("item-card");
+                                itemElement.setAttribute("data-id", itemId);
+                                itemElement.setAttribute('data-itemCategory', category);
+                                itemElement.setAttribute('data-itemSubCategory', subcategory);
+
+                                itemElement.innerHTML = `
+                                    <div class="item-img">
+                                        <img src="${result.itemData.img}" alt="${itemId}" class="item-image">
+                                    </div>
+                                    <div class="item-details">
+                                      <h3>${itemId}</h3>
+                                        <p class="item-meta">${result.itemData.qty} | ₹${result.itemData.price} | Packed : ${result.itemData.packed}</p>
+                                    </div>
+                                    <button class="remove-btn">Remove</button>
+                                `;
+
+                                trendingContainer.appendChild(itemElement);
+                                newItemElements1.push(itemElement.querySelector('.remove-btn'));
+                                if (newItemElements1.length > 0) {
+                                    attchBtnListner2(newItemElements1);
+                                }
+
+                                addDataId(itemId);
+                            }
+
+
+                        } else {
+                            showAlert(result.message, 'negative');
+                        }
+                        document.getElementById("loader_container").style.display = "none";
+                        return;
+                    } catch (error) {
+                        console.error("Error updating stock:", error);
+                        showAlert("Something went wrong!", "negative");
+                        document.getElementById("loader_container").style.display = "none";
+                        return;
+                    }
+                }
+
+                const updateBtns = document.querySelectorAll('.add-btn');
+                const removeBtns = document.querySelectorAll('.remove-btn');
+                if (updateBtns) {
+                    attchBtnListner(updateBtns);
+                }
+                if (removeBtns) {
+                    attchBtnListner2(removeBtns);
+                }
+
+                function attchBtnListner(elements) {
+                    elements.forEach(function (btn) {
+                        btn.addEventListener('click', function (event) {
+                            const itemCard = event.target.closest(".item-card");
+                            const itemId = itemCard.getAttribute("data-id");
+                            const category = itemCard.getAttribute("data-itemCategory");
+                            const subcategory = itemCard.getAttribute("data-itemSubCategory");
+
+                            const isValidString = (str) => str != null && !/[<>\/]/.test(str);
+
+                            if (!isValidString(category) || !isValidString(subcategory) || !isValidString(itemId)) {
+                                showAlert("Something went wrong with category, subcategory or item name.", "negative");
+                                return;
+                            }
+
+
+                            updateTrendingItems(itemId, category, subcategory, "update");
+                        });
+                    });
+                }
+
+                function attchBtnListner2(elements) {
+                    elements.forEach(function (btn) {
+                        btn.addEventListener('click', function (event) {
+                            const itemCard = event.target.closest(".item-card");
+                            const itemId = itemCard.getAttribute("data-id");
+                            const category = itemCard.getAttribute("data-itemCategory");
+                            const subcategory = itemCard.getAttribute("data-itemSubCategory");
+
+                            const isValidString = (str) => !/[<>\/]/.test(str);
+
+                            if (!isValidString(category) || !isValidString(subcategory) || !isValidString(itemId)) {
+                                showAlert("Something went wrong with category, subcategory or item name.", "negative");
+                                return;
+                            }
+
+                            updateTrendingItems(itemId, category, subcategory, "remove");
+                        });
+                    });
+                }
+
+            });
+        </script>
+
+</body>
+
+</html>

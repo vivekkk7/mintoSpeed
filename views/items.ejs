@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= favName %> - Category | mintoSpeed</title>
+    <meta name="description" content="Item details.">
+    <meta name="keywords" content="items">
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="index, follow">
+    <%- include('partials/headTagContent') %>
+
+    <!-- card css -->
+    <link rel="stylesheet" href="../public/css/itemCard.css" />
+    <!-- scroll -->
+    <script nonce="<%-nonce%>" src="../public/js/srollForSectionAndCategory.js"></script>
+</head>
+
+<body>
+    <!-- navbar -->
+    <%- include('partials/navbar') %>
+
+            <!-- mainhead -->
+            <div>
+                <% if (typeof selectedCategory !== 'undefined' && selectedCategory.length> 0) { %>
+                <% selectedCategory.forEach(category=> { %>
+                    <!-- Grocery item section -->
+                    <section class="grocery" id="selectedCat" data-category="<%= category.id %>" data-initial-subcategory="<%= category.subcategory.flag %>">
+                        <div>
+                            <!-- Category Title -->
+                            <h2 class="grocery_head"><span id="backBtn" style="margin-right: 7px; padding: 0 4px; cursor: pointer;"><i class="fa-solid fa-arrow-left"></i></span><%= category.id %></h2>
+
+                            <!-- Subcategory Navigation -->
+                            <div class="subCategoryDIv">
+                                <div class="left_btn"><i class="fa-solid fa-chevron-left"></i></div>
+                                <div class="right_btn"><i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                                <div class="content2" style="padding: 0 5px;">
+                                    <div class="content3">
+                                        <% category.subcategory.subcategories.forEach((subcategory, index)=> { %>
+                                            <!-- Subcategory Button, highlight the first subcategory as selected -->
+                                            <div class="grocery_type subCatElement <%= index === category.subcategory.flag ? 'selected' : '' %>"
+                                                data-subCategoryBtn="<%= subcategory.id %>"><%= subcategory.id %></div>
+                                            <% }) %>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Items Container for Selected Subcategory -->
+                            <div class="grocery_items_container">
+                                <% category.subcategory.subcategories.forEach((subcategory, index)=> { %>
+                                    <!-- Display items only for the first subcategory by default -->
+                                    <% if (index===category.subcategory.flag) { %>
+                                        <div class="grocery_items" id="grocery_items_<%= subcategory.id %>"
+                                            data-subCategory="<%= subcategory.id %>">
+
+                                            <% subcategory.items.forEach(item=> { %>
+                                                <%- include('partials/grocery_item_con', { item: item }) %>
+                                            <% }) %>
+                                        </div>
+                                    <% } %>
+                                <% }) %>
+                            </div>
+
+
+                        </div>
+                    </section>
+                    <% }) %>
+                    <% } else { %>
+                        <p style="text-align: center; margin-top: 50px; margin-bottom: 100px;">No item found.</p>
+                    <% } %>
+            </div>
+
+            <script nonce="<%-nonce%>">
+                document.getElementById('backBtn')?.addEventListener('click', () => window.history.back());
+            </script>
+
+
+            <!-- categories -->
+
+            <section class="content">
+                <% if (typeof categoryNames !== 'undefined' && categoryNames.length> 0) { %>
+                <div class="">
+                    <h2 class="content_head">select product by categories</h2>
+
+                    <div class="content1">
+                        <!-- leftright btn -->
+                        <div class="left_btn" id="leftContentBtn"><i class="fa-solid fa-chevron-left"></i></div>
+                        <div class="right_btn" id="rightContentBtn"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="content2">
+                            <!-- contact list -->
+                            <div class="content3">
+                                <% categoryNames.forEach(category=> { %>
+                                <div class="grocery_type">
+                                    <a href="/items?c=<%= category.value %>">
+                                        <img src="https://storage.googleapis.com/groscool-49709.appspot.com/images%2F8d8ad9d2-d295-4835-a095-ff6dcdf11bab-g1.png" alt="img" />
+                                        <p><%= category.key %></p>
+                                    </a>
+                                </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </section>
+
+
+
+            <!-- load sub category element -->
+            <script nonce="<%-nonce%>">
+                document.addEventListener('DOMContentLoaded', function () {
+                    const grocerySections = document.querySelectorAll('.grocery');
+                    let sectionSubCategories = {};
+
+                    function initializeSubCategories(section) {
+                        console.log("initializeSubCategories 1");
+                        const subCategoryButtons = section.querySelectorAll('.subCatElement');
+                        const groceryItemsContainer = section.querySelector('.grocery_items_container');
+                        const category = section.getAttribute('data-category');
+                        const dataInitialSubcategory = section.getAttribute('data-initial-subcategory');
+                        let newItemElements1 = [];
+                        let newItemElements2 = [];
+                        let activeButton = null; // To track the currently selected button
+
+                        if (!sectionSubCategories[category]) {
+                            console.log("initializeSubCategories 2");
+                            sectionSubCategories[category] = {};
+                        }
+
+                        function initializeSectionSubCategories(firstSubCategory) {
+                            console.log("initializeSubCategories 3");
+                            sectionSubCategories[category][firstSubCategory] = section.querySelector('.grocery_items');
+                        }
+
+                        // Function to fetch data from the backend using POST request
+                        async function fetchGroceryItems(subCategory) {
+                            console.log(`Starting fetching items for ${category} -> ${subCategory}`);
+                            document.getElementById("loader_container").style.display = "flex";
+
+                            // Check if this subCategory already exists in the DOM
+                            if (sectionSubCategories[category][subCategory]) {
+                                console.log(`Subcategory ${subCategory} already exists. Showing it.`);
+                                document.getElementById("loader_container").style.display = "none";
+                                showSubCategory(subCategory);
+                                return;
+                            }
+
+                            try {
+                                fetch('/get_grocery_items', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ category: category, subCategory: subCategory })
+                                }).then(response => {
+                                    if (!response.ok) {
+                                        showAlert('Failed to fetch grocery items.', 'negative');
+                                        document.getElementById("loader_container").style.display = "none";
+                                        return;
+                                    }
+                                    return response.json();
+                                })
+                                    .then(data => {
+                                        let items = data.items;
+                                        console.log(items);
+                                        const subCategoryDiv = document.createElement('div');
+                                        subCategoryDiv.classList.add('grocery_items');
+                                        subCategoryDiv.setAttribute('data-subCategory', subCategory);
+
+                                        document.getElementById("loader_container").style.display = "none";
+
+                                        // Now we can iterate over the array and create elements
+                                        items.forEach(item => {
+                                            const itemDiv = document.createElement('div');
+                                            itemDiv.classList.add('grocery_item');
+                                            itemDiv.setAttribute('data-packed', item.packed);
+                                            itemDiv.setAttribute('data-itemCategory', category);
+                                            itemDiv.setAttribute('data-itemSubCategory', subCategory);
+                                            console.log("item" + item);
+                                            console.log("itemname" + item.id);
+
+                                            itemDiv.innerHTML = `
+                                        <div class="infoBB ${item.replaceSelect == 'true' ? 'show' : 'hidden'}">
+                                            <div class="infoB">Item can be replace. <a style="color: rgb(51, 122, 254);" href="/c/terms-and-conditions">Know
+                                                more</a></div>
+                                            <div class="infoBBtn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+                                        </div>
+                                        <div class="item_img">
+                                            <img src="${item.image_url}" alt="img" />
+                                        </div>
+                                        <p class="item_stock ${!item.stock ? 'hidden' : item.stock == '0' ? 'c_red' : item.stock == 'x' ? 'hidden' : 'd_block'}">
+                                                    ${
+                                                      item.stock == '0' 
+                                                        ? 'Stock is unavailable' 
+                                                        : item.stock != 'x' 
+                                                          ? 'Stock : ' + item.stock + ' left' 
+                                                          : '' 
+                                                    }
+                                                </p>
+                                        <p class="item_name_p"><a class="item_name" href="/item?c=${encodeURIComponent(category)}&s=${encodeURIComponent(subCategory)}&i=${encodeURIComponent(item.id)}">${item.id}</a></p>
+                                        <p class="item_min_volume">${item.minVol}</p>
+                                        <p class="item_max_volume">${item.maxVol}</p>
+                                        <div class="item_volume">
+                                            <p class="item_weight" style="margin: 0;">${item.volume}</p>
+                                            <div class="item_volume_options">
+
+                                                ${item.packed ? `<!-- item is packed -->`
+                                                    : `${item.options.map(option => `
+                                                        <div class="item_volume_option">
+                                                            <p class="item_option_weight">${option.weight}</p>
+                                                            <p class="item_option_price_p">
+                                                                <span class="item_option_price">${option.price}</span>
+                                                                <span class="market_price">${option.priceMRP && option.priceMRP.trim() !== '' ? '₹ ' + option.priceMRP : ''}</span>
+                                                            </p>
+                                                        </div>
+                                                    `).join('')}`
+                                                }
+                                                <!-- custom option -->
+                                                <div class="item_volume_custom_option">
+                                                    <p class="item_volume_custom_option_head">Custom</p>
+                                                    <div class="item_volume_custom_option_input_div">
+                                                        ${item.packed ? `<!-- If item is packed, show text "pieces" -->
+                                                            <input type="number" class="item_volume_input_number" placeholder="Qty" min="0"  step="1" />
+                                                            <div class="item_volume_custom_option_for_pieces">pcs</div>`
+                                                    : ` <input type="number" class="item_volume_input_number" placeholder="Qty" min="0" />
+                                                            <div class="item_volume_custom_option_for_kggm">
+                                                                <label><input type="radio" name="kggm" checked value="kg"> kg</label>
+                                                                <label><input type="radio" name="kggm" value="gm"> gm</label>                                       
+                                                            </div>`}
+                                                    </div>
+                                                    <p class="item_volume_input_price">0</p>
+                                                    <button class="item_volume_custom_option_done_btn">Done</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="item_price_p">
+                                            <span class="item_price">${item.price}</span>
+                                            <span class="market_price">${item.popularMRP}</span>
+                                        </p>                                         <button class="item_add_btn">Add</button>
+                                    `;
+                                            subCategoryDiv.appendChild(itemDiv);
+                                            newItemElements1.push(itemDiv.querySelector('.item_volume')); // Store new item_volume divs
+                                            newItemElements2.push(itemDiv.querySelector('.item_add_btn')); // Store new item_volume divs
+                                        });
+
+                                        hideAllSubCategories();
+
+                                        attachVolumeOptionListeners(newItemElements1); // Attach listeners to new items
+                                        attachAddButtonListeners(newItemElements2); // Re-attach add button listeners to all items
+                                        groceryItemsContainer.appendChild(subCategoryDiv);
+                                        sectionSubCategories[category][subCategory] = subCategoryDiv;
+                                        console.log(" sectionSubCategories[category][subCategory] : " + category + subCategory);
+                                    })
+                                    .catch(error => {
+                                        hideAllSubCategories();
+                                        console.error('Error fetching data from the backend:', error);
+                                        showAlert('Failed to fetch data.', 'negative');
+                                        document.getElementById("loader_container").style.display = "none";
+                                    });
+                            } catch (error) {
+                                hideAllSubCategories();
+                                console.error("Error fetching data from the backend:", error);
+                                showAlert("Failed to load items. Please try again later.", "negative");
+                                document.getElementById("loader_container").style.display = "none";
+                            }
+                        }
+
+                        function hideAllSubCategories() {
+                            groceryItemsContainer.querySelectorAll('.grocery_items').forEach(div => div.style.display = 'none');
+                        }
+
+                        function showSubCategory(subCategory) {
+                            hideAllSubCategories();
+                            sectionSubCategories[category][subCategory].style.display = 'flex';
+                        }
+
+                        document.getElementById("loader_container").style.display = "none";
+
+
+                        // Event listener for subcategory buttons
+                        subCategoryButtons.forEach(button => {
+                            button.addEventListener('click', function () {
+                                document.getElementById("loader_container").style.display = "flex";
+
+                                const selectedSubCategory = this.getAttribute('data-subCategoryBtn');
+                                console.log(`Subcategory button clicked: ${selectedSubCategory}`);
+
+                                // Remove 'subCatSelected' class from the previously selected button
+                                if (activeButton) {
+                                    activeButton.classList.remove('subCatSelected');
+                                }
+
+                                this.classList.add('subCatSelected');
+                                activeButton = this; // Set the current button as active
+
+                                fetchGroceryItems(selectedSubCategory);
+                            });
+                        });
+
+                        // load the first subcategory on page load
+                        
+                         if (!activeButton && subCategoryButtons.length > 0) {
+                            const flag = dataInitialSubcategory ?  parseInt(dataInitialSubcategory, 10) : 0;
+                            const firstSubCategory = subCategoryButtons[flag].getAttribute('data-subCategoryBtn');
+                            if (firstSubCategory) {
+                                // fetchGroceryItems(firstSubCategory);
+                                initializeSectionSubCategories(firstSubCategory);
+                                subCategoryButtons[flag].classList.add('subCatSelected'); 
+                                activeButton = subCategoryButtons[flag];
+                            }
+                        }
+                    }
+
+                    grocerySections.forEach(section => {
+                        console.log("initialize sections subcategory.");
+                        document.getElementById("loader_container").style.display = "flex";
+                        initializeSubCategories(section);
+                        initializeScrollFunctionality(section);
+                    });
+                    
+                });
+
+            </script>
+
+        <br>
+        <br>
+
+        <br>
+        <br>
+
+    <!-- footer -->
+    <%- include('partials/footer') %>
+
+    <!--addToCartAndVolumeListener  -->
+    <script nonce="<%-nonce%>" src="../public/js/addToCartAndVolumeListener.js"></script>
+
+</body>
+
+</html>

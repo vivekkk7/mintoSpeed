@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - mintoSpeed</title>
+    <meta name="description" content="View your order just in a simple way!">
+    <meta name="keywords" content="orders, order details">
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="noindex, nofollow">
+
+    <%- include('partials/headTagContent') %>
+
+</head>
+
+<body>
+    <!-- navbar -->
+    <%- include('partials/navbar') %>
+
+        <!-- alertboxAndLoader -->
+        <%- include('partials/alertboxAndLoader') %>
+
+            <!-- profile con -->
+
+            <section class="pf_con">
+                <h2 class="track_head">Your Orders</h2>
+
+                <!-- Pending Orders Section -->
+                <% if (typeof pendingOrders !== 'undefined' && pendingOrders.length> 0) { %>
+                    <div class="info_con" id="orderContainer1">
+                        <div class="statusdiv">
+                            <h2 class="info_h2">Pending orders (<%= totalPendingOrders %>)</h2>
+                            <div class="tbcon">
+                                <table class="table">
+                                    <thead>
+                                        <th>Order on</th>
+                                        <th>OrderId</th>
+                                        <th>Total Items</th>
+                                        <th>Total Price</th>
+                                        <th>Delivery on</th>
+                                        <th>Status</th>
+                                        <th>View Detail</th>
+                                    </thead>
+                                    <tbody id="tBody1">
+                                        <% pendingOrders.forEach(order=> { %>
+                                            <tr>
+                                                <td data-label="Order on">
+                                                    <%= order.orderTime %>
+                                                </td>
+                                                <td data-label="OrderId">
+                                                    <%= order.orderId %>
+                                                </td>
+                                                <td data-label="Total Items">
+                                                    <%= order.totalItems %>
+                                                </td>
+                                                <td data-label="Total Price">₹<%= order.totalPrice %>
+                                                </td>
+                                                <td data-label="Delivery on">
+                                                    <%= order.deliveryTime %>&nbsp;
+                                                </td>
+                                                <td data-label="Status"><span
+                                                class="status_td <%= order.status === 'cancelled' ? 'redBack' : order.status === 'completed' ? 'greenBack' : 'blackBack' %>">
+                                                <%= order.status %>
+                                            </span>
+                                                </td>
+                                                <td data-label="View Detail"><a href="/order-details?orderId=<%= order.orderId %>">Click here</a></td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <% if (totalPendingPages > 1) { %>
+                        <!-- Pagination Buttons for Pending Orders -->
+                        <div class="pagination">
+                            <% for (let i=1; i <=totalPendingPages; i++) { %>
+                                <button class="pagination-btn pending" data-page="<%= i %>">
+                                    <%= i %>
+                                </button>
+                            <% } %>
+                        </div>
+                        <% } %>
+                    </div>
+                    <% } else { %>
+                        <p style="text-align: center; margin-top: 20px; margin-bottom: 20px;">No pending order found.</p>
+                    <% } %>
+
+                        <!-- All Orders Section -->
+                        <% if (typeof allOrders !== 'undefined' && allOrders.length> 0) { %>
+                            <div class="info_con" id="orderContainer2">
+                                <div class="statusdiv">
+                                    <h2 class="info_h2">All orders (<%= totalAllOrders %>)</h2>
+                                    <div class="tbcon">
+                                        <table class="table">
+                                            <thead>
+                                                <th>Order on</th>
+                                                <th>OrderId</th>
+                                                <th>Total Items</th>
+                                                <th>Total Price</th>
+                                                <th>Delivery on</th>
+                                                <th>Status</th>
+                                                <th>View Detail</th>
+                                            </thead>
+                                            <tbody id="tBody2">
+                                                <% allOrders.forEach(order=> { %>
+                                                    <tr>
+                                                        <td data-label="Order on">
+                                                            <%= order.orderTime %>
+                                                        </td>
+                                                        <td data-label="OrderId">
+                                                            <%= order.orderId %>
+                                                        </td>
+                                                        <td data-label="Total Items">
+                                                            <%= order.totalItems %>
+                                                        </td>
+                                                        <td data-label="Total Price">₹<%= order.totalPrice %>
+                                                        </td>
+                                                        <td data-label="Delivery on">
+                                                            <%= order.deliveryTime %>&nbsp;
+                                                        </td>
+                                                        <td data-label="Status">
+                                                        <span
+                                                        class="status_td <%= order.status === 'cancelled' ? 'redBack' : order.status === 'completed' ? 'greenBack' : 'blackBack' %>">
+                                                        <%= order.status %>
+                                                    </span>
+                                                        </td>
+                                                        <td data-label="View Detail"><a href="/order-details?orderId=<%= order.orderId %>">Click here</a></td>
+                                                    </tr>
+                                                    <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <% if (totalAllPages > 1) { %>
+                                <!-- Pagination Buttons for All Orders -->
+                                <div class="pagination">
+                                    <% for (let i=1; i <=totalAllPages; i++) { %>
+                                        <button class="pagination-btn all" data-page="<%= i %>">
+                                            <%= i %>
+                                        </button>
+                                        <% } %>
+                                </div>
+                                <% } %>
+                            </div>
+                            <% } %>
+            </section>
+
+            <script nonce="<%-nonce%>">
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Function to fetch and render orders
+                    const fetchOrders = async (page, type) => {
+                        try {
+                            const response = await fetch('/orders/fetch-orders', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    page,
+                                    type,
+                                }),
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.success) {
+                                    const tbodyId = type === 'pending' ? 'tBody1' : 'tBody2';
+                                    const tbody = document.getElementById(tbodyId);
+
+                                    tbody.innerHTML = data.orders.map(order => `
+                                        <tr>
+                                            <td data-label="Order on">${order.orderTime}</td>
+                                            <td data-label="OrderId">${order.orderId}</td>
+                                            <td data-label="Total Items">${order.totalItems}</td>
+                                            <td data-label="Total Price">₹${order.totalPrice}</td>
+                                            <td data-label="Delivery on">${order.deliveryTime}</td>
+                                            <td data-label="Status" class="${order.status === 'cancelled' ? 'redBack' : order.status === 'completed' ? 'greenBack' : 'blackBack'}">
+                                                ${order.status}
+                                            </td>
+                                            <td data-label="View Detail"><a href="/order-details?orderId=${order.orderId}">Click here</a></td>
+                                        </tr>
+                                    `).join('');
+                                }
+                                else if(data.success == "redirect"){
+                                        showAlert(data.message, "negative");
+                                        window.location.href = "/auth/login";
+                                        return;
+                                }
+                                 else {
+                                    console.error('Failed to fetch orders:', data.message);
+                                }
+                            } else {
+                                console.error('Failed to fetch orders:', response.statusText);
+                            }
+                        } catch (error) {
+                            console.error('Error fetching orders:', error);
+                        }
+                    };
+
+                    // Function to handle button highlighting
+                    const highlightButton = (type, page) => {
+                        const buttons = document.querySelectorAll(`.pagination-btn.${type}`);
+                        buttons.forEach(button => {
+                            // Set background only for the active button
+                            if (button.getAttribute('data-page') === page) {
+                                button.style.backgroundColor = '#5de778'; // Active button color
+                            } else {
+                                button.style.backgroundColor = 'transparent'; // Reset other buttons
+                            }
+                        });
+                    };
+
+                    // Initialize pagination on page load
+                    const initializePagination = () => {
+                        // Default first page active for both pending and all orders
+                        const firstPendingButton = document.querySelector('.pagination-btn.pending[data-page="1"]');
+                        const firstAllButton = document.querySelector('.pagination-btn.all[data-page="1"]');
+
+                        if (firstPendingButton) {
+                            highlightButton('pending', '1'); // Highlight first pending button
+                        }
+
+                        if (firstAllButton) {
+                            highlightButton('all', '1'); // Highlight first all button
+                        }
+                    };
+
+                    // Add click event listeners to pagination buttons
+                    document.addEventListener('click', (event) => {
+                        if (event.target.classList.contains('pagination-btn')) {
+                            const page = event.target.getAttribute('data-page');
+                            const type = event.target.classList.contains('pending') ? 'pending' : 'all';
+
+                            // Highlight the clicked button
+                            highlightButton(type, page);
+
+                            // Fetch orders for the selected page
+                            fetchOrders(page, type);
+                        }
+                    });
+
+                    // Initialize pagination on page load
+                    initializePagination();
+                });
+            </script>
+
+
+
+            <style>
+                td[data-label="View Detail"] a {
+                    color: rgb(1, 95, 217);
+                }
+                td[data-label="View Detail"] a:hover {
+                    opacity: 0.5;;
+                }
+                .pagination {
+                    display: flex;
+                    justify-content: center;
+                    padding: 30px 10px;
+                }
+
+                .pagination-btn {
+                    background-color: transparent;
+                    margin: 2px;
+                    color: black;
+                    font-weight: 600;
+                    border-radius: 10px;
+                }
+
+                .track_head {
+                    text-align: center;
+                    font-size: 20px;
+                    margin-top: 45px;
+                    margin-bottom: 10px;
+
+                }
+
+
+                @media screen and (max-width: 550px) {
+                    .track_head {
+                        font-size: 17px;
+                    }
+
+                }
+            </style>
+
+            <style>
+                section.pf_con {
+                    position: relative;
+                    width: 100%;
+                    min-height: 80vh;
+                    overflow-x: hidden;
+                }
+
+                div.info_con {
+                    padding: 10px 20px;
+                }
+
+
+                .tbcon {
+                    width: 100%;
+                    overflow-x: auto;
+                }
+
+                .info_h2 {
+                    font-size: 15px;
+                    margin-bottom: 20px;
+                    padding-left: 3px;
+                }
+
+                .table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+
+                .table td,
+                .table th {
+                    word-wrap: break-word;
+                    padding: 12px 15px;
+                    border: 1px solid #c0c0c0;
+                    text-align: center;
+                    font-size: 13px;
+                }
+
+                .table td,
+                .table th {
+                    min-width: 50px;
+                    max-width: 250px;
+                }
+
+                .status_td {
+                border-radius: 5px;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 4px 9px 5px 9px;
+                color: white;
+                text-transform: capitalize;
+            }
+            .greenBack {
+                background-color: green;
+            }
+
+            .redBack {
+                background-color: red;
+            }
+
+            .blackBack {
+                background-color: black;
+            }
+
+
+
+                .table th {
+                    font-size: 12px;
+                    padding: 10px 15px;
+                    background-color: rgb(148, 211, 130);
+                    color: #000000;
+                }
+
+                .table tbody tr:nth-child(even) {
+                    background-color: #ececec;
+                }
+
+
+                @media (max-width: 700px) {
+                    div.info_con {
+                        padding: 10px;
+                    }
+
+                    .table thead {
+                        display: none;
+                    }
+
+                    .table td,
+                    .table th {
+                        min-width: 150px;
+                        max-width: 100%;
+                    }
+
+                    .table tr,
+                    .table td {
+                        display: block;
+                        width: 100%;
+                    }
+
+                    .table tr {
+                        margin-bottom: 15px;
+                        background-color: white;
+                    }
+
+                    .table tbody tr:nth-child(even) {
+                        background-color: white;
+                    }
+
+                    .table td {
+                        padding-left: 40%;
+                        text-align: left;
+                        position: relative;
+                    }
+
+                    .table td::before {
+                        content: attr(data-label);
+                        position: absolute;
+                        left: 0;
+                        width: 40%;
+                        padding-left: 15px;
+                        font-size: 13px;
+                        font-weight: 700;
+                        text-align: left;
+                        font-family: 'Open Sans', sans-serif;
+                    }
+                }
+            </style>
+
+
+            <!-- footer -->
+            <%- include('partials/footer') %>
+</body>
+
+</html>

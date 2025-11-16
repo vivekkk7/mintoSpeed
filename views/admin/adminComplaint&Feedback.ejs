@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%=activePageTitle%> - Admin Dashboard
+    </title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="/public/css/adminordercf.css" />
+    <%- include('../partials/headTagContent') %>
+
+</head>
+
+<body>
+    <%- include('../partials/alertboxAndLoader') %>
+       
+            <section class="section_con">
+                <h4 class="info_h4"><span id="backBtn" style="margin-right: 7px; padding: 0 4px; cursor: pointer;"><i
+                            class="fa-solid fa-arrow-left"></i></span>
+                    <%=activePageTitle%>&nbsp;(<%= metaData.all ? metaData.all : 0 %>)
+                </h4>
+
+                <!--  -->
+                <div class="tabBtns1">
+                    <p class="tabBtn activetab">All (<%= metaData.all ? metaData.all : 0 %>)</p>
+                    <p class="tabBtn">Today (<%= metaData.today ? metaData.today : 0 %>)</p>
+                    <p class="tabBtn">Yesterday (<%= metaData.yesterday ? metaData.yesterday : 0 %>)</p>
+                    <p class="tabBtn">Last 7 days (<%= metaData.last_7_days ? metaData.last_7_days : 0 %>)</p>
+                    <p class="tabBtn">This month (<%= metaData.this_month ? metaData.this_month : 0 %>)</p>
+                    <p class="tabBtn">Last month (<%= metaData.last_month ? metaData.last_month : 0 %>)</p>
+                </div>
+                <hr style="opacity: 0.4;" />
+
+                <!-- tab 1 -->
+                <div class="content_container">
+                    <% if (typeof contentData !=='undefined' && contentData.length> 0) { %>
+                        <% contentData.forEach(data=> { %>
+                            <div class="mega_container" data-id="<%= data.id %>"
+                                 data-userId="<%= data.userId ? data.userId : '' %>" data-email="<%= data.email ? data.email : '' %>" id="mega_container_<%= data.id %>">
+                                <div class="mega_head flex">
+                                    <div class="mega_head_img"><i class="fa-regular fa-user"></i></div>
+                                    <div class="mega_head_1">
+                                        <h4 class="mega_head_title cf_title">
+                                            <a href="/dashboard/users?id=<%= data.userId ? data.userId : data.email %>"><%= data.userId ? data.userId : data.email %></a>
+                                        </h4>
+                                        <p class="mega_head_subtitle op-7">
+                                            <%= data.time %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--  -->
+                                <div class="tabs">
+
+                                    <hr style="opacity: 0.4;" />
+
+                                    <!-- tabs div profile-->
+                                    <div class="flex pfOderDiv">
+                                        <div class="tabsDiv profile-tabsDiv" style="display: none;">
+                                            
+                                        </div>
+
+                                        <!-- sub container -->
+                                        <div class="subDivCon">
+                                            <div class="ordersDiv">
+                                                <p class="cf_id_name">Id:&nbsp;<%= data.id %></p>
+                                                <% if (activePage == "feedback") { %>
+                                                    <div class="star-rating">
+                                                        <% for (let i = 1; i <= 5; i++) { %>
+                                                            <span class="star <%= i <= data.rating ? 'golden' : '' %>">&#9733;</span>
+                                                        <% } %>
+                                                    </div>
+                                                    <p class="cfsubtitle"><%= data.feedback %></p>
+                                                <% } else if (activePage == "complaint") { %>
+                                                    <p class="cftitle"><%= data.reason %></p>
+                                                    <p class="cfsubtitle"><%= data.detail %></p>
+                                                <% } %>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+                                <div class="loadMoreTrigger" id="tab1"></div>
+                                <% } else { %>
+                                    <p style="text-align: center; margin-top: 80px; margin-bottom: 100px;">No data
+                                        found.</p>
+                                    <% } %>
+                </div>
+
+                <!-- tab 2-->
+                <div class="content_container">
+                    <div class="loadMoreTrigger" id="tab2"></div>
+                </div>
+                <!-- tab 3-->
+                <div class="content_container">
+                    <div class="loadMoreTrigger" id="tab3"></div>
+                </div>
+                <!-- tab 4-->
+                <div class="content_container">
+                    <div class="loadMoreTrigger" id="tab4"></div>
+                </div>
+                <!-- tab 5-->
+                <div class="content_container">
+                    <div class="loadMoreTrigger" id="tab5"></div>
+                </div>
+                <!-- tab 6-->
+                <div class="content_container">
+                    <div class="loadMoreTrigger" id="tab6"></div>
+                </div>
+            </section>
+
+            <!-- loading sections showing -->
+            <div class="showingLoading">
+                <div class="loader" id="loadingRotatorForSections"></div>
+            </div>
+
+           
+
+            <script nonce="<%-nonce%>">
+                const activePage = "<%=activePage%>";
+                const flagPage = "<%=flag%>";
+                document.getElementById('backBtn')?.addEventListener('click', () => window.history.back());
+
+                document.addEventListener("DOMContentLoaded", async function () {
+                    const loadingRotatorForSections = document.getElementById("loadingRotatorForSections");
+                    const tabButtons = document.querySelectorAll(".tabBtn");
+                    const contentContainers = document.querySelectorAll(".content_container");
+                    let loadMoreTriggers = document.querySelectorAll(".loadMoreTrigger");
+                    let activeObserver = null; // To track the active observer
+
+                    if(flagPage && flagPage != "null" && flagPage.length > 5){
+                        document.querySelector('.tabBtns1').style.display = "none";
+                        loadingRotatorForSections.style.display = "none";
+                        return;
+                    }
+
+                    console.log("----- multiple orderid code started -----");
+                    
+                    function createObserver(target) {
+                        const observer = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    const allLoadMoreElements = document.querySelectorAll('.loadMoreTrigger');
+                                    const index = Array.from(allLoadMoreElements).indexOf(entry.target);
+                                    console.log(`Trigger hits for ${target.id} index ${index}`);
+                                    triggerData(index);
+                                }
+                            });
+                        }, { threshold: 1.0, root: null, rootMargin: '100px' });
+
+                        observer.observe(target.querySelector('.loadMoreTrigger'));
+                        return observer;
+                    }
+                    
+
+                    contentContainers[0].style.display = "block";
+                    tabButtons[0].classList.add("activetab");
+                    if (activeObserver) activeObserver.disconnect(); // Remove previous observer
+                    activeObserver = createObserver(contentContainers[0]);
+
+                    // Tab button click event to switch between tabs.
+                    tabButtons.forEach((tab, tabIndex) => {
+                        tab.addEventListener("click", function () {
+                            tabButtons.forEach(btn => btn.classList.remove("activetab"));
+                            contentContainers.forEach(container => container.style.display = "none");
+
+                            tab.classList.add("activetab");
+                            if (contentContainers[tabIndex]) {
+                                contentContainers[tabIndex].style.display = "block";
+                                if (activeObserver) activeObserver.disconnect(); // Remove previous observer
+                                activeObserver = createObserver(contentContainers[tabIndex]);
+                            } else {
+                                console.error(`No container found for tab index ${tabIndex}`);
+                            }
+                        });
+                    });
+
+
+                    //observer trigger
+                    async function triggerData(index) {
+                        console.log("trigger element : " + index);
+
+                        let dataId = null;
+
+                        if (contentContainers[index]) {
+                            const megaContainers = contentContainers[index].querySelectorAll(".mega_container");
+
+                            if (megaContainers.length > 0) {
+                                const lastMegaContainer = megaContainers[megaContainers.length - 1];
+                                dataId = lastMegaContainer.getAttribute("data-id");
+                            }
+
+                            await fetchData(index, dataId);
+                        }
+                    }
+
+                    async function fetchData(index, lastVisible) {
+                        loadingRotatorForSections.style.display = "block";
+                        try {
+                            const response = await fetch('/dashboard/api/load_cf_data', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ lastVisible, index, activePage })
+                            });
+
+                            const data = await response.json();
+
+                            if (data.orders && data.orders.length > 0) {
+                                console.log("data : " + data);
+                                data.orders.forEach(data => renderData(data, index));
+                            } else {
+                                if (activeObserver) activeObserver.disconnect();
+                                loadingRotatorForSections.style.display = "none";
+                            }
+                        } catch (error) {
+                            console.error('Error loading more sections:', error);
+                            showAlert("Failed to load data.", "negative");
+                            loadingRotatorForSections.style.display = "none";
+                        }
+                    }
+
+                    function renderData(data, index) {
+                        let html = ``;
+
+                        if (activePage === "feedback") {
+                            html += `<div class="star-rating">`;
+                            for (let i = 1; i <= 5; i++) {
+                                html += `<span class="star ${i <= data.rating ? 'golden' : ''}">&#9733;</span>`;
+                            }
+                            html += `</div>`;
+                            html += `<p class="cfsubtitle">${data.feedback}</p>`;
+                        } else if (activePage === "complaint") {
+                            html += `<p class="cftitle">${data.reason}</p>`;
+                            html += `<p class="cfsubtitle">${data.detail}</p>`;
+                        }
+                       
+                        const htmlData = `
+                            <div class="mega_container" data-id="${data.id}" data-userId="${data.userId ? data.userId : ''}" data-email="${data.email ? data.email : ''}" id="mega_container_${data.id}">
+                                <div class="mega_head flex">
+                                    <div class="mega_head_img"><i class="fa-regular fa-user"></i></div>
+                                    <div class="mega_head_1">
+                                        <h4 class="mega_head_title cf_title"><a href="/dashboard/users?id=${data.userId ? data.userId : data.email}">${data.userId ? data.userId : data.email}</a></h4>
+                                        <p class="mega_head_subtitle op-7">${data.time}</p>
+                                    </div>
+                                </div>
+                                <div class="tabs">
+                                    <hr style="opacity: 0.4;" />
+                                    <div class="flex pfOderDiv">
+                                        <div class="tabsDiv profile-tabsDiv" style="display: none;">
+                                        </div>
+                                        <div class="subDivCon">
+                                            <div class="ordersDiv">
+                                               ${html}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>`;
+
+                        if (contentContainers[index] && loadMoreTriggers[index]) {
+                            contentContainers[index].insertBefore(loadMoreTriggers[index], contentContainers[index].lastElementChild);
+                            contentContainers[index].appendChild(loadMoreTriggers[index]); // Reattach load-more-trigger at the bottom
+                            contentContainers[index].insertAdjacentHTML('beforeend', htmlData); // Append the new categoryHTML at the end
+                        }
+                    }
+                });
+
+            </script>
+
+</body>
+
+</html>

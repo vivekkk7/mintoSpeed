@@ -1,0 +1,150 @@
+<!-- alert notification -->
+<div id="alert_box">
+    <div id="alert_box2">
+        <p id="alert_msg">Hello, how are you?</p>
+        <p id="alert_msg_cross">&times;</p>
+    </div>
+</div>
+
+<style>
+    #alert_box {
+        display: inline;
+        position: fixed;
+        left: 50%;
+        top: -150px;
+        width: 100vw;
+        padding: 0 10px;
+        z-index: 100000000000000;
+        /* transition: top 0.5s ease; */
+    }
+
+    #alert_box2 {
+        position: relative;
+        padding: 8px 40px 8px 15px;
+        transform: translateX(-50%);
+        border-radius: 10px;
+        max-width: 500px;
+        min-width: 200px;
+        width: fit-content;
+    }
+
+    #alert_msg {
+        margin: 5px auto;
+        font-size: 14px;
+    }
+
+
+    #alert_msg_cross {
+        position: absolute;
+        right: 7px;
+        top: 0;
+        margin: 1px;
+        font-size: 23px;
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    #alert_msg_cross:hover {
+        color: black;
+    }
+</style>
+
+
+<script nonce="<%-nonce%>">
+    let alertTimeout;
+    // Function to show the alert box with a dynamic message and background color
+    function showAlert(alertMsg, type) {
+        const alertBox = document.getElementById("alert_box");
+
+        document.getElementById("alert_msg").textContent = alertMsg;
+        if (type == "positive") {
+            document.getElementById("alert_box2").style.backgroundColor = 'rgb(186, 248, 201)';
+            document.getElementById("alert_box2").style.color = 'rgb(0, 133, 0)';
+        }
+        else {
+            document.getElementById("alert_box2").style.backgroundColor = 'rgb(255, 204, 203)';
+            document.getElementById("alert_box2").style.color = 'rgb(133, 0, 0)';
+        }
+        if (alertTimeout) {
+            clearTimeout(alertTimeout);
+            alertTimeout = null;
+        }
+
+        alertBox.style.transition = "none";
+        alertBox.style.top = "-150px";
+        void alertBox.offsetHeight;
+
+        alertBox.style.transition = "top 0.5s ease";
+        alertBox.style.top = "20px";
+
+        alertTimeout = setTimeout(() => {
+            alertBox.style.top = "-150px";
+        }, 5000);
+    }
+
+    document.getElementById("alert_msg_cross").addEventListener("click", function () {
+        alertBox.style.top = "-150px";
+    });
+
+    // showAlert('This is a custom alert message!', 'negative');
+
+</script>
+
+<!-- loader -->
+<div id="loader_container">
+    <div class="loader"></div>
+</div>
+<style>
+    #loader_container {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        left: 0;
+        top: 0;
+        z-index: 100000000000000000;
+        position: fixed;
+        height: 100vh;
+        width: 100%;
+        background-color: rgb(84, 84, 84, 0.4);
+    }
+
+    .showingLoading { 
+    height: 200px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .loader {
+        border: 7px solid #b6b5b5;
+        border-radius: 50%;
+        border-top: 7px solid #0f952e;
+        width: 40px;
+        height: 40px;
+        -webkit-animation: spin 1s linear infinite;
+        /* Safari */
+        animation: spin 1s linear infinite;
+    }
+
+    /* Safari */
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>

@@ -1,0 +1,154 @@
+router.post('/add_to_cart', (req, res) => {
+    let itemName = req.body.item_name;
+    let itemWeight = req.body.item_weight;
+    let itemCategory = req.body.itemCategory;
+    let itemSubCategory = req.body.itemSubCategory;
+
+    let userId = req.cookies.userId;
+    let tempId = req.cookies.tempId;
+    let tempUser = false;
+    let sendTempId = false;
+    let minWeight = 0, maxWeight = 0, itemVol = 0;
+
+    if (!userId && !tempId) {
+        userId = uuidv4();
+        tempUser = true;
+        sendTempId = true;
+    }
+    else if (!userId && tempId) {
+        userId = tempId;
+        tempUser = true;
+    }
+    else {
+        tempUser = false;
+    }
+
+    if (!itemName || typeof itemName !== 'string' || !/^[a-zA-Z0-9_\- &]+$/.test(itemName)) {
+        console.log("error : itemName : " + itemName);
+        res.json({ message: 'Invalid item name.', type: 'negative' });
+        return;
+    }
+
+    if (!itemWeight || typeof itemWeight !== 'string' || !/^[a-zA-Z0-9_.\- &]+$/.test(itemWeight)) {
+        console.log("error : itemWeight : " + itemWeight);
+        res.json({ message: 'Invalid item volume.', type: 'negative' });
+        return;
+    }
+
+    if (!itemCategory || typeof itemCategory !== 'string' || !/^[a-zA-Z0-9_.\- &]+$/.test(itemCategory)) {
+        console.log("error : itemCategory : " + itemCategory);
+        res.json({ message: 'Invalid item category.', type: 'negative' });
+        return;
+    }
+
+    if (!itemSubCategory || typeof itemSubCategory !== 'string' || !/^[a-zA-Z0-9_.\- &]+$/.test(itemSubCategory)) {
+        console.log("error : itemSubCategory : " + itemSubCategory);
+        res.json({ message: 'Invalid item SubCategory.', type: 'negative' });
+        return;
+    }
+
+
+    itemName.toLowerCase();
+    console.log("itemName : " + itemName);
+
+    let itemQuery = database.ref(`items/${itemCategory}/${itemSubCategory}/${itemName}`);
+
+    itemQuery.once('value')
+        .then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+
+                if (data.packed === "true" || data.packed === true) {
+                    minWeight = parseInt(data.min);
+                    maxWeight = parseInt(data.max);
+                    itemVol = parseInt(itemWeight);
+                }
+                else {
+                    minWeight = convertToGrams(data.min);
+                    maxWeight = convertToGrams(data.max);
+                    itemVol = convertToGrams(itemWeight);
+                }
+
+
+                if (itemVol => minWeight && itemVol <= maxWeight) {
+                    const cartRef = database.ref(`cart/${userId}`);
+
+                    const cartItemData = {
+                        name: itemName,
+                        volume: itemWeight,
+                        qty: 1,
+                        category: itemCategory,
+                        subCategory: itemSubCategory,
+                        tempUser: tempUser,
+                        dateTime: getISTDateTime()
+                    };
+
+                    // Fetch the existing cart items to determine the next key
+                    cartRef.once('value')
+                        .then((snapshot) => {
+                            const cartItems = snapshot.val();
+                            let nextKey = 0;
+
+                            if (cartItems) {
+                                let keys = Object.keys(cartItems).map(key => parseInt(key, 10));
+                                nextKey = Math.max(...keys) + 1;
+                            }
+                            // Use the next sequential key (e.g., '0', '1', '2', etc.)
+                            const newItemRef = cartRef.child(nextKey.toString());
+
+                            newItemRef.set(cartItemData)
+                                .then(() => {
+                                    let totalCartItem = 0;
+                                    console.log('Item successfully added to cart!');
+                                    const totalCart = database.ref(`cart/${userId}`);
+                                    // Get the total number of children inside `userid`
+                                    totalCart.once('value')
+                                        .then((snapshot) => {
+                                            if (snapshot.exists()) {
+                                                totalCartItem = snapshot.numChildren();
+                                                if (sendTempId) {
+                                                    res.json({ totalCart: totalCartItem, tempId: userId, message: 'Item added to cart successfully', type: 'positive' });
+                                                }
+                                                else {
+                                                    res.json({ totalCart: totalCartItem, message: 'Item added to cart successfully.', type: 'positive' });
+                                                }
+                                            }
+                                            else {
+                                                res.json({ totalCart: totalCartItem, message: 'Item added to cart successfully.', type: 'positive' });
+                                            }
+                                        })
+                                        .catch((error) => {
+                                            console.error("Error fetching data..:", error);
+                                            res.json({ totalCart: totalCartItem, message: 'Item added to cart successfully. Refresh page if cart number on navbar does not change.', type: 'negative' });
+
+                                        });
+
+                                })
+                                .catch((error) => {
+                                    res.json({ message: 'Error adding item to cart.', type: 'negative' });
+                                    console.error('Error adding item to cart:', error);
+                                });
+                        })
+                        .then(() => {
+                            console.log('!Item successfully added to cart 3.');
+                        })
+                        .catch((error) => {
+                            console.error('Error adding item to cart 2:', error);
+                            res.json({ message: 'Error adding item to cart.', type: 'negative' });
+                        });
+                }
+                else {
+                    res.json({ message: 'Invalid item weight or quantity.', type: 'negative' });
+                    return;
+                }
+            } else {
+                console.log('product not found 6.');
+                res.json({ message: `${itemName} not found in our category.`, type: 'negative' });
+            }
+        })
+        .catch((error) => {
+            console.error('Error to check the category of product:', error);
+            res.json({ message: 'Error to check the category of product.', type: 'negative' });
+        });
+
+});

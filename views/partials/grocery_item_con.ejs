@@ -1,0 +1,90 @@
+<div class="grocery_item" data-packed="<%= item.packed %>" data-itemCategory="<%= item.category %>"
+    data-itemSubCategory="<%= item.subcategory %>">
+    <div class="infoBB <%= item.replaceSelect === 'true' ? 'show' : 'hidden' %>">
+        <div class="infoB">Item can be replace. <a style="color: rgb(51, 122, 254);" href="/c/terms-and-conditions">Know
+                more</a></div>
+        <div class="infoBBtn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+    </div>
+    <div class="item_img">
+        <img src="<%= item.image_url %>" alt="img" />
+    </div>
+    <p
+        class="item_stock <%= !item.stock ? 'hidden' : item.stock == '0' ? 'c_red' : item.stock == 'x' ? 'hidden' : 'd_block' %>">
+        <%= item.stock=='0' ? 'Stock is unavailable' : item.stock !='x' ? 'Stock : ' + item.stock + ' left' : '' %>
+    </p>
+
+    <p class="item_name_p"><a class="item_name"
+            href="/item?c=<%= encodeURIComponent(item.category) %>&s=<%= encodeURIComponent(item.subcategory) %>&i=<%= encodeURIComponent(item.id) %>">
+            <%= item.id %>
+        </a></p>
+    <p class="item_min_volume">
+        <%= item.minVol %>
+    </p>
+    <p class="item_max_volume">
+        <%= item.maxVol %>
+    </p>
+
+    <div class="item_volume">
+        <p class="item_weight" style="margin: 0;">
+            <%= item.volume %>
+        </p>
+        <div class="item_volume_options">
+            <% if (item.packed) { %>
+                <!-- item is packed -->
+                <% } else { %>
+                    <% item.options.forEach(option=> { %>
+                        <div class="item_volume_option">
+                            <p class="item_option_weight">
+                                <%= option.weight %>
+                            </p>
+
+                            <p class="item_option_price_p">
+                                <span class="item_option_price">
+                                    <%= option.price %>
+                                </span>
+                                <% if (option.priceMRP && option.priceMRP.length> 0) { %>
+                                    <span class="market_price">₹&nbsp;<%= option.priceMRP %></span>
+                                    <% } %>
+                            </p>
+                        </div>
+                        <% }) %>
+                            <% } %>
+
+                                <!-- custom option -->
+                                <div class="item_volume_custom_option">
+                                    <p class="item_volume_custom_option_head">
+                                        Custom</p>
+                                    <div class="item_volume_custom_option_input_div">
+                                        <% if (item.packed) { %>
+                                            <!-- If item is packed, show text "pieces" -->
+                                            <input type="number" class="item_volume_input_number" placeholder="Qty"
+                                                min="0" step="1" />
+                                            <div class="item_volume_custom_option_for_pieces">
+                                                pcs</div>
+                                            <% } else { %>
+                                                <input type="number" class="item_volume_input_number" placeholder="Qty"
+                                                    min="0" />
+                                                <div class="item_volume_custom_option_for_kggm">
+                                                    <label><input type="radio" name="kggm" checked value="kg">kg</label>
+                                                    <label><input type="radio" name="kggm" value="gm">gm</label>
+                                                </div>
+                                                <% } %>
+                                    </div>
+                                    <p class="item_volume_input_price">
+                                        0</p>
+                                    <button class="item_volume_custom_option_done_btn">Done</button>
+                                </div>
+        </div>
+    </div>
+    <p class="item_price_p">
+        <span class="item_price">
+            <%= item.price %>
+        </span>
+        <% if (item.popularMRP && item.popularMRP.length> 0) { %>
+            <span class="market_price">
+                <%= item.popularMRP %>
+            </span>
+            <% } %>
+    </p>
+    <button class="item_add_btn">Add</button>
+</div>

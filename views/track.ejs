@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track your order - mintoSpeed</title>
+    <meta name="description" content="Easily track your order just in a simple way!">
+    <meta name="keywords" content="track, track order, track order mintospeed">
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="index, follow">
+
+
+    <%- include('partials/headTagContent') %>
+</head>
+
+<body>
+    <!-- navbar -->
+    <%- include('partials/navbar') %>
+
+            <!-- profile con -->
+
+            <section class="pf_con">
+                <h2 class="track_head">Track your order</h2>
+                <p class="track_head_p">Track your order by entering the order ID. <br /> Order Id sent to your email with order info when you ordered.</p>
+                <!-- search -->
+                <div class="search">
+                    <div class="search2"><input type="search" id="orderId" name="search"
+                            placeholder="Enter your order id..." /><span id="searchBtn" class="searchBtn"><i
+                                class="fa-solid fa-magnifying-glass"></i></span></div>
+                </div>
+
+                <!--info container -->
+                <div class="info_con" id="orderContainer">
+                    <div class="statusdiv">
+                        <h2 class="info_h2">order status :</h2>
+                        <div class="tbcon">
+                            <table class="table">
+                                <thead>
+                                    <th>Order on</th>
+                                    <th>OrderId</th>
+                                    <th>Total Items</th>
+                                    <th>Total Price</th>
+                                    <th>Delivery on</th>
+                                    <th>Status</th>
+                                    <th>View Detail</th>
+                                </thead>
+                                <tbody id="tBody">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <script nonce="<%-nonce%>">
+                document.addEventListener('DOMContentLoaded', function () {
+                    let orderContainer = document.getElementById('orderContainer');
+                    let tBody = document.getElementById('tBody');
+                    let searchInput = document.getElementById('orderId');
+                    let searchBtn = document.getElementById('searchBtn');
+            
+                    const handleSearch = function () {
+                        const orderId = searchInput.value.trim();
+                        const regex = /^[a-zA-Z0-9]+$/; // Allow only alphabets and numbers
+            
+                        if (orderId === "") {
+                            showAlert("Please enter your order ID.", "negative");
+                            return;
+                        } else if (!regex.test(orderId)) {
+                            showAlert("Invalid order ID! Only alphabets and numbers are allowed.", "negative");
+                            return;
+                        } else if (orderId.length != 10) {
+                            showAlert("Invalid order ID! Order ID should be of 10 characters.", "negative");
+                            return;
+                        }
+            
+                        document.getElementById("loader_container").style.display = "flex";
+            
+                        // Send data to backend
+                        fetch('/track/submit', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ orderId: orderId })
+                        })
+                            .then(response => response.json())
+                            .then(response => {
+                                if (response.type == "positive") {
+                                    document.getElementById("loader_container").style.display = "none";
+                                    let  tr = `<tr>
+                                                <td data-label="Order on">${response.orderData.orderTime}</td>
+                                                <td data-label="OrderId">${response.orderData.orderId}</td>
+                                                <td data-label="Total Items">${response.orderData.orderTotalItems}</td>
+                                                <td data-label="Total Price">₹${response.orderData.orderTotalPrice}</td>
+                                                <td data-label="Delivery on">${response.orderData.deliveryTime}</td>
+                                                <td data-label="Status"><span class="status_td ${response.orderData.orderStatus === 'cancelled' ? 'redBack' : response.orderData.orderStatus === 'completed' ? 'greenBack' : 'blackBack'}">${response.orderData.orderStatus}</span></td>
+                                                <td data-label="View Detail"><a href="/order-details?orderId=${response.orderData.orderId}">Click here</a></td>
+                                            </tr>`;
+
+                                    tBody.innerHTML = tr;
+                                    orderContainer.style.display = "block";
+                                    let statusTd = document.querySelector('.status_td');
+
+                                    if (response.orderData.orderStatus === 'completed') { 
+                                        statusTd.classList.add('greenBack');
+                                    } else if (response.orderData.orderStatus === 'cancelled') { 
+                                        statusTd.classList.add('redBack');
+                                    } else {
+                                        statusTd.classList.add('blackBack');
+                                    }
+                                    
+                                } else {
+                                    document.getElementById("loader_container").style.display = "none";
+                                    orderContainer.style.display = "none";
+                                    showAlert(response.message, response.type);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error submitting orderId:', error);
+                                showAlert('Failed to fetch data. Please try again.', 'negative');
+                                document.getElementById("loader_container").style.display = "none";
+                                orderContainer.style.display = "none";
+                            });
+                    };
+            
+                    searchBtn.addEventListener('click', handleSearch);
+            
+                    // Add "Enter" key functionality
+                    searchInput.addEventListener('keydown', function (event) {
+                        if (event.key === 'Enter') {
+                            handleSearch();
+                        }
+                    });
+                });
+            </script>
+            
+
+
+            <style>
+                td[data-label="View Detail"] a {
+                    color: rgb(1, 95, 217);
+                }
+                td[data-label="View Detail"] a:hover {
+                    opacity: 0.5;;
+                }
+                .track_head {
+                    text-align: center;
+                    font-size: 21px;
+                    margin-top: 100px;
+                }
+                .track_head_p{
+                    margin-bottom: 50px;
+                    text-align: center;
+                    font-size: 14px;
+                    line-height: 1.6;
+                }
+
+                div.search {
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 30px;
+                }
+
+
+                .search2 {
+                    width: 400px;
+                    height: 45px;
+                    border-radius: 50px;
+                    overflow: hidden;
+                    border: 2px solid rgb(120, 196, 246);
+                }
+
+                .searchBtn {
+                    width: 65px;
+                    padding: 7px 20px;
+                }
+
+                .search2,
+                .searchBtn {
+                    display: flex;
+                    align-items: center;
+                    text-align: center;
+                    cursor: pointer;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    background-color: rgb(255, 255, 255);
+                }
+
+                input[name=search] {
+                    font-size: 14px;
+                    outline: none;
+                    background-color: transparent;
+                    border: none;
+                    padding-left: 20px;
+                    padding-right: 56px;
+                    width: 100%;
+                    height: 38px;
+                }
+
+                input[type=search]::-ms-clear {
+                    display: none;
+                    width: 0;
+                    height: 0;
+                }
+
+                input[type=search]::-ms-reveal {
+                    display: none;
+                    width: 0;
+                    height: 0;
+                }
+
+                input[type="search"]::-webkit-search-decoration,
+                input[type="search"]::-webkit-search-cancel-button,
+                input[type="search"]::-webkit-search-results-button,
+                input[type="search"]::-webkit-search-results-decoration {
+                    display: none;
+                }
+
+                .search2:hover {
+                    border-color: rgb(81, 158, 209);
+                }
+
+                .searchBtn>i {
+                    padding: 8px 5px 8px 5px;
+                    font-size: 16px;
+                }
+
+
+
+                @media screen and (max-width: 550px) {
+                    .track_head {
+                        font-size: 17px;
+                        margin-top: 65px;
+                    }
+                    .track_head_p{
+                        margin-bottom: 40px;
+                        font-size: 12px;
+                    }
+
+                    div.search2 {
+                        width: calc(100vw - 40px);
+                        height: 40px;
+                    }
+
+                }
+            </style>
+
+            <style>
+                section.pf_con {
+                    position: relative;
+                    width: 100%;
+                    min-height: 80vh;
+                    overflow-x: hidden;
+                }
+
+                div.info_con {
+                    margin-top: 40px;
+                    padding: 20px;
+                }
+
+                #orderContainer {
+                    display: none;
+                }
+
+                .tbcon {
+                    width: 100%;
+                    overflow-x: auto;
+                }
+
+                .info_h2 {
+                    font-size: 16px;
+                    margin-bottom: 20px;
+                }
+
+                .table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+
+                .table td,
+                .table th {
+                    word-wrap: break-word;
+                    padding: 12px 15px;
+                    border: 1px solid #c0c0c0;
+                    text-align: center;
+                    font-size: 13px;
+                }
+
+                .table td
+                .table th {
+                    min-width: 50px;
+                    max-width: 250px;
+                }
+
+                .table th {
+                    font-size: 13px;
+                    background-color: rgb(148, 211, 130);
+                    color: #000000;
+                }
+
+                .table tbody tr:nth-child(even) {
+                    background-color: #ececec;
+                }
+
+                .status_td {
+                border-radius: 5px;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 4px 9px 5px 9px;
+                color: white;
+                text-transform: capitalize;
+            }
+
+            .greenBack {
+                background-color: green;
+            }
+
+            .redBack {
+                background-color: red;
+            }
+
+            .blackBack {
+                background-color: black;
+            }
+
+
+
+                @media (max-width: 700px) {
+                    div.info_con {
+                        padding: 10px;
+                    }
+
+                    .table thead {
+                        display: none;
+                    }
+
+                  
+
+                    .table td,
+                    .table th {
+                        min-width: 150px;
+                        max-width: 100%;
+                    }
+
+                    .table tr,
+                    .table td {
+                        display: block;
+                        width: 100%;
+                    }
+
+                    .table tr {
+                        margin-bottom: 15px;
+                        background-color: white;
+                    }
+
+                    .table tbody tr:nth-child(even) {
+                        background-color: white;
+                    }
+
+                    .table td {
+                        padding-left: 40%;
+                        text-align: left;
+                        position: relative;
+                    }
+
+                    .table td::before {
+                        content: attr(data-label);
+                        position: absolute;
+                        left: 0;
+                        width: 40%;
+                        padding-left: 15px;
+                        font-size: 13px;
+                        font-weight: 700;
+                        text-align: left;
+                        font-family: 'Open Sans', sans-serif;
+                    }
+                }
+            </style>
+
+
+<!-- footer -->
+<%- include('partials/footer') %>
+</body>
+
+</html>

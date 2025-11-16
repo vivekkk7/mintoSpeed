@@ -1,0 +1,147 @@
+<style>
+  /* Set a style for all buttons */
+  .messageBoxBtn {
+    background-color: #1aaa04;
+    color: white;
+    padding: 8px 20px;
+    font-size: 13px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: fit-content;
+  }
+
+  .messageBoxBtn:hover {
+    opacity: 0.8;
+  }
+
+
+  .boxContainer {
+    padding: 10px;
+  }
+
+  .messageBoxContainerHead {
+    text-align: center;
+    margin: 15px 0 7px 0;
+    position: relative;
+    font-weight: 700;
+  }
+
+  .messageBoxHead {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .messageBoxP p {
+    font-size: 14px;
+    margin: 5px;
+    text-align: center;
+  }
+
+  /* The messageBoxModel (background) */
+  .messageBoxModel {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  /* messageBoxModel Content/Box */
+  .messageBoxModel-content {
+    background-color: #fefefe;
+    margin: 20px;
+    border: 1px solid #888;
+    max-width: 500px;
+    min-width: 300px;
+    width: 600px;
+    padding: 20px 10px;
+  }
+
+  /* The Close Button (x) */
+  .messageBoxClose {
+    position: absolute;
+    right: 20px;
+    top: -10px;
+    color: #000;
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  .messageBoxClose:hover,
+  .messageBoxClose:focus {
+    color: red;
+    cursor: pointer;
+  }
+
+  /* Add Zoom Animation */
+  .messageBoxAnimate {
+    -webkit-animation: animatezoom 0.4s;
+    animation: animatezoom 0.4s
+  }
+
+  @-webkit-keyframes animatezoom {
+    from {
+      -webkit-transform: scale(0)
+    }
+
+    to {
+      -webkit-transform: scale(1)
+    }
+  }
+
+  @keyframes animatezoom {
+    from {
+      transform: scale(0)
+    }
+
+    to {
+      transform: scale(1)
+    }
+  }
+
+
+  @media screen and (max-width: 450px) {
+    .messageBoxModel-content {
+      margin: 15px;
+      max-width: 100%;
+    }
+
+    .boxContainer {
+      padding: 5px;
+    }
+  }
+</style>
+
+<div id="messageBoxid01" class="messageBoxModel">
+  <div class="messageBoxModel-content messageBoxAnimate">
+    <div class="messageBoxContainerHead">
+      <span id="messageBoxClose" class="messageBoxClose" title="Close Modal">&times;</span>
+      <div class="messageBoxHead">Alert box</div>
+    </div>
+
+    <div class="boxContainer">
+      <div class="messageBoxP">text</div>
+    </div>
+
+    <div class="boxContainer btnBoxContainer" style="float: right; padding-top: 15px;">
+    </div>
+  </div>
+</div>
+
+<script nonce="<%-nonce%>">
+  // Get the modal
+  var messageBoxModel = document.getElementById('messageBoxid01');
+
+  document.getElementById("messageBoxClose").addEventListener('click', function () {
+    messageBoxModel.style.display = "none";
+  });
+</script>

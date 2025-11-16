@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin dashboard</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <%- include('../partials/headTagContent') %>
+        <!-- Include Firebase SDK -->
+        <!-- <script nonce="<%-nonce%>"  type="module"  src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script> -->
+        <!-- <script nonce="<%-nonce%>"  type="module"  src="https://www.gstatic.com/firebasejs/9.17.2/firebase-messaging.js"></script> -->
+        <!-- <script nonce="<%-nonce%>" src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script> -->
+        <!-- <script nonce="<%-nonce%>" src="https://www.gstatic.com/firebasejs/10.10.0/firebase-messaging-compat.js"></script>         -->
+ 
+        <script nonce="<%-nonce%>" src="/socket.io/socket.io.js"></script>
+        <script nonce="<%-nonce%>" src="../../public/js/getDeliveryBoyLatLng.js"></script>
+</head>
+
+<body>
+
+    <%- include('../partials/alertboxAndLoader') %>
+ <!-- navbar -->
+ <nav class="nav_ad flex justify-between align-center">
+    <div class="flex align-center"> <i class="fa-solid fa-bars menu_btn"></i>&nbsp;&nbsp;&nbsp;&nbsp;<div style="font-size: 20px; font-weight: 600;">Admin Dashboard</div>
+    </div>
+    <button class="lgbtn" id="lgbtn1">Logout</button>
+
+    <!-- sidebar -->
+    <div class="sidebar">
+        <div style="display: flex; flex-wrap: nowrap; height: 40px; align-items: center; margin: 5px 15px;">
+            <i class="fa-solid fa-bars menu_btn"></i>
+            <div style="font-size: 20px; font-weight: 600; margin-left: 20px;">Admin Dashboard</div>
+        </div>
+
+        <div class="sidebar-content">
+            <ul class="sidebarLists">
+                <li class="sidebarList">
+                    <a href="/dashboard/api/stock" class="nav-sidebarLink">
+                        <i class="fa-solid fa-layer-group icon"></i>
+                        <span class="sidebarLink">Update Stock</span>
+                    </a>
+                </li>
+                <li class="sidebarList">
+                    <a href="/dashboard/api/addTrendingItem" class="nav-sidebarLink">
+                        <i class="fa-solid fa-square-poll-vertical icon"></i>
+                        <span class="sidebarLink">Add Trending Items</span>
+                    </a>
+                </li>
+                <li class="sidebarList">
+                    <a href="/dashboard/addItem" class="nav-sidebarLink">
+                        <i class="fa-regular fa-square-plus icon"></i>
+                        <span class="sidebarLink">Add Item</span>
+                    </a>
+                </li>
+                <li class="sidebarList">
+                    <a href="/dashboard/modifyItem" class="nav-sidebarLink">
+                        <i class="fa-solid fa-pen-to-square icon"></i>
+                        <span class="sidebarLink">Modify Item</span>
+                    </a>
+                </li>
+                <li class="sidebarList">
+                    <a href="/dashboard/deleteItem" class="nav-sidebarLink">
+                        <i class="fa-solid fa-trash-can icon"></i>
+                        <span class="sidebarLink">Delete Item</span>
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="bottom-cotent" style="padding-bottom: 35px;">
+                
+                <li class="sidebarList">
+                    <a href="javascript:void(0)" id="navLogout" class="nav-sidebarLink lgbtn">
+                        <i class="fa-solid fa-right-from-bracket icon"></i>
+                        <span class="sidebarLink">Logout</span>
+                    </a>
+                </li>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- intro -->
+<div class="introDiv">
+    <h3><i class="fa-solid fa-bolt"></i>&nbsp;&nbsp;&nbsp;Welcome to Admin Dashboard!</h3>
+    <p style="font-size: 12px;">*Now you can click on users name to see their profiles, total orders and total feebacks.</p>
+    <!-- <p style="font-size: 12px; font-weight: 600; color: green;">*Page is Live.</p> -->
+ </div>
+
+ <!--  -->
+<section class="ad_con">
+    <div class="flex">
+        <div>
+            <!-- orders  -->
+            <div class="ad_con1">
+                <h3 class="ad_sub_head">Delivery Orders</h3>
+                <div class="flex">
+                    <div class="ad_con11" id="pfPending">
+                        <p class="ad_con11_head">Pending Orders</p>
+                        <p class="ad_con11_head2" id="totalPendingOrders">
+                            <%= metaData && typeof metaData.totalPendingOrders !=='undefined' ?
+                                metaData.totalPendingOrders : 0 %>
+                        </p>
+                    </div>
+                    <div class="ad_con11" id="pfCompleted">
+                        <p class="ad_con11_head">Completed Orders</p>
+                        <p class="ad_con11_head2" id="totalCompletedOrders">
+                            <%= metaData && typeof metaData.totalCompletedOrders !=='undefined' ?
+                                metaData.totalCompletedOrders : 0 %>
+                        </p>
+                        <p class="ad_con11_p_today">Today:&nbsp;<span class="today_com_span"><%= metaDataCompleted.today ? metaDataCompleted.today : 0 %></span></p>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Yesterday:&nbsp;<span class="7days_com_span"><%= metaDataCompleted.yesterday ? metaDataCompleted.yesterday : 0 %></span></p>
+                            <p class="ad_con11_p">This Month:&nbsp;<span class="this_month_com_span"><%= metaDataCompleted.this_month ? metaDataCompleted.this_month : 0 %></span></p>
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Last 7 days:&nbsp;<span class="7days_com_span"><%= metaDataCompleted.last_7_days ? metaDataCompleted.last_7_days : 0 %></span></p>
+                            <p class="ad_con11_p">Last Month:&nbsp;<span class="this_month_com_span"><%= metaDataCompleted.last_month ? metaDataCompleted.last_month : 0 %></span></p>
+                        </div>
+                    </div>
+                    <div class="ad_con11" id="pfCancelled">
+                        <p class="ad_con11_head">Cancelled Orders</p>
+                        <p class="ad_con11_head2" id="totalCancelledOrders">
+                            <%= metaData && typeof metaData.totalCancelledOrders !=='undefined' ?
+                                metaData.totalCancelledOrders : 0 %>
+                        </p>
+                        <p class="ad_con11_p_today">Today:&nbsp;<span class="today_can_span"><%= metaDataCancelled.today ? metaDataCancelled.today : 0 %></span></p>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Yesterday:&nbsp;<span class="7days_com_span"><%= metaDataCancelled.yesterday ? metaDataCancelled.yesterday : 0 %></span></p>
+                            <p class="ad_con11_p">This Month:&nbsp;<span class="this_month_com_span"><%= metaDataCancelled.this_month ? metaDataCancelled.this_month : 0 %></span></p>
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Last 7 days:&nbsp;<span class="7days_com_span"><%= metaDataCancelled.last_7_days ? metaDataCancelled.last_7_days : 0 %></span></p>
+                            <p class="ad_con11_p">Last Month:&nbsp;<span class="this_month_com_span"><%= metaDataCancelled.last_month ? metaDataCancelled.last_month : 0 %></span></p>
+                        </div>
+                    </div>
+                    <div class="ad_con11" id="pfLifeTime">
+                        <p class="ad_con11_head">LifeTime Orders</p>
+                        <p class="ad_con11_head2" id="lifeTimeOrders">
+                            <%= metaData && typeof metaData.lifeTimeOrders !=='undefined' ?
+                                metaData.lifeTimeOrders : 0 %>
+                        </p>
+                        <p class="ad_con11_p_today">Today:&nbsp;<span class="today_can_span"><%= metaDataLifeTimeOrder.today ? metaDataLifeTimeOrder.today : 0 %></span></p>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Yesterday:&nbsp;<span class="7days_com_span"><%= metaDataLifeTimeOrder.yesterday ? metaDataLifeTimeOrder.yesterday : 0 %></span></p>
+                            <p class="ad_con11_p">This Month:&nbsp;<span class="this_month_com_span"><%= metaDataLifeTimeOrder.this_month ? metaDataLifeTimeOrder.this_month : 0 %></span></p>
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Last 7 days:&nbsp;<span class="7days_com_span"><%= metaDataLifeTimeOrder.last_7_days ? metaDataLifeTimeOrder.last_7_days : 0 %></span></p>
+                            <p class="ad_con11_p">Last Month:&nbsp;<span class="this_month_com_span"><%= metaDataLifeTimeOrder.last_month ? metaDataLifeTimeOrder.last_month : 0 %></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- user actions  -->
+            <div class="ad_con1">
+                <h3 class="ad_sub_head">Users & their actions</h3>
+                <div class="flex">
+                    <div class="ad_con11" id="pfUsers">
+                        <p class="ad_con11_head">Total Users</p>
+                        <p class="ad_con11_head2">
+                            <%= metaDataUsers && typeof metaDataUsers.totalUser !=='undefined' ?
+                            metaDataUsers.totalUser : 0 %>
+                        </p>
+                        <p class="ad_con11_p_today">Today:&nbsp;<span class="today_com_span"><%= metaDataUsers.today ? metaDataUsers.today : 0 %></span></p>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Yesterday:&nbsp;<span class="7days_com_span"><%= metaDataUsers.yesterday ? metaDataUsers.yesterday : 0 %></span></p>
+                            <p class="ad_con11_p">This Month:&nbsp;<span class="this_month_com_span"><%= metaDataUsers.this_month ? metaDataUsers.this_month : 0 %></span></p>
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Last 7 days:&nbsp;<span class="7days_com_span"><%= metaDataUsers.last_7_days ? metaDataUsers.last_7_days : 0 %></span></p>
+                            <p class="ad_con11_p">Last Month:&nbsp;<span class="this_month_com_span"><%= metaDataUsers.last_month ? metaDataUsers.last_month : 0 %></span></p>
+                        </div>
+                    </div>
+                    <!--  -->
+                    <div class="ad_con11" id="pfComplaint">
+                        <p class="ad_con11_head">Total Complaint</p>
+                        <p class="ad_con11_head2" id="totalComplaints">
+                            <%= metaData && typeof metaData.totalComplaints !=='undefined' ?
+                                metaData.totalComplaints : 0 %>
+                        </p>
+                        <p class="ad_con11_p_today">Today:&nbsp;<span class="today_com_span"><%= metaDataComplaints.today ? metaDataComplaints.today : 0 %></span></p>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Yesterday:&nbsp;<span class="7days_com_span"><%= metaDataComplaints.yesterday ? metaDataComplaints.yesterday : 0 %></span></p>
+                            <p class="ad_con11_p">This Month:&nbsp;<span class="this_month_com_span"><%= metaDataComplaints.this_month ? metaDataComplaints.this_month : 0 %></span></p>
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Last 7 days:&nbsp;<span class="7days_com_span"><%= metaDataComplaints.last_7_days ? metaDataComplaints.last_7_days : 0 %></span></p>
+                            <p class="ad_con11_p">Last Month:&nbsp;<span class="this_month_com_span"><%= metaDataComplaints.last_month ? metaDataComplaints.last_month : 0 %></span></p>
+                        </div>
+                    </div>
+                    <!--  -->
+                    <div class="ad_con11" id="pfFeedback">
+                        <p class="ad_con11_head">Total Feedbacks</p>
+                        <p class="ad_con11_head2" id="totalFeedbacks">
+                            <%= metaData && typeof metaData.totalFeedbacks !=='undefined' ?
+                                metaData.totalFeedbacks : 0 %>
+                        </p>
+                        <p class="ad_con11_p_today">Today:&nbsp;<span class="today_com_span"><%= metaDataFeedbacks.today ? metaDataFeedbacks.today : 0 %></span></p>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Yesterday:&nbsp;<span class="7days_com_span"><%= metaDataFeedbacks.yesterday ? metaDataFeedbacks.yesterday : 0 %></span></p>
+                            <p class="ad_con11_p">This Month:&nbsp;<span class="this_month_com_span"><%= metaDataFeedbacks.this_month ? metaDataFeedbacks.this_month : 0 %></span></p>
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="ad_con11_p">Last 7 days:&nbsp;<span class="7days_com_span"><%= metaDataFeedbacks.last_7_days ? metaDataFeedbacks.last_7_days : 0 %></span></p>
+                            <p class="ad_con11_p">Last Month:&nbsp;<span class="this_month_com_span"><%= metaDataFeedbacks.last_month ? metaDataFeedbacks.last_month : 0 %></span></p>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <!-- admin logs -->
+        <div class="adminLogsDiv" style="display: none;">
+            <p class="adminLogsDiv_head">Admin Logs & Error</p>
+            <p style="text-align: center;">This feature will rollout <br />in future updates.</p>
+         </div>
+    </div>
+
+   
+</section>
+
+
+<style>
+    section.ad_con {
+            padding: 15px;
+            padding-top: 0;
+        }
+
+        .nav_ad {
+            padding: 10px 20px;
+            box-shadow: 0px 2px 3px rgba(100, 100, 100, 0.16);
+        }
+
+        .introDiv{
+            padding: 15px 30px;
+            margin-top: 3px;
+            /* background-image: linear-gradient(117deg, rgb(141, 220, 119) 39.2%, rgb(209, 245, 202) 156.2%); */
+            background-color: rgb(240, 240, 240);
+        }
+        .introDiv h3{
+            font-weight: 600;
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+    .lgbtn {
+        height: 40px;
+        margin-top: 15px;
+    }
+
+    .ad_sub_head {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 35px 0 10px 10px;
+    }
+
+    .ad_con11,
+    .adminLogsDiv {
+        position: relative;
+        margin: 10px;
+        display: block;
+        height: 172px;
+        flex: 1 1 240px;
+        width: auto;            
+        min-width: 240px;
+        max-width: 260px;
+        background-color: rgb(255, 255, 255);
+        border: 1px solid rgb(225, 225, 225);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* border: 1px solid #ddd; */
+        color: rgb(31, 31, 31);
+        border-radius: 10px;
+        overflow: hidden;
+        padding: 18px 15px;
+        cursor: pointer;
+    }
+
+    .ad_con11::after {
+        font-family: 'Font Awesome 5 Free';
+        content: '\f105';
+        font-weight: 600;
+        font-size: 18px;
+        position: absolute;
+        top: 20px;
+        right: 15px;
+    }
+
+
+    .ad_con11_head {
+        font-size: 15px;
+        margin: 1px 0 10px 0;
+        font-weight: 600;
+    }
+
+    .ad_con11_head2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 7px 0;
+    }
+
+    @keyframes borderFlash {
+    0% { color: rgb(255, 255, 255); }
+    50% { color: rgb(30, 30, 30); }
+    100% { color: rgb(255, 255, 255); }
+    }
+
+    .highlight{
+        animation: borderFlash 1.3s ease-in-out infinite;
+    }
+
+    .ad_con11_p {
+        font-size: 12px;
+        margin-top: 3px;
+        margin-bottom: 0;
+        opacity: 0.8;
+    }
+    .ad_con11_p_today {
+        font-size: 14px;
+        margin-top: 13px;
+        margin-bottom: 0;
+        opacity: 0.8;
+    }
+
+    .ad_con11_p span, .ad_con11_p_today span{
+        font-weight: 600;
+        opacity: 1;
+        font-size: 15px;
+    }
+    .ad_con11_p_today span{
+        font-size: 16px;
+    }
+    #pfCancelled {
+        color: white;
+        background-color: #a64343;
+    }
+
+    #pfCompleted {
+        color: white;
+        background-color: #47937c;
+    }
+
+    #pfPending {
+        color: white;
+        background-color: #5b717d;
+    }
+
+    .adminLogsDiv {
+        padding: 9px 5px;
+        margin: 30px;
+        margin-top: 30px;
+        flex: 1 1 300px;
+        min-width: 250px;
+        max-width: 350px;
+        height: 350px;
+
+        background-color: rgb(254, 254, 254);
+        border: 1px solid #cecece;
+    }
+
+    .adminLogsDiv_head {
+        border-bottom: 1px solid rgb(216, 216, 216);
+        padding-bottom: 12px;
+        margin: 7px;
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        text-transform: capitalize;
+    }
+</style>
+
+<style>
+    .menu_btn{
+        cursor: pointer;
+    }
+    nav .sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        height: 100%;
+        width: 300px;
+        padding: 20px 0;
+        z-index: 10000000000000;
+        overflow: hidden;
+        background-color: #fff;
+        box-shadow: 0 5px 1px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s ease;
+    }
+
+    nav.sidebarOpe .sidebar {
+        left: 0;
+    }
+
+    .sidebar .sidebar-content {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 10px 12px;
+    }
+
+    .sidebar-content .sidebarList {
+        list-style: none;
+    }
+
+    .sidebarList .nav-sidebarLink {
+        display: flex;
+        align-items: center;
+        margin: 8px 0;
+        padding: 7px 10px;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+
+    .sidebarLists .nav-sidebarLink:hover {
+        background-color: #46b86e;
+    }
+
+    .nav-sidebarLink .icon {
+        margin-right: 20px;
+        font-size: 16px;
+        color: #707070;
+    }
+
+    .nav-sidebarLink .sidebarLink {
+        font-size: 16px;
+        color: #707070;
+        font-weight: 400;
+    }
+
+    .sidebarLists .nav-sidebarLink:hover .icon,
+    .sidebarLists .nav-sidebarLink:hover .sidebarLink {
+        color: #fff;
+    }
+
+    #sidebarCat {
+        padding-bottom: 20px;
+    }
+
+    #sidebarCat>a {
+        text-transform: capitalize;
+        padding-bottom: 0px;
+    }
+
+    .category_sidebar_ul {
+        padding-left: 40px;
+    }
+
+    .category_sidebar_ul>li {
+        position: relative;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 7px 0;
+        text-transform: capitalize;
+    }
+
+    .category_sidebar_ul>li>ul>li {
+        cursor: pointer;
+        position: relative;
+        padding: 6px 0;
+        text-transform: capitalize;
+    }
+
+    .sidebarOverlay {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        height: 1000vh;
+        width: 200%;
+        opacity: 0;
+        z-index: 1000000000000;
+        pointer-events: none;
+        transition: all 0.4s ease;
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    nav.sidebarOpe~.sidebarOverlay {
+        opacity: 1;
+        left: 300px;
+        pointer-events: auto;
+    }
+</style>
+
+    <!--  -->
+    <script nonce="<%-nonce%>">
+        // links and logout
+        $(document).ready(function () {
+            $('#pfPending').click(function () {
+                window.location.href = '/dashboard/orders/pending';
+            });
+            $('#pfCompleted').click(function () {
+                window.location.href = '/dashboard/orders/completed';
+            });
+            $('#pfCancelled').click(function () {
+                window.location.href = '/dashboard/orders/cancelled';
+            });
+            $('#pfLifeTime').click(function () {
+                window.location.href = '/dashboard/orders/lifetime';
+            });
+
+            $('#pfUsers').click(function () {
+                window.location.href = '/dashboard/users';
+            });
+
+            $('#pfComplaint').click(function () {
+                window.location.href = '/dashboard/cf/complaint';
+            });
+
+            $('#pfFeedback').click(function () {
+                window.location.href = '/dashboard/cf/feedback';
+            });
+
+            $('#lgbtn1').click(async function () {
+                await logout();
+            });
+            $('#navLogout').click(async function () {
+                await logout();
+            });
+
+            async function logout() {
+                document.getElementById("loader_container").style.display = "flex";
+
+                try {
+                    const response = await fetch('/dashboard/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    const result = await response.json();
+
+                    if (result.type == "positive") {
+                        window.location.href = '/';
+                    } else {
+                        showAlert("Something went wrong. Please try again.", "negative");
+                        document.getElementById("loader_container").style.display = "none";
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    document.getElementById("loader_container").style.display = "none";
+                    showAlert('Something went wrong. Please try again.', "negative");
+                }
+            }
+
+            //live update data
+            const socket = io("https://mintospeed.in", {
+                transports: ["websocket"],
+                withCredentials: true
+            });
+
+            // const socket = io("https://mintospeed.in", { transports: ["websocket"] });
+
+            socket.on("ping", (data) => {
+                console.log(data.message);
+            });
+
+            socket.on("updateMetaData", (metaData) => {
+                console.log("🔥 Live Meta Data:", metaData);
+                showAlert('New data found.', "positive");
+
+                // Function to update text with effect if changed
+                const updateElement = (id, newValue) => {
+                    const element = document.getElementById(id);
+                    if (element && element.textContent != newValue) {
+                        element.textContent = newValue;
+                        element.classList.add("highlight"); // Add highlight effect
+
+                        // Remove effect after animation duration
+                        setTimeout(() => element.classList.remove("highlight"), 60000);
+                    }
+                };
+            
+                updateElement("totalPendingOrders", metaData.totalPendingOrders);
+                updateElement("totalCompletedOrders", metaData.totalCompletedOrders);
+                updateElement("totalCancelledOrders", metaData.totalCancelledOrders);
+                updateElement("lifeTimeOrders", metaData.lifeTimeOrders);
+                updateElement("totalComplaints", metaData.totalComplaints);
+                updateElement("totalFeedbacks", metaData.totalFeedbacks);
+            });
+        });
+    </script>
+
+<!-- sidebar -->
+<script nonce="<%-nonce%>">
+    //sidebar
+    const navBarSide = document.querySelector(".nav_ad"),
+        sidebarOPenBtns = document.querySelectorAll(".menu_btn"),
+        overlaySidebar = document.querySelector(".sidebarOverlay");
+
+    sidebarOPenBtns.forEach((menuBtn) => {
+        menuBtn.addEventListener("click", () => {
+            navBarSide.classList.toggle("sidebarOpe");
+        });
+    });
+
+    overlaySidebar.addEventListener("click", () => {
+        navBarSide.classList.remove("sidebarOpe");
+    });
+    </script>
+
+<!-- fcm -->
+<!-- <script nonce="<%-nonce%>">
+    document.addEventListener("DOMContentLoaded", async function () {
+
+    if (typeof firebase === "undefined") {
+    console.error("Firebase is not loaded!");
+    }
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyDFgvcbxCbPKwSxkzdIBYe0CJGCeqhQO2Q",
+    authDomain: "mintospeed-web.firebaseapp.com",
+    projectId: "mintospeed-web",
+    storageBucket: "mintospeed-web.firebasestorage.app",
+    messagingSenderId: "494958498311",
+    appId: "1:494958498311:web:da56215a676c72ec7390a2"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    
+        
+    if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/firebase-messaging-sw.js")
+        .then((registration) => {
+            console.log("Service Worker registered:", registration);
+            requestPermission();
+        })
+        .catch((error) => {
+            console.error("Service Worker registration failed:", error);
+        });
+}
+
+// Request notification permission
+function requestPermission() {
+    Notification.requestPermission().then((permission) =>  {
+        if (permission === "granted") {
+            // Note the corrected getToken usage: don't pass messaging as first parameter.
+            messaging.getToken(messaging, { vapidKey: "BOIobGnzeSvrTwMpiszkH9qX1Yv5IN_hfyjkB6bTpE9t_5L4vCxvgVKYgfIrQlpQE9pK2QgQ-ueEjZZhu1zqU4s" })
+                .then(async (token) =>  {
+                    if (token) {
+                        console.log("FCM Token:", token);
+                    
+                        try {
+                            const response = await fetch('/api/save-fcm-token', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ token })
+                            });
+                        
+                            const result = await response.json();
+                        
+                            if (result.type == "positive") {
+                                console.log('Token added');
+                            } else {
+                                console.error('Token not added');
+                            }
+                        } catch (error) {
+                            console.error('Error adding token:', error);
+                        }
+                    } else {
+                        console.log("No registration token available.");
+                    }
+                })
+                .catch((err) => {
+                    console.error("Error getting FCM token:", err);
+                });
+        } else {
+            console.error("Notification permission not granted.");
+        }
+    });
+}
+
+// Handle foreground notifications
+messaging.onMessage((payload) => {
+    console.log("Foreground notification received:", payload);
+    alert(payload.notification.title + "\n" + payload.notification.body);
+});
+});
+</script> -->
+</body>
+
+</html>

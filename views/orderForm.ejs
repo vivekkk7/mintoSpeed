@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Information - mintoSpeed</title>
+    <meta name="description" content="Delivery information for your order.">
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="noindex, nofollow">
+
+    <%- include('partials/headTagContent') %>
+        <script nonce="<%-nonce%>" src="../public/js/getAddressByLocation.js"></script>
+
+</head>
+
+<body>
+    <!-- alertboxAndLoader -->
+    <%- include('partials/alertboxAndLoader') %>
+        <%- include('partials/popupBox') %>
+
+            <section class="container">
+                <div class="container2">
+                    <% if (typeof userData !='undefined' ) { %>
+
+                        <div class="logo"><a href="/">minto<span>Speed</span></a></div>
+                        <header>Delivery Information</header>
+                        <br />
+
+                        <!--  -->
+                        <form action="#" class="form">
+                            <div class="input-box">
+                                <label>Full Name</label>
+                                <input type="text" id="fullName" style="text-transform: capitalize;"
+                                    value="<%= userData !== 'undefined' && userData.fullName ? userData.fullName : '' %>"
+                                    placeholder="Enter full name" required />
+                            </div>
+
+                            <div class="column" style="flex-wrap: nowrap;">
+                                <div class="input-box">
+                                    <label>Email Address</label>
+                                    <input type="email" id="email"
+                                        value="<%= userData !== 'undefined' && userData.email ? userData.email : '' %>"
+                                        placeholder="Enter Email Address" required />
+                                </div>
+
+                            </div>
+
+
+                            <div class="column" style="flex-wrap: nowrap;">
+                                <div class="input-box">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="phone"
+                                        value="<%= userData !== 'undefined' && userData.phone ? userData.phone : '' %>"
+                                        placeholder="Enter phone number" required />
+                                </div>
+
+                            </div>
+
+
+                            <div class="input-box address" id="addressCon" style="display: none;">
+                                <label>Address</label>
+                                <input type="text" id="streetAddress"
+                                    value="<%= userData !== 'undefined' && userData.streetAddress ? userData.streetAddress : '' %>"
+                                    placeholder="Enter street address" readonly required />
+                                <div class="column">
+                                    <input type="text" id="city"
+                                        value="<%= userData !== 'undefined' && userData.city ? userData.city : '' %>"
+                                        placeholder="Enter your city" readonly required />
+                                    <input type="number" id="pincode"
+                                        value="<%= userData !== 'undefined' && userData.pincode ? userData.pincode : '' %>"
+                                        placeholder="Enter pincode" readonly required />
+                                </div>
+                            </div>
+
+                            <br />
+
+                            <!-- Payment Mode Section -->
+                            <div class="pmode_box" id="paymentMode">
+                                <h3 style="margin-bottom: 15px;">Total : <span>₹&nbsp;<%= totalPrice %>
+                                    </span>&nbsp;(<span>
+                                        <%= totalItems %>
+                                    </span>&nbsp;items)</h3>
+                                <h3>Payment mode</h3>
+                                <div class="pmode_option">
+                                    <!-- <div class="pmode">
+                            <input type="radio" id="online" name="pmode" value="online" checked />
+                            <label for="online">Online</label>
+                        </div> -->
+                                    <div class="pmode">
+                                        <input type="radio" id="cod" name="pmode" value="cod" checked />
+                                        <label for="cod">COD (Cash On Delivery)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="text" value="<%= orderId %>" id="orderId" class="hidden" />
+                            <input type="text" value="<%= userData !== 'undefined' ? 'true' : 'false' %>"
+                                id="isUserExit" class="hidden" />
+                            <!-- <p style="font-size: 11px; margin-top: 15px;">**Currently, We accept 211019 pincode. If you are not from this area please wait, we will reach to your location soon.</p> -->
+                            <!-- <p style="font-size: 11px; margin: 17px 0 5px 0;">*Delivery charge apply below ₹99 order (₹20 delivery charge) and above ₹99 (Free Delivery)</p> -->
+
+                            <button class="orderBtn" style="display: none;">Order</button>
+                            <div class="addressBtn" id="addressBtn">Give Your Address</div>
+                        </form>
+
+                        <% } else { %>
+                            <p style="text-align: center; margin-top: 50px; margin-bottom: 100px;">No order found.</p>
+                            <% } %>
+                </div>
+            </section>
+
+            <script nonce="<%-nonce%>">
+                document.addEventListener("DOMContentLoaded", () => {
+                    const currentPageLink = window.location.href;
+                    sessionStorage.setItem('redirect_link', currentPageLink);
+
+                    const modal = document.getElementById('messageBoxid01');
+                    const messageBoxHead = document.querySelector('.messageBoxHead');
+                    const messageBoxP = document.querySelector('.messageBoxP');
+                    const actionButtons = document.querySelector('.btnBoxContainer');
+
+                    let latitude = null;
+                    let longitude = null;
+
+                    document.getElementById("addressCon").addEventListener("click", () => {
+                        addressfun();
+                    });
+                    document.getElementById("addressBtn").addEventListener("click", () => {
+                        addressfun();
+                    });
+
+                    function addressfun(){
+                        messageBoxHead.innerHTML = `<i style="margin-right: 10px" class="fa-solid fa-map-location-dot"></i>Your Address`;
+
+                        messageBoxP.innerHTML = `<br />
+                            <form action="#" class="form2">
+                            <label><input type="radio" name="addressOption" value="current">&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-location-dot"></i>&nbsp;&nbsp;Use Current Location</label>
+                            <br /><br />
+                            <label><input type="radio" name="addressOption" value="manually">&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-pen"></i>&nbsp;&nbsp;Enter Manually</label>
+                            <br />
+
+
+                            <div class="input-box address1" style="display: none;">
+                              <label>Address</label>
+                              <input type="text" id="streetAddress1" placeholder="Enter street address" required />
+                              <div class="column">
+                                <input type="text" id="city1" placeholder="Enter your city" required />
+                                <input type="number" id="pincode1" value="211019" placeholder="Enter pincode" readonly required />
+                              </div>
+                            </div>
+                            </form>
+                        `;
+                        
+                        actionButtons.style.marginTop = "20px";
+                        actionButtons.innerHTML = `<button type="button" class="messageBoxBtn" id = "closeOK" style="background-color: green; color: white;">OK</button>`;
+
+                        messageBoxHead.style.color = "#04711a";
+                        document.getElementById("messageBoxClose").style.display = "none";
+                        modal.style.display = 'flex';
+
+                        const radioButtons = document.querySelectorAll('input[name="addressOption"]');
+
+                        // Add event listeners to each radio button
+                        radioButtons.forEach(radio => {
+                            radio.addEventListener("change", function () {
+                                handleRadioSelection(this.value);
+                            });
+                        });
+
+                        // Function to handle radio button selection
+                        async function handleRadioSelection(value) {
+
+                            if (value == "current") {
+                                document.getElementById("loader_container").style.display = "flex";
+                                document.querySelector(".address1").style.display = "none";
+
+                                const data = await getLocationAddress();
+
+                                if (data.status) {
+                                    if (data.msg.error) {
+                                        showAlert(data.msg.error, "negative");
+                                        return;
+                                    }
+                                    latitude = data.lat || '';
+                                    longitude = data.lon || ''
+                                    document.getElementById("streetAddress1").value = data.msg.address;
+                                    document.getElementById("city1").value = data.msg.city;
+                                    
+                                    document.querySelector(".address1").style.display = "block";
+                                }
+                                else {
+                                    showAlert(data.msg, "negative");
+                                }
+                                document.getElementById("loader_container").style.display = "none";
+                            }
+                            else {
+                                document.getElementById("city1").value = "";
+                                document.getElementById("streetAddress1").value = "";
+                                document.querySelector(".address1").style.display = "block";
+                            }
+                        }
+
+                        //
+                        document.getElementById("closeOK").addEventListener("click", () => {
+                            document.getElementById("streetAddress").value = document.getElementById("streetAddress1").value.trim();
+                            document.getElementById("city").value = document.getElementById("city1").value.trim();
+                            modal.style.display = 'none';
+                            document.getElementById("addressCon").style.display = "block";
+                            document.getElementById("addressBtn").style.display = "none";
+                            document.querySelector(".orderBtn").style.display = "block";
+                        });
+                    
+                    }
+
+
+                    // form
+                    const form = document.querySelector(".form");
+
+                    form.addEventListener("submit", async (e) => {
+                        e.preventDefault(); // Prevent form submission for validation
+                        document.getElementById("loader_container").style.display = "flex";
+
+                        let isValid = true;
+
+                        // Fetch values using IDs
+                        const fullName = document.getElementById("fullName").value.trim();
+                        const email = document.getElementById("email").value.trim();
+                        const phone = document.getElementById("phone").value.trim();
+                        const streetAddress = document.getElementById("streetAddress").value.trim();
+                        const city = document.getElementById("city").value.trim();
+                        const pincode = document.getElementById("pincode").value.trim();
+                        // const district = document.getElementById("district").value;
+                        // const state = document.getElementById("state").value;
+                        const orderId = document.getElementById("orderId").value.trim();
+                        const isUserExit = document.getElementById("isUserExit").value.trim();
+                        const paymentMode = document.querySelector('input[name="pmode"]:checked').value.trim();
+
+                        let validatePaymentMode = (input) => {
+                            return typeof input === 'string' && ['online', 'cod'].includes(input.toLowerCase());
+                        };
+                        let validateInput = (input) => 
+    typeof input === 'string' && /^[a-zA-Z0-9_\- &,./]+$/.test(input) && input.length > 3;
+                        let validateNumberInput = (input, length) => typeof input === 'string' && /^\d+$/.test(input) && input.length === length;
+                        let validateEmail = (input) => typeof input === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
+
+
+                        // Full Name Validation
+                        if (!validateInput(fullName)) {
+                            showAlert("Full Name is required and not contain invalid characters.", "negative");
+                            document.getElementById("loader_container").style.display = "none";
+                            return isValid = false;
+                        }
+
+
+                        // Email Validation
+                        if (!validateEmail(email)) {
+                            showAlert("Please enter a valid email address", "negative");
+                            document.getElementById("loader_container").style.display = "none";
+                            return isValid = false;
+                        }
+
+                        const phoneRegex = /^(\+91)?[6-9]\d{9}$/;
+                        if (!phoneRegex.test(phone)) {
+                            showAlert("Please enter a valid phone number", "negative");
+                            document.getElementById("loader_container").style.display = "none";
+                            return isValid = false;
+                        }
+
+                        // Address Validation
+                        if (!validateInput(streetAddress)) {
+                            showAlert("Street address is required and not contain invalid characters like / < >.", "negative");
+                            document.getElementById("loader_container").style.display = "none";
+                            return isValid = false;
+                        }
+
+                        if (!validateInput(city)) {
+                            showAlert("City is required and not contain invalid characters like / < >.", "negative");
+                            document.getElementById("loader_container").style.display = "none";
+                            return isValid = false;
+                        }
+
+                        // Pincode Validation (6 digits)
+                        if (!validateNumberInput(pincode, 6)) {
+                            showAlert("Please enter a valid 6-digit pincode", "negative");
+                            document.getElementById("loader_container").style.display = "none";
+                            return isValid = false;
+                        }
+
+
+                        // Payment Mode Validation
+                        if (!validatePaymentMode(paymentMode)) {
+                            showAlert("Please select a payment mode", "negative");
+                            isValid = false;
+                            document.getElementById("loader_container").style.display = "none";
+                        }
+
+                        if (isValid) {
+                            // Collect data from the form
+                            const formData = {
+                                fullName, email, phone, streetAddress, city, pincode, orderId, paymentMode, latitude, longitude
+                            };
+                            console.log("formData : " + formData);
+
+
+                            // Send data to backend using fetch
+                            try {
+                                const response = await fetch('/orderForm/order', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(formData)
+                                });
+
+                                const result = await response.json();
+
+                                if (result.type == "positive") {
+                                    let data = ``;
+                                    if (result.coupanHtml != undefined && result.coupanHtml.length > 20) {
+                                        data = `<p style="font-size: 14px; margin-top: 5px;">Your order placed successfully and will be deliver soon.</p>
+                                        <h3 style="text-align: center; font-weight: 700; margin: 15px 5px 5px; font-size: 16px;">Hurrah! You won a coupan.</h3>
+
+                                        ${result.coupanHtml}
+                                        <p style="font-size: 13px; margin-top: 10px;">Coupan and Orders details are sent to your email address. Win more coupans for discount in restaurants, bakery, GYM and many more on the orders above ₹199.
+                                        T&amp;C apply.</p>`;
+                                    }
+                                    else {
+                                        data = `<p>Your order placed successfully and will be delivered soon.</p>
+                                        <p style="margin-top: 8px;">Order details are sent to your email address containing order Id and ordered item information.</p>
+                                        
+                                        `;
+                                    }
+
+                                    messageBoxHead.innerHTML = `<i style="margin-right: 10px" class="fa-regular fa-paper-plane"></i>Order Placed Successfully!`;
+
+                                    messageBoxP.innerHTML = data;
+                                    actionButtons.style.marginTop = "20px";
+                                    actionButtons.innerHTML = `<button type="button" class="messageBoxBtn" style="background-color: #cecece; color: black;"><a style="text-decoration: none; color: black;" href="/">Continue&nbsp;Shopping</a></button>
+                                    <button type="button" class="messageBoxBtn" id="profileBtn"><a style="text-decoration: none; color: white;" href="/order-details?orderId=${result.orderId}">Order&nbsp;Details</a></button>`;
+
+                                    messageBoxHead.style.color = "#04711a";
+                                    document.getElementById("loader_container").style.display = "none";
+                                    document.getElementById("messageBoxClose").style.display = "none";
+                                    modal.style.display = 'flex';
+
+                                }
+                                else if (result.type == "redirect") {
+                                    showAlert(result.message, "negative");
+                                    window.location.href = "/auth/login";
+                                    return;
+                                }
+                                else if (result.type == "negative") {
+                                    showAlert(result.message, "negative");
+                                    document.getElementById("loader_container").style.display = "none";
+                                    return;
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                document.getElementById("loader_container").style.display = "none";
+                                showAlert('An error occurred while placing the order. Please try again.', "negative");
+                                return;
+                            }
+                        }
+                        else {
+                            showAlert("Some input field contain invalid values. Please try again.", "negative");
+                            document.getElementById("loader_container").style.display = "none";
+                            return;
+                        }
+                    });
+                });
+            </script>
+
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                    font-family: 'Open Sans', sans-serif;
+                }
+
+                body {
+                    background-color: rgb(243, 243, 243);
+                }
+
+                div.logo {
+                    margin: 7px;
+                    text-align: center;
+                }
+
+                div.logo>a {
+                    text-decoration: none;
+                    color: #0bb744;
+                    font-weight: 800;
+                    font-size: 18px;
+                }
+
+                div.logo>a span {
+                    color: rgb(19, 19, 19);
+                }
+
+
+                .container {
+                    position: fixed;
+                    width: 100%;
+                    height: 100vh;
+                    display: flex;
+                    justify-content: center;
+                    overflow: auto;
+                }
+
+                .container2 {
+                    position: relative;
+                    max-width: 550px;
+                    width: 550px;
+                    height: fit-content;
+                    background: #fff;
+                    padding: 20px;
+                    margin: 15px;
+                    margin-bottom: 80px;
+                    border-radius: 8px;
+                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+                }
+
+                .container2 header {
+                    font-size: 1rem;
+                    color: #4a4a4a;
+                    font-weight: 700;
+                    text-align: center;
+                    padding: 5px 10px 0 10px;
+                }
+
+                .container2 .form, .form2 {
+                    margin-top: 0px;
+                }
+
+                .form .input-box, .form2 .input-box {
+                    width: 100%;
+                    margin-top: 20px;
+                }
+
+                .input-box label {
+                    color: #333;
+                    font-size: 13px;
+                }
+
+                .form :where(.input-box input, .select-box, .input-box select),
+                .form2 :where(.input-box input, .select-box, .input-box select) {
+                    position: relative;
+                    height: 40px;
+                    width: 100%;
+                    outline: none;
+                    font-size: 13px;
+                    color: #6b6b6b;
+                    margin-top: 5px;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    padding: 0 10px;
+                    background-color: #fafafa;
+                }
+
+                .input-box input:focus {
+                    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+                }
+
+                .form .column, .form2 .column  {
+                    display: flex;
+                    column-gap: 15px;
+                }
+
+                .form .pmode_box {
+                    margin-top: 10px;
+                    padding: 15px;
+                    background-color: rgb(145, 249, 150);
+                }
+
+                .pmode_box h3 {
+                    color: #333;
+                    font-size: 15px;
+                    font-weight: 400;
+                    margin-bottom: 8px;
+                }
+
+                .form :where(.pmode_option, .pmode) {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 50px;
+                    flex-wrap: wrap;
+                    font-size: 15px;
+                }
+
+                .form .pmode {
+                    column-gap: 5px;
+                }
+
+                .pmode input {
+                    font-size: 15px;
+                    accent-color: rgb(67, 74, 69);
+                }
+
+                .form :where(.pmode input, .pmode label) {
+                    cursor: pointer;
+                    font-size: 15px;
+                }
+
+                .pmode label {
+                    color: #444444;
+                    font-size: 14px;
+                }
+
+                .address :where(input, .select-box), .address1 :where(input, .select-box) {
+                    margin-top: 15px;
+                    font-size: 15px;
+                }
+
+                .select-box select {
+                    height: 100%;
+                    width: 100%;
+                    outline: none;
+                    border: none;
+                    color: #525252;
+                    font-size: .9rem;
+                    background-color: #f6f6f6;
+
+                }
+
+                .orderBtn, .addressBtn,
+                .verifyOtpBtn,
+                .timer {
+                    height: 55px;
+                    width: 100%;
+                    color: #fff;
+                    font-size: .9rem;
+                    font-weight: 400;
+                    margin-top: 25px;
+                    border: none;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    background: rgb(78, 223, 67);
+                }
+
+                .addressBtn{
+                    user-select: none;
+        cursor: pointer;
+        border: none;
+        padding: 13px 19px;
+        font-size: 16px;
+        background-color:  #0bb744;
+        color: white;
+        border-radius: 6px;
+        font-weight: 600;
+        text-align: center;
+                }
+
+                .verifyOtpBtn,
+                .timer {
+                    margin-top: 32px;
+                    height: 38px;
+                    width: 100px;
+                }
+
+                .timer {
+                    background-color: transparent;
+                    color: black;
+                    border: none;
+                }
+
+                .form button:hover {
+                    background: rgb(11, 144, 29);
+                }
+
+                .hidden {
+                    display: none !important;
+                }
+
+                .visible {
+                    display: block;
+                }
+
+                .visible-flex {
+                    display: flex !important;
+                }
+
+                /*Responsive*/
+                @media screen and (max-width: 400px) {
+                    .form .column, .form2 .column {
+                        flex-wrap: wrap;
+                    }
+
+                    .form :where(.pmode_option, .pmode) {
+                        row-gap: 5px;
+                    }
+
+                    .container2 {
+                        padding: 20px 10px;
+                    }
+                }
+            </style>
+</body>
+
+</html>

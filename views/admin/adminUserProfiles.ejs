@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%=activePageTitle%> - Admin Dashboard
+    </title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="/public/css/adminordercf.css" />
+    <%- include('../partials/headTagContent') %>
+</head>
+
+<body>
+    <%- include('../partials/alertboxAndLoader') %>
+
+        <section class="section_con">
+            <h4 class="info_h4"><span id="backBtn" style="margin-right: 7px; padding: 0 4px; cursor: pointer;"><i
+                        class="fa-solid fa-arrow-left"></i></span>
+                <%=activePageTitle%>&nbsp;(<%= metaData.totalUser ? metaData.totalUser : 0 %>)
+            </h4>
+
+            <!--  -->
+            <div class="tabBtns1">
+                <p class="tabBtn activetab">All (<%= metaData.totalUser ? metaData.totalUser : 0 %>)</p>
+                <p class="tabBtn">Today (<%= metaData.today ? metaData.today : 0 %>)</p>
+                <p class="tabBtn">Yesterday (<%= metaData.yesterday ? metaData.yesterday : 0 %>)</p>
+                <p class="tabBtn">Last 7 days (<%= metaData.last_7_days ? metaData.last_7_days : 0 %>)</p>
+                <p class="tabBtn">This month (<%= metaData.this_month ? metaData.this_month : 0 %>)</p>
+                <p class="tabBtn">Last month (<%= metaData.last_month ? metaData.last_month : 0 %>)</p>
+            </div>
+            <hr style="opacity: 0.4;" />
+
+            <!-- tab 1 -->
+            <div class="content_container">
+                <% if (typeof contentData !=='undefined' && contentData.length> 0) { %>
+                    <% contentData.forEach(data=> { %>
+                        <div class="mega_container" data-id="<%= data.id %>" id="mega_container_<%= data.id %>">
+                            <div class="mega_head flex">
+                                <div class="mega_head_img"><i class="fa-regular fa-user"></i></div>
+                                <div class="mega_head_1">
+                                    <h4 class="mega_head_title">
+                                        <%= data.fullName %>
+                                    </h4>
+                                    <p class="mega_head_subtitle op-7">
+                                        <%= data.phone %>
+                                    </p>
+                                </div>
+                            </div>
+                            <!--  -->
+                            <div class="tabs">
+                                <div class="tab2Btns1">
+                                    <p class="tab2Btn tabbtn1 activetab2">Profile</p>
+                                    <p class="tab2Btn tabbtn2">MetaData</p>
+                                </div>
+
+                                <hr style="opacity: 0.4;" />
+
+                                <!-- tabs div profile-->
+                                <div class="flex pfOderDiv">
+                                    <div class="tabsDiv profile-tabsDiv2 tabsDivN1">
+                                        <p><span class="user-info-span">UserId: </span>
+                                            <%= data.id %>
+                                        </p>
+                                        <p><span class="user-info-span">Phone: </span>
+                                            <%= data.phone %>
+                                        </p>
+                                        <p><span class="user-info-span">Email: </span>
+                                            <%= data.email %>
+                                        </p>
+
+                                        <p><span class="user-info-span">Address: </span>
+                                            <%= data.streetAddress %>
+                                        </p>
+                                        <p><span class="user-info-span">City: </span>
+                                            <%= data.city %>
+                                        </p>
+                                        <p><span class="user-info-span">Pincode: </span>
+                                            <%= data.pincode %>
+                                        </p>
+                                        <p><span class="user-info-span">Created&nbsp;on: </span>
+                                            <%= data.createdon %>
+                                        </p>
+                                        <p><span class="user-info-span">Signup&nbsp;on: </span>
+                                            <%= data.signupon %>
+                                        </p>
+                                    </div>
+
+                                    <!-- metadata -->
+                                    <div class="tabsDiv profile-tabsDiv2 hidden tabsDivN2" style="width: 100%;">
+                                        
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <% }) %>
+                            <div class="loadMoreTrigger" id="tab1"></div>
+                            <% } else { %>
+                                <p style="text-align: center; margin-top: 80px; margin-bottom: 100px;">No user
+                                    found.</p>
+                                <% } %>
+            </div>
+
+            <!-- tab 2-->
+            <div class="content_container">
+                <div class="loadMoreTrigger" id="tab2"></div>
+            </div>
+            <!-- tab 3-->
+            <div class="content_container">
+                <div class="loadMoreTrigger" id="tab3"></div>
+            </div>
+            <!-- tab 4-->
+            <div class="content_container">
+                <div class="loadMoreTrigger" id="tab4"></div>
+            </div>
+            <!-- tab 5-->
+            <div class="content_container">
+                <div class="loadMoreTrigger" id="tab5"></div>
+            </div>
+            <!-- tab 6-->
+            <div class="content_container">
+                <div class="loadMoreTrigger" id="tab6"></div>
+            </div>
+        </section>
+
+        <!-- loading sections showing -->
+        <div class="showingLoading">
+            <div class="loader" id="loadingRotatorForSections"></div>
+        </div>
+
+
+        <script nonce="<%-nonce%>">
+            const activePage = "<%=activePage%>";
+            const flagPage = "<%=flag%>";
+            document.getElementById('backBtn')?.addEventListener('click', () => window.history.back());
+
+            document.addEventListener("DOMContentLoaded", async function () {
+                const loadingRotatorForSections = document.getElementById("loadingRotatorForSections");
+                const tabButtons = document.querySelectorAll(".tabBtn");
+                const contentContainers = document.querySelectorAll(".content_container");
+                let loadMoreTriggers = document.querySelectorAll(".loadMoreTrigger");
+                let activeObserver = null; // To track the active observer
+                
+                //profile btn listenr
+                document.querySelectorAll(".mega_container").forEach(div1 => {
+                    if (!div1.hasAttribute('data-listener')) {
+                        div1.setAttribute('data-listener', 'true');
+
+                        const div11 = div1.querySelector(".tabsDivN1");
+                        const div12 = div1.querySelector(".tabsDivN2");
+                        const btn11 = div1.querySelector(".tabbtn1");
+                        const btn12 = div1.querySelector(".tabbtn2");
+
+                        btn11.addEventListener("click", function () {
+                            div11.classList.remove("hidden");
+                            div12.classList.add("hidden");
+                            this.classList.add("activetab2");
+                            btn12.classList.remove("activetab2");
+                        });
+
+                        btn12.addEventListener("click", async function () {
+                            div11.classList.add("hidden");
+                            div12.classList.remove("hidden");
+                            this.classList.add("activetab2");
+                            btn11.classList.remove("activetab2");
+                            if (div12 && div12.textContent.trim() === "") {
+                                await fetchMetadata(div12);
+                            }
+                        });
+                    }
+                });
+
+                if (flagPage && flagPage != "null" && flagPage.length > 5) {
+                    document.querySelector('.tabBtns1').style.display = "none";
+                    loadingRotatorForSections.style.display = "none";
+                    return;
+                }
+
+                console.log("----- multiple id code started -----");
+
+                //observer
+                function createObserver(target) {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const allLoadMoreElements = document.querySelectorAll('.loadMoreTrigger');
+                                const index = Array.from(allLoadMoreElements).indexOf(entry.target);
+                                console.log(`Trigger hits for ${target.id} index ${index}`);
+                                triggerData(index);
+                            }
+                        });
+                    }, { threshold: 1.0, root: null, rootMargin: '100px' });
+
+                    observer.observe(target.querySelector('.loadMoreTrigger'));
+                    return observer;
+                }
+
+
+                contentContainers[0].style.display = "block";
+                tabButtons[0].classList.add("activetab");
+                if (activeObserver) activeObserver.disconnect(); // Remove previous observer
+                activeObserver = createObserver(contentContainers[0]);
+
+                // Tab button click event to switch between tabs.
+                tabButtons.forEach((tab, tabIndex) => {
+                    tab.addEventListener("click", function () {
+                        tabButtons.forEach(btn => btn.classList.remove("activetab"));
+                        contentContainers.forEach(container => container.style.display = "none");
+
+                        tab.classList.add("activetab");
+                        if (contentContainers[tabIndex]) {
+                            contentContainers[tabIndex].style.display = "block";
+                            if (activeObserver) activeObserver.disconnect(); // Remove previous observer
+                            activeObserver = createObserver(contentContainers[tabIndex]);
+                        } else {
+                            console.error(`No container found for tab index ${tabIndex}`);
+                        }
+                    });
+                });
+
+
+
+                //observer trigger
+                async function triggerData(index) {
+                    console.log("trigger element : " + index);
+
+                    let dataId = null;
+
+                    if (contentContainers[index]) {
+                        const megaContainers = contentContainers[index].querySelectorAll(".mega_container");
+
+                        if (megaContainers.length > 0) {
+                            const lastMegaContainer = megaContainers[megaContainers.length - 1];
+                            dataId = lastMegaContainer.getAttribute("data-id");
+                        }
+
+                        await fetchData(index, dataId);
+                    }
+                }
+
+                async function fetchData(index, lastVisible) {
+                    loadingRotatorForSections.style.display = "block";
+                    try {
+                        const response = await fetch('/dashboard/api/load_cf_data', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ lastVisible, index, activePage })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.orders && data.orders.length > 0) {
+                            console.log("data : " + data);
+                            data.orders.forEach(data => renderData(data, index));
+                        } else {
+                            if (activeObserver) activeObserver.disconnect();
+                            loadingRotatorForSections.style.display = "none";
+                        }
+                    } catch (error) {
+                        console.error('Error loading more sections:', error);
+                        showAlert("Failed to load data.", "negative");
+                        loadingRotatorForSections.style.display = "none";
+                    }
+                }
+
+                function renderData(data, index) {
+
+                    const htmlData = `
+                            <div class="mega_container" data-id="${data.id}" id="mega_container_${data.id}">
+                                <div class="mega_head flex">
+                                    <div class="mega_head_img"><i class="fa-regular fa-user"></i></div>
+                                    <div class="mega_head_1">
+                                        <h4 class="mega_head_title">${data.fullName}</h4>
+                                        <p class="mega_head_subtitle op-7">${data.phone}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="tabs">
+                                    <div class="tab2Btns1">
+                                        <p class="tab2Btn tabbtn1 activetab2">Profile</p>
+                                        <p class="tab2Btn tabbtn2">MetaData</p>
+                                    </div>
+                    
+                                    <hr style="opacity: 0.4;" />
+
+                                    <!-- tabs div profile-->
+                                    <div class="flex pfOderDiv">
+                                        <div class="tabsDiv profile-tabsDiv2 tabsDivN1">
+                                            <p><span class="user-info-span">UserId: </span>
+                                                ${data.id}
+                                            </p>
+                                            <p><span class="user-info-span">Phone: </span>
+                                                ${data.phone}
+                                            </p>
+                                            <p><span class="user-info-span">Email: </span>
+                                                ${data.email}
+                                            </p>
+
+                                            <p><span class="user-info-span">Address: </span>
+                                                ${data.streetAddress}
+                                            </p>
+                                            <p><span class="user-info-span">City: </span>
+                                                ${data.city}
+                                            </p>
+                                            <p><span class="user-info-span">Pincode: </span>
+                                                ${data.pincode}
+                                            </p>
+                                            <p><span class="user-info-span">Created&nbsp;on: </span>
+                                                ${data.createdon}
+                                            </p>
+                                            <p><span class="user-info-span">Signup&nbsp;on: </span>
+                                                ${data.signupon}
+                                            </p>
+                                        </div>
+
+                                        <!-- metadata -->
+                                        <div class="tabsDiv profile-tabsDiv2 hidden tabsDivN2" style="width: 100%;">
+                                            
+                                        </div>
+
+                                    </div>
+                                   
+                                </div>
+                            </div>`;
+
+                    if (contentContainers[index] && loadMoreTriggers[index]) {
+                        contentContainers[index].insertBefore(loadMoreTriggers[index], contentContainers[index].lastElementChild);
+                        contentContainers[index].appendChild(loadMoreTriggers[index]); // Reattach load-more-trigger at the bottom
+                        contentContainers[index].insertAdjacentHTML('beforeend', htmlData); // Append the new categoryHTML at the end
+
+                        document.querySelectorAll(".mega_container").forEach(div1 => {
+                            if (!div1.hasAttribute('data-listener')) {
+                                div1.setAttribute('data-listener', 'true');
+
+                                const div11 = div1.querySelector(".tabsDivN1");
+                                const div12 = div1.querySelector(".tabsDivN2");
+                                const btn11 = div1.querySelector(".tabbtn1");
+                                const btn12 = div1.querySelector(".tabbtn2");
+
+                                btn11.addEventListener("click", function () {
+                                    div11.classList.remove("hidden");
+                                    div12.classList.add("hidden");
+                                    this.classList.add("activetab2");
+                                    btn12.classList.remove("activetab2");
+                                });
+
+                                btn12.addEventListener("click", async function () {
+                                    div11.classList.add("hidden");
+                                    div12.classList.remove("hidden");
+                                    this.classList.add("activetab2");
+                                    btn11.classList.remove("activetab2");
+                                    if (div12 && div12.textContent.trim() === "") {
+                                        await fetchMetadata(div12);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+           
+                
+                // metadata
+                async function fetchMetadata(container) {
+                    document.getElementById("loader_container").style.display = "flex";
+                    const megaCon = container.closest('.mega_container'); // Limit scope to individual grocery_item
+                    const userId = megaCon.getAttribute('data-id').trim();
+                    console.log("userId : " + userId);
+
+                    try {
+                        const response = await fetch('/dashboard/api/load_user_metadata', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            console.log("data.metadata : " + data.metadata);
+                            renderMetaData(data.metadata, container);
+                        } else {
+                            showAlert("Data not found.", "negative");
+                        }
+                        document.getElementById("loader_container").style.display = "none";
+                    } catch (error) {
+                        console.error('Error loading more sections:', error);
+                        showAlert("Failed to load data.", "negative");
+                        document.getElementById("loader_container").style.display = "none";
+                    }
+                }
+
+                function renderMetaData(metaData, container){
+                    container.innerHTML = `
+                    <div class="flex justify-around">
+                        <div class="metaDiv">
+                            <p class="metaDiv_p1">Total Orders</p>
+                            <p class="metaDiv_p2">${ metaData && typeof metaData.lifeTimeOrders !=='undefined' ?
+                                metaData.lifeTimeOrders : 0}</p>
+                        </div>
+                        <div class="metaDiv">
+                            <p class="metaDiv_p1">Pending Orders</p>
+                            <p class="metaDiv_p2">${ metaData && typeof metaData.totalPendingOrders !=='undefined' ?
+                                metaData.totalPendingOrders : 0}</p>
+                        </div>
+                        <div class="metaDiv">
+                            <p class="metaDiv_p1">Completed Orders</p>
+                            <p class="metaDiv_p2">${ metaData && typeof metaData.totalCompletedOrders !=='undefined' ?
+                                metaData.totalCompletedOrders : 0}</p>
+                        </div>
+                        <div class="metaDiv">
+                            <p class="metaDiv_p1">Cancelled Orders</p>
+                            <p class="metaDiv_p2">${ metaData && typeof metaData.totalCancelledOrders !=='undefined' ?
+                                metaData.totalCancelledOrders : 0}&nbsp;(${ metaData && typeof metaData.totalCancelledOrdersByHim !=='undefined' ?
+                                metaData.totalCancelledOrdersByHim : 0}&nbsp;by user)</p>
+                        </div>
+                        <div class="metaDiv">
+                            <p class="metaDiv_p1">Total Complaints</p>
+                            <p class="metaDiv_p2">${ metaData && typeof metaData.totalComplaints !=='undefined' ?
+                                metaData.totalComplaints : 0}</p>
+                        </div>
+                        <div class="metaDiv">
+                            <p class="metaDiv_p1">Total Feedbacks</p>
+                            <p class="metaDiv_p2">${ metaData && typeof metaData.totalFeedbacks !=='undefined' ?
+                                metaData.totalFeedbacks : 0}</p>
+                        </div>
+                    </div>
+                    `;
+                }
+
+            });
+
+        </script>
+
+</body>
+
+</html>

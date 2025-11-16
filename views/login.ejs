@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | mintoSpeed</title>
+  <meta name="description" content="login in mintoSpeed">
+  <meta name="keywords" content="login">
+  <meta name="author" content="mintoSpeed">
+  <meta name="robots" content="index, follow">
+
+
+  <!-- fav icon -->
+  <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="/favicon/site.webmanifest" />
+
+  <!-- google font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <!--Font awesome icon-->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+  <!-- hash -->
+  <!-- <script nonce="<%-nonce%>" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script> -->
+
+  <script nonce="<%-nonce%>"
+    src="https://www.google.com/recaptcha/enterprise.js?render=6LfpL6MqAAAAADXXbESyGRXDNwTJdsZCuqO3ffIr"></script>
+
+</head>
+
+<body>
+  <!-- alertboxAndLoader -->
+  <%- include('partials/alertboxAndLoader') %>
+
+    <section class="container">
+
+      <div class="container2">
+        <header>Login</header>
+        <div class="logo"><span style=" font-size: 13px;">on</span>&nbsp;<a href="/">minto<span>Speed</span></a></div>
+
+        <!--  -->
+        <div class="formDiv">
+
+          <div class="column">
+            <div class="input-box">
+              <label>Phone Number</label>
+              <input type="tel" id="phone" placeholder="Enter phone number" required />
+            </div>
+          </div>
+
+
+          <div class="column" style="flex-wrap: nowrap;">
+            <div class="input-box">
+              <label>Enter Password</label>
+              <input type="password" id="passwordInput" placeholder="Enter password" />
+            </div>
+            <div>
+              <p style="width: 30px; padding-top: 22px;" id="togglePassword" class="togBtn"
+                style="background-color: transparent;"><i class="fa-solid fa-eye-slash"></i></p>
+            </div>
+          </div>
+
+
+          <button class="orderBtn" id="submitBtn">Submit</button>
+          <p style="text-align: center; font-size: 14px; margin-top: 20px;">New User? <a href="/auth"
+              style="text-decoration: none;">Create an Account</a></p>
+          </formDiv>
+
+        </div>
+    </section>
+
+    <script nonce="<%-nonce%>">
+      document.addEventListener("DOMContentLoaded", () => {
+        const passwordInput = document.getElementById("passwordInput");
+        const togglePassword = document.getElementById("togglePassword");
+
+        togglePassword.addEventListener("click", () => {
+          const isPassword = passwordInput.getAttribute("type") === "password";
+          passwordInput.setAttribute("type", isPassword ? "text" : "password");
+          togglePassword.innerHTML = isPassword
+            ? '<i class="fa-solid fa-eye"></i>' // Show password icon
+            : '<i class="fa-solid fa-eye-slash"></i>'; // Hide password icon
+        });
+
+
+
+        document.getElementById("submitBtn").onclick = async function () {
+          document.getElementById("loader_container").style.display = "flex";
+
+          const phone = document.getElementById("phone").value.trim();
+          const password = document.getElementById("passwordInput").value.trim();
+
+          const phoneRegex = /^(\+91)?[6-9]\d{9}$/;
+          if (!phoneRegex.test(phone)) {
+            showAlert("Phone number is incorrect!", "negative");
+            document.getElementById("loader_container").style.display = "none";
+            return;
+          }
+
+          if (password === "" || password.length < 6) {
+            showAlert("Password not matched.", "negative");
+            document.getElementById("loader_container").style.display = "none";
+            return;
+          }
+          try {
+            // recaptcha
+            grecaptcha.enterprise.ready(async () => {
+              const token = await grecaptcha.enterprise.execute('6LfpL6MqAAAAADXXbESyGRXDNwTJdsZCuqO3ffIr', { action: 'LOGIN' });
+              // const hashedPassword = CryptoJS.SHA256(password).toString();
+
+              const formData = {
+                phone, password, token
+              };
+
+              try {
+                const response = await fetch('/auth/login', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.type == "positive") {
+                  showAlert('Login successfully.', "positive");
+                  const redirectLink = sessionStorage.getItem('redirect_link');
+                  if (redirectLink) {
+                    console.log("redirectLink: " + redirectLink);
+                    window.location.href = redirectLink; // Redirect to the saved link
+                  } else {
+                    window.location.href = '/profile';
+                  }
+                  return;
+                } else if (result.type == "negative") {
+                  showAlert(result.message, "negative");
+                  document.getElementById("loader_container").style.display = "none";
+                  return;
+                }
+              } catch (error) {
+                console.error('Error:', error);
+                document.getElementById("loader_container").style.display = "none";
+                showAlert('An error occurred. Please try again.', "negative");
+                return;
+              }
+            });
+          }
+          catch (err) {
+            document.getElementById("loader_container").style.display = "none";
+            showAlert('Something went wrong to deal with reCaptcha. Please try again.', "negative");
+            return;
+          }
+        }
+      });
+    </script>
+
+
+
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Open Sans', sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        background-color: rgb(243, 243, 243);
+      }
+
+      .disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .enabled {
+        opacity: 1;
+        cursor: pointer;
+      }
+
+      div.logo {
+        margin: 5px;
+        text-align: center;
+      }
+
+      div.logo>a {
+        text-decoration: none;
+        color: #0bb744;
+        font-weight: 800;
+        font-size: 15px;
+      }
+
+      div.logo>a span {
+        color: rgb(19, 19, 19);
+      }
+
+      .container {
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: auto;
+      }
+
+      .container2 {
+        max-width: 500px;
+        width: 500px;
+        height: fit-content;
+        background: #fff;
+        padding: 20px;
+        margin: 15px;
+        margin-bottom: 80px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .container2 header {
+        font-size: 1.3rem;
+        color: #424242;
+        font-weight: 700;
+        text-align: center;
+        padding: 5px 10px 0 10px;
+      }
+
+      .container2 .formDiv {
+        margin-top: 10px;
+      }
+
+      .formDiv .input-box {
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      .input-box label {
+        color: #333;
+        font-size: 13px;
+      }
+
+      .formDiv :where(.input-box input, .select-box) {
+        position: relative;
+        height: 40px;
+        width: 100%;
+        outline: none;
+        font-size: 13px;
+        color: #6b6b6b;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 0 10px;
+        background-color: #fafafa;
+      }
+
+      .input-box input:focus {
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      }
+
+      .formDiv .column {
+        display: flex;
+        column-gap: 15px;
+      }
+
+      .address :where(input, .select-box) {
+        margin-top: 15px;
+      }
+
+      .select-box select {
+        height: 100%;
+        width: 100%;
+        outline: none;
+        border: none;
+        color: #525252;
+        font-size: .9rem;
+        background-color: #f6f6f6;
+
+      }
+
+      .orderBtn,
+      .verifyOtpBtn,
+      .timer,
+      .togBtn {
+        height: 51px;
+        width: 100%;
+        color: #fff;
+        font-size: .9rem;
+        font-weight: 400;
+        margin-top: 35px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: rgb(77, 215, 67);
+      }
+
+      .togBtn {
+        background-color: transparent;
+        color: black;
+      }
+
+      .verifyOtpBtn,
+      .timer {
+        margin-top: 32px;
+        height: 38px;
+        width: 100px;
+      }
+
+      .timer {
+        background-color: transparent;
+        color: black;
+        border: none;
+      }
+
+      .formDiv button:hover {
+        background: rgb(19, 172, 40);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .visible {
+        display: block;
+      }
+
+      .visible-flex {
+        display: flex !important;
+      }
+
+      /*Responsive*/
+      @media screen and (max-width: 400px) {
+        .formDiv .column {
+          flex-wrap: wrap;
+        }
+
+        .container2 {
+          padding: 20px 15px;
+        }
+      }
+    </style>
+</body>
+
+</html>

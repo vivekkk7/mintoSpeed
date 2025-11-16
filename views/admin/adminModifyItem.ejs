@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modify Item - Admin | mintoSpeed</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- google font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <!-- google icon -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,700,0,0" />
+  <!--Font awesome icon-->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+  <script nonce="<%-nonce%>" src="https://kit.fontawesome.com/6ac775d87f.js" crossorigin="anonymous"></script>
+  <!-- jQuery -->
+  <script nonce="<%-nonce%>" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+  <!-- alertboxAndLoader -->
+  <%- include('../partials/alertboxAndLoader') %>
+
+    <section class="container">
+      <div class="container2">
+        <header><span id="backBtn" style="margin-right: 7px; padding: 0 4px; cursor: pointer;"><i class="fa-solid fa-arrow-left"></i></span>Modify an Item</header>
+        <form action="#" class="form" id="itemForm" enctype="multipart/form-data">
+          <!-- Category Dropdown or Add New -->
+          <div class="input-box">
+            <label>Category</label>
+            <select id="categorySelect">
+              <option hidden>Select Category</option>
+            </select>
+          </div>
+
+          <!-- Subcategory Dropdown or Add New -->
+          <div class="input-box">
+            <label>Subcategory</label>
+            <select id="subcategorySelect">
+              <option hidden>Select Subcategory</option>
+            </select>
+          </div>
+
+          <!-- Subcategory Dropdown or Add New -->
+          <div class="column">
+            <div class="input-box" style="width: calc(100% - 120px);">
+              <label>Item Name</label>
+              <select id="itemSelect">
+                <option hidden>Select Item</option>
+              </select>
+            </div>
+
+            <div class="input-box" style="width: 110px; padding: 5px 10px; margin-top: 45px;">
+              <button id="newItemNameBtn">Change Name</button>
+            </div>
+          </div>
+
+          <div class="input-box" id="newItemNameDiv" style="display: none;">
+            <label>New Item Name</label>
+            <input type="text" id="newItemName" placeholder="Enter new item name or leave blank if don't want to change.." />
+          </div>
+
+          <!-- Image Upload -->
+          <div class="column">
+            <div class="input-box">
+              <label>Upload Item Image</label>
+              <input type="file" id="itemImage" accept="image/*" />
+            </div>
+
+            <div class="input-box" id="img_container">
+            </div>
+          </div>
+
+
+          <!-- replacement -->
+          <div class="input-box">
+            <label>Can be Replace?</label>
+            <select id="replaceSelect">
+              <option hidden>Select Replacement</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <!-- Packed Status -->
+          <div class="input-box">
+            <label>Packed</label>
+            <select id="packedSelect">
+              <option hidden>Select Packed Status</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </div>
+
+          <!-- Item Quantity Details -->
+          <div class="column">
+            <div class="input-box">
+              <label>Minimum Quantity</label>
+              <input type="text" id="minQty" placeholder="Enter minimum quantity" required />
+            </div>
+            <div class="input-box">
+              <label>Maximum Quantity</label>
+              <input type="text" id="maxQty" placeholder="Enter maximum quantity" required />
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="input-box">
+              <label>Popular Quantity</label>
+              <input type="text" id="popularQty" placeholder="Enter popular quantity" required />
+            </div>
+            <div class="input-box">
+              <label>Price for Popular Quantity</label>
+              <input type="number" id="popularPrice" placeholder="Enter price" required />
+            </div>
+
+            <div class="input-box">
+              <label>MRP for Popular Quantity</label>
+              <input type="number" id="popularMRP" placeholder="MRP(optional)"  />
+            </div>
+          </div>
+
+
+          <!-- Dynamic Weight and Price Combinations for Unpacked Items -->
+          <div id="weightPriceOptions" style="display: none; background-color: whitesmoke; padding: 10px 7px;">
+            <p class="weightPriceOptionsh4">Weight/Price Combinations</p>
+            <div id="weightPriceContainer">
+              <div class="weight-price-row">
+                <input type="text" class="weightInput" placeholder="Weight" required />
+                <input type="number" class="priceInput" placeholder="Price for Weight" required />
+
+                <input type="number" class="priceMRP" placeholder="MRP"  />
+              </div>
+            </div>
+            <button type="button" class="addPackedListBtn">New Row</button>
+          </div>
+
+          <div class="input-box">
+            <label>About Item or Description(optional)</label>
+            <textarea id="itemAbout" placeholder="Give detail info about item that customer can read.."></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="submitBtn">Update Item</button>
+        </form>
+      </div>
+    </section>
+
+
+    <script nonce="<%-nonce%>">
+            document.getElementById('backBtn')?.addEventListener('click', () => window.history.back());
+
+      let isError = false;
+      document.addEventListener("DOMContentLoaded", function () {
+        // Add event listeners to handle changes and validation
+        document.getElementById("packedSelect").addEventListener("change", togglePacked);
+        document.querySelector(".submitBtn").addEventListener("click", handleSubmit);
+        document.querySelector(".addPackedListBtn").addEventListener("click", addWeightPriceCombination);
+        document.getElementById("popularPrice").addEventListener("input", (event) => validatePrice(event.target));
+
+        const newItemName = document.getElementById('newItemName');
+        document.getElementById('newItemNameBtn').addEventListener('click', function(){
+          document.getElementById('newItemNameDiv').style.display = "block";
+          newItemName.value = document.getElementById("itemSelect").value.trim();
+        });
+
+        function validateText(input) {
+          console.log("err 13.4");
+          if (input && input.value !== undefined && input.value.length < 1) {
+            showAlert("Blank input.", "negative");
+            input.style.border = "1px solid red";
+            isError = true;
+            return null; // Indicate invalid input
+          }
+
+          input.style.border = "1px solid #ddd";
+          isError = false;
+          return input;
+        }
+
+        // Sanitize input to prevent XSS
+        function sanitizeInput(inputElement) {
+          console.log("err 13.3");
+          if (inputElement == null) {
+            return null;
+          }
+          const input = inputElement.value.trim();
+          if (input.length < 1) {
+            showAlert("Blank Input.", "negative");
+            inputElement.style.border = "1px solid red";
+            isError = true;
+            return null; // Indicate invalid input
+          }
+
+          inputElement.style.border = "1px solid #ddd";
+          isError = false;
+          return input;
+        }
+
+        // Validation for quantity (packed vs unpacked)
+        function validateQuantity(input, flag) {
+          console.log("err 13.2");
+          const quantityPattern = /^\d+\s(gm|kg)$/;
+          let val;
+
+          if (flag === true) {
+            val = input.value.trim();
+            if (!quantityPattern.test(val)) {
+              isError = true;
+              showAlert("Please enter a valid quantity.", "negative");
+              input.style.border = "1px solid red";
+              return null;
+            } else {
+              isError = false;
+              input.style.border = "1px solid #ddd";
+              return input;
+            }
+
+          } else if (flag === false) {
+            val = input.trim();
+            if (!quantityPattern.test(val)) {
+              isError = true;
+              showAlert("Please enter a valid quantity.", "negative");
+              input.style.border = "1px solid red";
+              return null;
+            } else {
+              isError = false;
+              input.style.border = "1px solid #ddd";
+              return input;
+            }
+          }
+        }
+
+        // Validation for price inputs
+        function validatePrice(input) {
+          console.log("er 13.0");
+          // Ensure input is defined and has a value property
+          if (input && input.value.trim() !== undefined) {
+            console.log("er 13");
+            const value = input.value.trim();
+            if (isNaN(value) || value < 1) {
+              isError = true;
+              input.style.border = "1px solid red";
+              showAlert("Please enter a valid positive price.", "negative");
+              return null;
+            }
+            input.style.border = "1px solid #ddd";
+            isError = false;
+            return input;
+          }
+        }
+
+        function validatePriceInput(event) {
+          validatePrice(event.target);
+        }
+
+        function validateQuantityInput(event) {
+          validateQuantity(event.target, true);
+        }
+
+        function togglePacked() {
+          console.log("er 5");
+          let weightInputs = document.getElementsByClassName("weightInput");
+          let priceInputs = document.getElementsByClassName("priceInput");
+          const packedSelect = document.getElementById("packedSelect").value.trim();
+          const weightPriceOptions = document.getElementById("weightPriceOptions");
+          weightPriceOptions.style.display = packedSelect === "false" ? "block" : "none";
+
+          document.getElementById("minQty").value = "";
+          document.getElementById("maxQty").value = "";
+          document.getElementById("popularQty").value = "";
+          document.getElementById("weightPriceContainer").innerHTML = `
+                                <div class="weight-price-row">
+                <input type="text" class="weightInput" placeholder="Weight" required />
+                <input type="number" class="priceInput" placeholder="Price for Weight" required />
+
+                <input type="number" class="priceMRP" placeholder="MRP(optional)"  />
+              </div>`;
+
+          if (packedSelect === "true") {
+            document.getElementById("minQty").removeEventListener("input", validateQuantityInput);
+            document.getElementById("maxQty").removeEventListener("input", validateQuantityInput);
+            document.getElementById("popularQty").removeEventListener("input", validateQuantityInput);
+
+            document.getElementById("minQty").type = "number";
+            document.getElementById("maxQty").type = "number";
+            document.getElementById("popularQty").type = "number";
+
+            document.getElementById("minQty").addEventListener("input", validatePriceInput);
+            document.getElementById("maxQty").addEventListener("input", validatePriceInput);
+            document.getElementById("popularQty").addEventListener("input", validatePriceInput);
+          } else {
+            document.getElementById("minQty").removeEventListener("input", validatePriceInput);
+            document.getElementById("maxQty").removeEventListener("input", validatePriceInput);
+            document.getElementById("popularQty").removeEventListener("input", validatePriceInput);
+
+            document.getElementById("minQty").type = "text";
+            document.getElementById("maxQty").type = "text";
+            document.getElementById("popularQty").type = "text";
+
+            document.getElementById("minQty").addEventListener("input", validateQuantityInput);
+            document.getElementById("maxQty").addEventListener("input", validateQuantityInput);
+            document.getElementById("popularQty").addEventListener("input", validateQuantityInput);
+
+            Array.from(weightInputs).forEach((input) => {
+              input.addEventListener("input", validateQuantityInput);
+            });
+            Array.from(priceInputs).forEach((input) => {
+              input.addEventListener("input", validatePriceInput);
+            });
+          }
+        }
+        console.log("er 6");
+
+
+        // Add dynamic weight/price combination rows
+        function addWeightPriceCombination() {
+          console.log("er 7");
+
+          const container = document.getElementById("weightPriceContainer");
+          const newRow = document.createElement("div");
+          newRow.classList.add("weight-price-row");
+          newRow.innerHTML = `
+
+          <input type="text" class="weightInput" placeholder="Weight" required />
+          <input type="number" class="priceInput" step="0.01" placeholder="Price for Weight" required  />
+          <input type="number" class="priceMRP" placeholder="MRP(optional)"  />`;
+          container.appendChild(newRow);
+        }
+        console.log("er 8");
+
+
+        // Handle form submission
+        function handleSubmit(event) {
+          event.preventDefault();
+
+          let itemName = sanitizeInput(validateText(document.getElementById("itemSelect")));
+          let category = sanitizeInput(validateText(document.getElementById("categorySelect")));
+          let subcategory = sanitizeInput(validateText(document.getElementById("subcategorySelect")));
+          let minQty;
+          let maxQty;
+          let popularQty;
+          let popularPrice = sanitizeInput(validatePrice(document.getElementById("popularPrice")));
+          let packed = sanitizeInput(document.getElementById("packedSelect"));
+          let itemAbout = document.getElementById("itemAbout").value.trim();
+
+          let replaceSelect = document.getElementById("replaceSelect").value.trim();
+          let popularMRP = document.getElementById("popularMRP").value.trim();
+
+          if(replaceSelect.length < 3 || replaceSelect == null){
+            showAlert("Replace value not selected.", "negative");
+          }
+          
+          console.log("submit1 : " + itemName + category + subcategory + popularPrice + packed);
+
+          // Additional weight/price combinations for unpacked items
+          let weightPriceCombinations = [];
+          if (packed === "false") {
+            minQty = sanitizeInput(validateQuantity(document.getElementById("minQty"), true));
+            maxQty = sanitizeInput(validateQuantity(document.getElementById("maxQty"), true));
+            popularQty = sanitizeInput(validateQuantity(document.getElementById("popularQty"), true));
+            document.querySelectorAll(".weight-price-row").forEach((row) => {
+              let weight = sanitizeInput(validateQuantity(row.querySelector(".weightInput"), true));
+              let price = sanitizeInput(validatePrice(row.querySelector(".priceInput")));
+              let priceMRP = row.querySelector(".priceMRP").value.trim();
+              console.log("submit2 : " + minQty + maxQty + popularQty + weight + price);
+              if (weight != null && price != null) {
+                if(priceMRP == null){
+                  priceMRP = '';
+                }
+                weightPriceCombinations.push({ weight, price, priceMRP });
+              }
+              else {
+                showAlert("Combined weight or price contain null.", "negative");
+              }
+            });
+          }
+          else {
+            minQty = sanitizeInput(validatePrice(document.getElementById("minQty")));
+            maxQty = sanitizeInput(validatePrice(document.getElementById("maxQty")));
+            popularQty = sanitizeInput(validatePrice(document.getElementById("popularQty")));
+          }
+          console.log("submit3 : " + minQty + maxQty + popularQty);
+
+          let newItemNameVal = newItemName.value.trim();
+          if(newItemNameVal.length < 2){
+            newItemNameVal = null;
+          }
+          else if(/[<>\/]/.test(newItemNameVal)){
+            showAlert("New item name contain < > / these invalid characters.", "negative");
+            return;
+          }
+
+          // Handle file upload
+          const fileInput = document.getElementById("itemImage");
+          const file = fileInput.files[0];
+
+          if (itemName != null && category != null && subcategory != null && minQty != null && maxQty != null && popularPrice != null && popularQty != null && packed != null) {
+            document.getElementById("loader_container").style.display = "flex";
+            itemName = itemName.toLowerCase();
+            category = category.toLowerCase();
+            subcategory = subcategory.toLowerCase();
+
+            const formData = new FormData();
+            formData.append("itemName", itemName);
+            formData.append("category", category);
+            formData.append("subcategory", subcategory);
+            formData.append("minQty", minQty);
+            formData.append("maxQty", maxQty);
+            formData.append("popularQty", popularQty);
+            formData.append("popularPrice", popularPrice);
+            formData.append("packed", packed === "true");
+            formData.append("weightPriceCombinations", JSON.stringify(weightPriceCombinations)); // Send as JSON string
+            formData.append("itemImage", file); // Image file
+            formData.append("itemAbout", itemAbout); 
+            formData.append("replaceSelect", replaceSelect); 
+            formData.append("popularMRP", popularMRP); 
+            formData.append("newItemName", newItemNameVal); 
+
+            // Send the form data to the backend
+            fetch('/dashboard/modifyItem/modify-item', {
+              method: 'POST',
+              body: formData
+            })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  showAlert("Item modify successfully!", "positive");
+                  document.getElementById('newItemNameDiv').style.display = "none";
+                  document.getElementById("itemForm").reset(); // Reset the form
+                  document.getElementById("weightPriceContainer").innerHTML = `
+                                <div class="weight-price-row">
+                <input type="text" class="weightInput" placeholder="Weight" required />
+                <input type="number" class="priceInput" placeholder="Price for Weight" required />
+
+                  <input type="number" class="priceMRP" placeholder="MRP(optional)"</div>`;
+
+                  document.getElementById("img_container").innerHTML = '';
+                } else {
+                  console.error("Error modify item:", data.message);
+                  showAlert("Error in modify item.", "negative");
+                }
+                document.getElementById("loader_container").style.display = "none";
+              })
+              .catch(error => {
+                console.error("Error modify item:", error);
+                showAlert("Error in modify item..", "negative");
+                document.getElementById("loader_container").style.display = "none";
+              });
+          }
+          else {
+            showAlert("Something went wrong to submit the form.", "negative");
+            document.getElementById("loader_container").style.display = "none";
+          }
+        }
+
+
+
+        console.log("er 16");
+
+        function populateCategories() {
+          console.log("er 24");
+
+          const categorySelect = document.getElementById("categorySelect");
+          document.getElementById("loader_container").style.display = "flex";
+
+          fetch('/dashboard/modifyItem/get-categories', {
+            method: 'POST'
+          })
+            .then(response => {
+              if (!response.ok) {
+                console.log("er 25");
+                showAlert("Category not fetched.", "negative");
+                document.getElementById("loader_container").style.display = "none";
+                return;
+              }
+              return response.json();
+            })
+            .then(categories => {
+              console.log("er 26");
+              categories.forEach(category => {
+                const categoryOption = document.createElement("option");
+                categoryOption.value = category;
+                console.log("category : " + category);
+                categoryOption.textContent = category;
+                categorySelect.appendChild(categoryOption);
+              });
+              document.getElementById("loader_container").style.display = "none";
+            })
+            .catch(error => {
+              showAlert("Error fetching categories.", "negative");
+              console.error("Error fetching categories:", error);
+              document.getElementById("loader_container").style.display = "none";
+            });
+        }
+
+
+        function populateSubcategories(category) {
+          console.log("er 17");
+
+          const subcategorySelect = document.getElementById("subcategorySelect");
+          subcategorySelect.innerHTML = '<option hidden>Select Subcategory</option>';
+          
+          console.log("er 18");
+          document.getElementById("loader_container").style.display = "flex";
+
+          fetch('/dashboard/modifyItem/get-subcategories', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({ category: category.toLowerCase() })
+          })
+            .then(response => response.json())
+            .then(subcategories => {
+              console.log("er 19");
+              subcategories.forEach(subcategory => {
+                const subcatOption = document.createElement("option");
+                subcatOption.value = subcategory;
+                subcatOption.textContent = subcategory;
+                subcategorySelect.appendChild(subcatOption);
+              });
+              document.getElementById("loader_container").style.display = "none";
+            })
+            .catch(error => {
+              showAlert("Error fetching sub-categories.", "negative");
+              console.error("Error fetching sub-categories:", error);
+              document.getElementById("loader_container").style.display = "none";
+            });
+        }
+        console.log("er 20");
+
+         //item select
+         function populateItem(category, subcategory) {
+
+          
+          console.log("er 25.001");
+          const itemSelect = document.getElementById("itemSelect");
+          itemSelect.innerHTML = '<option hidden>Select Item</option>';
+          
+          document.getElementById("loader_container").style.display = "flex";
+
+          fetch('/dashboard/modifyItem/get-items', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({ category: category.toLowerCase(), subcategory: subcategory.toLowerCase() })
+          })
+            .then(response => response.json())
+            .then(items => {
+              console.log("er 25.0");
+              items.forEach(item => {
+                const subcatOption = document.createElement("option");
+                subcatOption.value = item;
+                subcatOption.textContent = item;
+                itemSelect.appendChild(subcatOption);
+              });
+              document.getElementById("loader_container").style.display = "none";
+            })
+            .catch(error => {
+              showAlert("Error fetching items.", "negative");
+              console.error("Error fetching items:", error);
+              document.getElementById("loader_container").style.display = "none";
+            });
+        }
+        console.log("er 25");
+
+
+        // Initialize categories on page load
+        window.onload = () => {
+          console.log("er 21");
+          populateCategories();
+        };
+
+        // Populate subcategories when category changes
+        document.getElementById("categorySelect").addEventListener("change", function () {
+          console.log("er 22");
+          const selectedCategory = this.value.trim();
+          if (selectedCategory !== "new") {
+            populateSubcategories(selectedCategory);
+          }
+        });
+
+        // Populate items when subcategory changes
+        document.getElementById("subcategorySelect").addEventListener("change", function () {
+          console.log("er 25.3");
+    
+          const selectedCategory = document.getElementById("categorySelect").value.trim();
+          const selectedSubCategory = this.value.trim();
+          populateItem(selectedCategory, selectedSubCategory);
+        });
+
+
+        //load item data
+        document.getElementById("itemSelect").addEventListener("change", function () {
+          console.log("er 25.3");
+          const selectedCategory = document.getElementById("categorySelect").value.trim();
+          const selectedSubCategory = document.getElementById("subcategorySelect").value.trim();
+          const selectedItem = this.value.trim();
+          loadItem(selectedCategory, selectedSubCategory, selectedItem);
+        });
+
+
+        //load item
+        function loadItem(category, subcategory, itemName) {
+          console.log("er 25.002");
+
+          document.getElementById("loader_container").style.display = "flex";
+
+          fetch('/dashboard/modifyItem/load-item', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({ category: category.toLowerCase(), subcategory: subcategory.toLowerCase(), itemName: itemName.toLowerCase() })
+          })
+            .then(response => response.json())
+            .then(item => {
+              document.getElementById("loader_container").style.display = "none";
+
+              let flag = item.packed ? "true" : "false";
+
+              let flag2 = item.replaceSelect == "true" ? true : false;
+              document.getElementById("packedSelect").value = flag;
+              togglePacked();
+              document.getElementById("minQty").value = item.min;
+              document.getElementById("maxQty").value = item.max;
+              document.getElementById("popularQty").value = item.qty;
+              document.getElementById("popularPrice").value = item.price;
+              document.getElementById("itemAbout").value = item.itemAbout;
+
+              document.getElementById("replaceSelect").value = flag2;
+              document.getElementById("popularMRP").value = item.popularMRP;
+              document.getElementById("img_container").innerHTML = `<img height="100px" width="fit-content" src="${item.img}" alt="img" />`;
+
+              if (!item.packed) {
+                const weightPriceOptions = document.getElementById("weightPriceOptions");
+                weightPriceOptions.style.display = "block";
+
+                const container = document.getElementById("weightPriceContainer");
+
+                // Parse the stringified options into an array
+                let options = [];
+                try {
+                  options = JSON.parse(item.options); // Parse only if it's a string
+                  if (!Array.isArray(options)) {
+                    options = []; // Ensure it's an array
+                  }
+                } catch (error) {
+                  console.error("Error parsing options:", error);
+                  options = []; // Fallback to an empty array on error
+                }
+
+                const rows = options.map(option => `
+                  <div class="weight-price-row">
+                      <input type="text" class="weightInput" value="${option.weight || ''}" placeholder="Weight" required />
+                      <input type="number" class="priceInput" value="${option.price || ''}" placeholder="Price for Weight" required />
+
+                      <input type="number" class="priceMRP" value="${option.priceMRP || ''}" placeholder="MRP(optional)"  />
+                  </div>
+                `).join('');
+
+                container.innerHTML = rows;
+              }
+              // Add event listeners to all inputs to change border color on value change
+              const inputs = document.querySelectorAll("input");
+              inputs.forEach(input => {
+                input.addEventListener("input", (event) => {
+                  event.target.style.borderColor = "red"; // Set border to red on change
+                });
+              });
+            })
+            .catch(error => {
+              showAlert("Error fetching item data.", "negative");
+              console.error("Error fetching item:", error);
+              document.getElementById("loader_container").style.display = "none";
+            });
+        }
+
+      });
+
+    </script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Open Sans', sans-serif;
+      }
+
+      body {
+        background-color: rgb(243, 243, 243);
+      }
+
+
+      .container {
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        overflow-y: auto;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container2 {
+        position: relative;
+        max-width: 650px;
+        width: 650px;
+        height: fit-content;
+        background: #fff;
+        padding: 20px;
+        margin: 10px 10px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .container2 header {
+        font-size: 1.1rem;
+        color: #5a5a5a;
+        font-weight: 700;
+        padding: 10px 10px;
+      }
+
+      textarea{
+        width: 100%;
+    margin-top: 7px;
+    padding: 5px;
+      }
+
+      option{
+        text-transform: capitalize;
+      }
+
+      .container2 .form {
+        margin-top: 20px;
+      }
+#weightPriceOptions{
+        margin-top: 7px;
+      }
+      .form .input-box,
+      .weightPriceOptionsh4 {
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      .input-box label,
+      .weightPriceOptionsh4 {
+        color: #333;
+        font-size: 0.9rem;
+      }
+      .weightPriceOptionsh4{
+        margin-top: 5px;
+      }
+      .form :where(.input-box input, .select-box, .input-box select, .weight-price-row input) {
+        position: relative;
+        height: 40px;
+        width: 100%;
+        outline: none;
+        font-size: 0.9rem;
+        color: #707070;
+        margin-top: 8px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 0 10px;
+      }
+
+      .input-box input:focus {
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+      }
+
+      .form .column {
+        display: flex;
+        column-gap: 15px;
+      }
+
+      .submitBtn,
+      .addPackedListBtn {
+        height: 45px;
+        width: 100%;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 400;
+        margin-top: 30px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: rgb(199, 212, 20);
+      }
+
+      .addPackedListBtn {
+        height: 35px;
+        width: 150px;
+        margin-top: 10px;
+      }
+
+      .form button:hover {
+        background: rgb(207, 222, 0);
+      }
+
+      /* Dynamic weight/price rows */
+      .weight-price-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .weightPriceOptions {
+        padding: 10px;
+      }
+
+
+      /* Responsive */
+      @media screen and (max-width: 400px) {
+        .form .column {
+          flex-wrap: wrap;
+        }
+
+        .container2 {
+          padding: 10px;
+          margin: 2px;
+        }
+      }
+    </style>
+</body>
+
+</html>

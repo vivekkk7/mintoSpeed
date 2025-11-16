@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mintoSpeed - Shop fresh veggies, fruits, atta, wafers, biscuits, pure cow ghee, namkeen and many more. Delivery in 15 minutes</title>
+    <meta name="description"
+        content="Shop fresh veggies, fruits, atta, wafers, biscuits, and many more delivered straight to your door. Shop conveniently with mintoSpeed!">
+    <meta name="keywords"
+        content="groceries, grocery delivery, fresh produce, online shopping, pantry essentials, grocery store">
+    <meta name="author" content="mintoSpeed">
+    <meta name="robots" content="index, follow">
+
+    <%- include('partials/headTagContent') %>
+
+    <!-- card css -->
+     <link rel="stylesheet" href="../public/css/itemCard.css" />
+    <!-- scroll -->
+    <script nonce="<%-nonce%>" src="../public/js/srollForSectionAndCategory.js"></script>
+</head>
+
+<body>
+    <!-- navbar -->
+    <%- include('partials/navbar') %>
+
+  <!-- mainhead -->
+  <section class="introSection">
+    <div class="intro1">
+      <!-- part 1 -->
+      <div class="intro11">
+        <div class="intro111">
+          <h2 style="text-transform: none;">Ghar baithe sab kuch milega,<br />mintoSpeed se kaam chalega!</h2>
+          <!-- <h3>Order now! Delivey in just 15 minutes</h3> -->
+          <p class="introP1">Shop fresh veggies, fruits, atta, wafers, <span class="introPHide"> biscuits</span> <br /><span class="introPHide">pure</span> cow ghee, namkeen and many more</p>
+          <!-- <p class="introP2">Delivey in just 15 minutes</p> -->
+          <div class="intro1div">
+            <div class="introdiv11"><div class="intro1Div1"><i class="fa-solid fa-mobile-screen-button"></i></div><p>Place an<br />Order</p></div>
+            <div class="introdiv11"><div class="intro1Div1"><i class="fa-solid fa-truck"></i></div><p>Schedule<br />Delivery</p></div>
+            <div class="introdiv11"><div class="intro1Div1"><i class="fa-solid fa-people-carry-box"></i></div><p>Get at your<br />doorstep</p></div>
+          </div>
+        </div>
+      </div>
+      <!-- part 2 -->
+      <div class="intro12">
+        <div class="intro121">
+          <div class="intro1211">
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <style>
+    section.introSection {
+      position: relative;
+      height: 400px;
+      width: 100%;
+    }
+
+    .intro1 {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      background-color: #c9d7cb;
+      overflow: hidden;
+    }
+
+    .intro11 {
+      display: flex;
+      align-items: center;
+      width: 70%;
+      height: 100%;
+    }
+
+    .intro11>div {
+      z-index: 100;
+      padding-left: 10%;
+      padding-right: 0px;
+    }
+    .intro111 > h2{
+      font-size: 26px;
+      color: rgb(1, 122, 1);
+    }
+    .intro111>h3{
+      font-size: 16px;
+      color: rgb(24, 35, 24);
+    }
+    .intro111>p{
+      font-size: 14px;
+    }
+
+    .intro1div{
+      position: relative;
+      margin-top: 25px;
+      width: 250px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .intro1div::after{
+      position: absolute;
+      top: 25px;
+      content: "";
+      left: 0;
+      width: 200px;
+      height: 1px;
+      background-color: black;
+      z-index: 1!important;
+    }
+    .introdiv11 p{
+      font-size: 11px;
+      text-align: center;
+    }
+    .intro1Div1{
+      position: relative;
+      height: 44px;
+      width: 44px;
+      font-size: 18px;
+      border-radius: 50%;
+      background-color: rgb(245, 244, 244);
+      padding: 10px 6px 9px 6px;
+      text-align: center;
+      z-index: 20!important;
+    }
+    .intro12 {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 50%;
+      height: 100%;
+    }
+
+    .intro121,
+    .intro1211 {
+      padding-left: 70px;
+      background-color: rgb(30, 161, 30);
+      height: 100%;
+      width: 100%;
+      clip-path: circle(70% at 68% 38%); 
+    }
+
+    .intro1211{
+        background-color: rgb(121, 175, 125);
+      background-image: url('https://firebasestorage.googleapis.com/v0/b/mintospeed-web.firebasestorage.app/o/images%2Fintro_img.png?alt=media&token=b0dd0072-a309-413c-a9d5-b91df66f9034');
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  
+    @media screen and (max-width: 1000px) {
+      section.introSection {
+      height: 300px;
+    }
+      .intro11>div {
+      padding-left: 5%;
+    }
+    .intro111 > h2{
+      font-size: 23px;
+    }
+
+      .intro12 {
+      width: 45%;
+    }
+    }
+
+    @media screen and (max-width: 800px) {
+     
+    .intro111 > h2{
+      font-size: 21px;
+    }
+
+      .intro12 {
+      width: 55%;
+    }
+    }
+
+    @media screen and (max-width: 700px) {
+    .intro11{
+      width: 100%;
+    }
+    .intro11>div{
+      width: 95%;
+    }
+   
+   
+    .intro111 > p{
+      font-size: 13px;
+    }
+    .intro121,
+    .intro1211{
+      padding-top: 30px;
+      padding-left: 50px;
+      clip-path: circle(50% at 82% 84%);
+    }
+      .intro12 {
+      width: 70%;
+    }
+
+    .intro1div{
+      transform: scale(0.7);
+      transform-origin: left;
+      margin-top: 0px;
+      width: 200px;
+    }
+    .intro1div::after{
+      width: 150px;
+    }
+    }
+    @media screen and (max-width: 450px) {
+      .introPHide{
+        display: none;
+      }
+    }
+  </style>
+
+
+            <!-- categories -->
+
+            <section class="content">
+                <% if (typeof categoryNames !=='undefined' && categoryNames.length> 0) { %>
+                    <div class="">
+                        <h2 class="content_head">select product by categories</h2>
+
+                        <div class="content1">
+                            <!-- leftright btn -->
+                            <div class="left_btn" id="leftContentBtn"><i class="fa-solid fa-chevron-left"></i></div>
+                            <div class="right_btn" id="rightContentBtn"><i class="fa-solid fa-chevron-right"></i></div>
+                            <div class="content2">
+                                <!-- contact list -->
+                                <div class="content3">
+                                    <% categoryNames.forEach(category=> { %>
+                                        <div class="grocery_type">
+                                            <a href="/items?c=<%= category.value %>">
+                                                <img src="https://storage.googleapis.com/groscool-49709.appspot.com/images%2F8d8ad9d2-d295-4835-a095-ff6dcdf11bab-g1.png"
+                                                    alt="img" />
+                                                <p>
+                                                    <%= category.key %>
+                                                </p>
+                                            </a>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+            </section>
+
+
+            <!-- trending -->
+            <% if (trendItems && trendItems.length> 0) { %>
+                <% trendItems.forEach(tItems => { %>
+            
+                <section class="groc_sec">
+                    <h2 class="grocery_head">Trending Products</h2>
+            
+                    <div class="grocery_items">
+                        <% tItems.items.forEach(item=> { %>
+                            <%- include('partials/grocery_item_con', { item: item }) %>
+                        <% }) %>
+                    </div>
+                </section>
+            <% }) %>
+            <% } %>
+
+            <br />
+   
+
+        <!-- sections -->
+
+            <div id="grocery-sections">
+                <% if (typeof categories !=='undefined' && categories.length> 0) { %>
+
+                    <% categories.forEach(category=> { %>
+                        <!-- Grocery item section -->
+                        <section class="grocery" data-category="<%= category.id %>">
+                            <div>
+                                <!-- Category Title -->
+                                <h2 class="grocery_head">
+                                    <%= category.id %>
+                                </h2>
+
+                                <!-- Subcategory Navigation -->
+                                <div class="subCategoryDIv">
+                                    <div class="left_btn"><i class="fa-solid fa-chevron-left"></i></div>
+                                    <div class="right_btn"><i class="fa-solid fa-chevron-right"></i>
+                                    </div>
+                                    <div class="content2" style="padding: 0 5px;">
+                                        <div class="content3">
+                                            <% category.subcategories.forEach((subcategory, index)=> { %>
+                                                <!-- Subcategory Button, highlight the first subcategory as selected -->
+                                                <div class="grocery_type subCatElement <%= index === 0 ? 'selected' : '' %>"
+                                                    data-subCategoryBtn="<%= subcategory.id %>">
+                                                    <%= subcategory.id %>
+                                                </div>
+                                            <% }) %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Items Container for Selected Subcategory -->
+                                <div class="grocery_items_container">
+                                    <% category.subcategories.forEach((subcategory, index)=> { %>
+                                        <!-- Display items only for the first subcategory by default -->
+                                        <% if (index===0) { %>
+                                            <div class="grocery_items" id="grocery_items_<%= subcategory.id %>"
+                                                data-subCategory="<%= subcategory.id %>">
+
+                                                <% subcategory.items.forEach(item=> { %>
+                                                    <%- include('partials/grocery_item_con', { item: item }) %>
+                                                <% }) %>
+                                            </div>
+                                            <% } %>
+                                                <% }) %>
+                                </div>
+
+
+                            </div>
+                        </section>
+                    <% }) %>
+
+                    <div id="load-more-trigger"></div>
+                    <!-- Target element for triggering additional content load -->
+                    <% } else { %>
+                    <p style="text-align: center; margin-top: 50px; margin-bottom: 100px;">No item found.
+                    </p>
+                    <% } %>
+            </div>
+
+            <!-- loading sections showing -->
+            <div class="showingLoading">
+                <div class="loader" id="loadingRotatorForSections"></div>
+            </div>
+
+
+
+            <!-- load sub category element -->
+            <script nonce="<%-nonce%>">
+                
+                document.addEventListener('DOMContentLoaded', function () {
+                    const grocerySections = document.querySelectorAll('.grocery');
+                    let sectionSubCategories = {};
+
+                    function initializeSubCategories(section) {
+                        console.log("initializeSubCategories 1");
+                        const subCategoryButtons = section.querySelectorAll('.subCatElement');
+                        const groceryItemsContainer = section.querySelector('.grocery_items_container');
+                        const category = section.getAttribute('data-category').toLowerCase();
+                        let newItemElements1 = [];
+                        let newItemElements2 = [];
+                        let activeButton = null; // To track the currently selected button
+
+                        if (!sectionSubCategories[category]) {
+                            console.log("initializeSubCategories 2");
+                            sectionSubCategories[category] = {};
+                        }
+
+                        function initializeSectionSubCategories(firstSubCategory) {
+                            firstSubCategory = firstSubCategory.toLowerCase();
+                            console.log("initializeSubCategories 3");
+                            sectionSubCategories[category][firstSubCategory] = section.querySelector('.grocery_items');
+                        }
+
+                        // Function to fetch data from the backend using POST request
+                        async function fetchGroceryItems(subCategory) {
+                            subCategory = subCategory.toLowerCase();
+                            console.log(`Starting fetching items for ${category} -> ${subCategory}`);
+                            document.getElementById("loader_container").style.display = "flex";
+
+                            // Check if this subCategory already exists in the DOM
+                            if (sectionSubCategories[category][subCategory]) {
+                                console.log(`Subcategory ${subCategory} already exists. Showing it.`);
+                                document.getElementById("loader_container").style.display = "none";
+                                showSubCategory(subCategory);
+                                return;
+                            }
+
+                            try {
+                                fetch('/get_grocery_items', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ category: category, subCategory: subCategory })
+                                }).then(response => {
+                                    if (!response.ok) {
+                                        showAlert('Failed to fetch grocery items.', 'negative');
+                                        document.getElementById("loader_container").style.display = "none";
+                                        return;
+                                    }
+                                    return response.json();
+                                })
+                                    .then(data => {
+                                        let items = data.items;
+                                        console.log("items" + items);
+                                        const subCategoryDiv = document.createElement('div');
+                                        subCategoryDiv.classList.add('grocery_items');
+                                        subCategoryDiv.setAttribute('data-subCategory', subCategory);
+
+                                        document.getElementById("loader_container").style.display = "none";
+
+                                        // Now we can iterate over the array and create elements
+                                        items.forEach(item => {
+                                            const itemDiv = document.createElement('div');
+                                            itemDiv.classList.add('grocery_item');
+                                            itemDiv.setAttribute('data-packed', item.packed);
+                                            itemDiv.setAttribute('data-itemCategory', category);
+                                            itemDiv.setAttribute('data-itemSubCategory', subCategory);
+                                            console.log("item" + item);
+                                            console.log("itemname" + item.id);
+
+                                            itemDiv.innerHTML = `
+                                                <div class="infoBB ${item.replaceSelect == 'true' ? 'show' : 'hidden'}">
+                                                    <div class="infoB">Item can be replace. <a style="color: rgb(51, 122, 254);" href="/c/terms-and-conditions">Know
+                                                        more</a></div>
+                                                    <div class="infoBBtn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+                                                </div>
+                                                <div class="item_img">
+                                                    <img src="${item.image_url}" alt="img" />
+                                                </div>
+                                                <p class="item_stock ${!item.stock ? 'hidden' : item.stock == '0' ? 'c_red' : item.stock == 'x' ? 'hidden' : 'd_block'}">
+                                                    ${
+                                                      item.stock == '0' 
+                                                        ? 'Stock is unavailable' 
+                                                        : item.stock != 'x' 
+                                                          ? 'Stock : ' + item.stock + ' left' 
+                                                          : '' 
+                                                    }
+                                                </p>
+                                                <p class="item_name_p"><a class="item_name" href="/item?c=${encodeURIComponent(category)}&s=${encodeURIComponent(subCategory)}&i=${encodeURIComponent(item.id)}">${item.id}</a></p>
+                                                <p class="item_min_volume">${item.minVol}</p>
+                                                <p class="item_max_volume">${item.maxVol}</p>
+                                                <div class="item_volume">
+                                                    <p class="item_weight" style="margin: 0;">${item.volume}</p>
+                                                    <div class="item_volume_options">
+                                                    
+                                                        ${item.packed ? `<!-- item is packed -->`
+                                                            : `${item.options.map(option => `
+                                                                <div class="item_volume_option">
+                                                                    <p class="item_option_weight">${option.weight}</p>
+                                                                    <p class="item_option_price_p">
+                                                                        <span class="item_option_price">${option.price}</span>
+                                                                        <span class="market_price">${option.priceMRP && option.priceMRP.trim() !== '' ? '₹ ' + option.priceMRP : ''}</span>
+                                                                    </p>
+                                                                </div>
+                                                            `).join('')}`
+                                                        }
+                                                        <!-- custom option -->
+                                                        <div class="item_volume_custom_option">
+                                                            <p class="item_volume_custom_option_head">Custom</p>
+                                                            <div class="item_volume_custom_option_input_div">
+                                                                ${item.packed ? `<!-- If item is packed, show text "pieces" -->
+                                                                    <input type="number" class="item_volume_input_number" placeholder="Qty" min="0"  step="1" />
+                                                                    <div class="item_volume_custom_option_for_pieces">pcs</div>`
+                                                            : ` <input type="number" class="item_volume_input_number" placeholder="Qty" min="0" />
+                                                                    <div class="item_volume_custom_option_for_kggm">
+                                                                        <label><input type="radio" name="kggm" checked value="kg"> kg</label>
+                                                                        <label><input type="radio" name="kggm" value="gm"> gm</label>                                       
+                                                                    </div>`}
+                                                            </div>
+                                                            <p class="item_volume_input_price">0</p>
+                                                            <button class="item_volume_custom_option_done_btn">Done</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <p class="item_price_p">
+                                                    <span class="item_price">${item.price}</span>
+                                                    <span class="market_price">${item.popularMRP}</span>
+                                                </p>                                        
+                                            <button class="item_add_btn">Add</button>
+                                            `;
+                                            subCategoryDiv.appendChild(itemDiv);
+                                            newItemElements1.push(itemDiv.querySelector('.item_volume')); // Store new item_volume divs
+                                            newItemElements2.push(itemDiv.querySelector('.item_add_btn')); // Store new item_volume divs
+                                        });
+
+                                        hideAllSubCategories();
+
+                                        attachVolumeOptionListeners(newItemElements1); // Attach listeners to new items
+                                        attachAddButtonListeners(newItemElements2); // Re-attach add button listeners to all items
+                                        groceryItemsContainer.appendChild(subCategoryDiv);
+                                        sectionSubCategories[category][subCategory] = subCategoryDiv;
+                                        console.log(" sectionSubCategories[category][subCategory] : " + category + subCategory);
+                                    })
+                                    .catch(error => {
+                                        hideAllSubCategories();
+                                        console.error('Error fetching data from the backend:', error);
+                                        showAlert('Failed to fetch data.', 'negative');
+                                        document.getElementById("loader_container").style.display = "none";
+                                    });
+                            } catch (error) {
+                                hideAllSubCategories();
+                                console.error("Error fetching data from the backend:", error);
+                                showAlert("Failed to load items. Please try again later.", "negative");
+                                document.getElementById("loader_container").style.display = "none";
+                            }
+                        }
+
+                        function hideAllSubCategories() {
+                            groceryItemsContainer.querySelectorAll('.grocery_items').forEach(div => div.style.display = 'none');
+                        }
+
+                        function showSubCategory(subCategory) {
+                            subCategory = subCategory.toLowerCase();
+                            hideAllSubCategories();
+                            sectionSubCategories[category][subCategory].style.display = 'flex';
+                        }
+
+                        document.getElementById("loader_container").style.display = "none";
+
+
+                        // Event listener for subcategory buttons
+                        subCategoryButtons.forEach(button => {
+                            button.addEventListener('click', function () {
+                                document.getElementById("loader_container").style.display = "flex";
+
+                                const selectedSubCategory = this.getAttribute('data-subCategoryBtn').toLowerCase();
+                                console.log(`Subcategory button clicked: ${selectedSubCategory}`);
+
+                                // Remove 'subCatSelected' class from the previously selected button
+                                if (activeButton) {
+                                    activeButton.classList.remove('subCatSelected');
+                                }
+
+                                this.classList.add('subCatSelected');
+                                activeButton = this; // Set the current button as active
+
+                                fetchGroceryItems(selectedSubCategory);
+                            });
+                        });
+
+                        // Optionally, load the first subcategory on page load
+                        const firstSubCategory = subCategoryButtons[0]?.getAttribute('data-subCategoryBtn').toLowerCase();
+                        if (firstSubCategory) {
+                            // fetchGroceryItems(firstSubCategory);
+                            initializeSectionSubCategories(firstSubCategory);
+                            subCategoryButtons[0].classList.add('subCatSelected'); // Optionally, set the first one as selected
+                            activeButton = subCategoryButtons[0];
+                        }
+                    }
+
+
+                    grocerySections.forEach(section => {
+                        console.log("initialize sections subcategory.");
+                        document.getElementById("loader_container").style.display = "flex";
+                        initializeSubCategories(section);
+                        initializeScrollFunctionality(section);
+                    });
+
+
+                    //////////////////////////////////////////////
+                    //load more sections -
+
+                    const loadingRotatorForSections = document.getElementById("loadingRotatorForSections");
+                    const groceryContainer = document.getElementById('grocery-sections');
+                    const loadMoreTrigger = document.getElementById('load-more-trigger');
+                    const grocerySec = document.querySelectorAll('.grocery');
+
+                    //showing loader
+                    loadingRotatorForSections.style.display = "block";
+
+                    // Get the data-category value of the last grocery section
+                    let lastGrocerySection = grocerySec[grocerySec.length - 1];
+                    let lastCategoryValue = lastGrocerySection ? lastGrocerySection.getAttribute('data-category') : null;
+
+                    // Track the last visible document for pagination
+                    let lastVisible = lastCategoryValue;
+                    let loading = false;
+
+                    // Set up IntersectionObserver to load more when reaching the bottom of the page
+                    const observer = new IntersectionObserver(async (entries) => {
+                        if (entries[0].isIntersecting && !loading) {
+                            console.log("Reached the bottom of grocery-sections");
+                            // showAlert("Loading more sections...", "positive");
+                            loadingRotatorForSections.style.display = "block";
+                            loading = true; // Prevent multiple requests while loading
+                            await loadAdditionalSections();
+                            loadingRotatorForSections.style.display = "none";
+                            loading = false; // Reset loading status
+                        }
+                    }, { root: null, rootMargin: '200px' });
+
+                    observer.observe(loadMoreTrigger);
+
+                    async function loadAdditionalSections() {
+                        console.log("loadAdditionalSections called...");
+                        try {
+                            const response = await fetch('/load_more_sections', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ lastVisible }) // Send lastVisible to the backend
+                            });
+                            const data = await response.json();
+
+                            if (data.categories && data.categories.length > 0) {
+                                data.categories.forEach(category => renderCategory(category));
+                                lastVisible = data.lastVisible; // Update lastVisible with the new value for the next load
+                            } else {
+                                // console.log("No more sections to load.");
+                                // showAlert("All categories loaded.", "negative");
+                                observer.unobserve(loadMoreTrigger); // Stop observing if no more items to load
+                            }
+                        } catch (error) {
+                            console.error('Error loading more sections:', error);
+                            showAlert("Failed to load additional sections.", "negative");
+                        }
+                    }
+
+                    // Render Category Section Dynamically
+                    function renderCategory(category) {
+                        const categoryHTML = `
+<section class="grocery" data-category="${category.id}">
+    <div>
+        <h2 class="grocery_head">${category.id}</h2>
+        <div class="subCategoryDIv">
+            <div class="left_btn"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="right_btn"><i class="fa-solid fa-chevron-right"></i></div>
+            <div class="content2" style="padding: 0 5px;">
+                <div class="content3">
+                    ${category.subcategories.map((subcategory, index) => `
+                        <div class="grocery_type subCatElement ${index === 0 ? 'selected' : ''}" 
+                             data-subCategoryBtn="${subcategory.id}">
+                             ${subcategory.id}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+
+        <div class="grocery_items_container">
+           ${category.subcategories.map((subcategory, index) =>
+                            index === 0 ? `
+                    <div class="grocery_items"  
+                         data-subCategory="${subcategory.id}">
+                        ${subcategory.items.map(item => `
+                            <div class="grocery_item" data-packed="${item.packed}" data-itemCategory="${category.id}" data-itemSubCategory="${subcategory.id}">                                                    
+                                <div class="infoBB ${item.replaceSelect == 'true' ? 'show' : 'hidden'}">
+                                            <div class="infoB">Item can be replace. <a style="color: rgb(51, 122, 254);" href="/c/terms-and-conditions">Know
+                                                more</a></div>
+                                            <div class="infoBBtn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+                                        </div>
+                                <div class="item_img">
+                                    <img src="${item.image_url}" alt="img" />
+                                </div>
+                                <p class="item_stock ${!item.stock ? 'hidden' : item.stock == '0' ? 'c_red' : item.stock == 'x' ? 'hidden' : 'd_block'}">
+                                                    ${
+                                                      item.stock == '0' 
+                                                        ? 'Stock is unavailable' 
+                                                        : item.stock != 'x' 
+                                                          ? 'Stock : ' + item.stock + ' left' 
+                                                          : '' 
+                                                    }
+                                                </p>
+                                <p class="item_name_p"><a class="item_name" href="/item?c=${encodeURIComponent(category.id)}&s=${encodeURIComponent(subcategory.id)}&i=${encodeURIComponent(item.id)}">${item.id}</a></p>
+                                <p class="item_min_volume">${item.minVol}</p>
+                                <p class="item_max_volume">${item.maxVol}</p>
+                                <div class="item_volume">
+                                    <p class="item_weight" style="margin: 0;">${item.volume}</p>
+                                    <div class="item_volume_options">
+                                        ${item.packed ? `<!-- item is packed -->`
+                                    : `${item.options.map(option => `
+                                            <div class="item_volume_option">
+                                                <p class="item_option_weight">${option.weight}</p>
+                                                <p class="item_option_price_p">
+                                                    <span class="item_option_price">${option.price}</span>
+                                                    <span class="market_price">${option.priceMRP && option.priceMRP.trim() !== '' ? '₹ ' + option.priceMRP : ''}</span>
+                                                </p>
+                                            </div>
+                                        `).join('')}`
+                                }
+                                        <!-- custom option -->
+                                        <div class="item_volume_custom_option">
+                                            <p class="item_volume_custom_option_head">Custom</p>
+                                            <div class="item_volume_custom_option_input_div">
+                                                ${item.packed ? `<!-- If item is packed, show text "pieces" -->
+                                                    <input type="number" class="item_volume_input_number" placeholder="Qty" min="0"  step="1" />
+                                                    <div class="item_volume_custom_option_for_pieces">pcs</div>`
+                                    : ` <input type="number" class="item_volume_input_number" placeholder="Qty" min="0" />
+                                                    <div class="item_volume_custom_option_for_kggm">
+                                                        <label><input type="radio" name="kggm" checked value="kg"> kg</label>
+                                                        <label><input type="radio" name="kggm" value="gm"> gm</label>                                       
+                                                    </div>`}
+                                            </div>
+                                            <p class="item_volume_input_price">0</p>
+                                            <button class="item_volume_custom_option_done_btn">Done</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="item_price_p">
+                                    <span class="item_price">${item.price}</span>
+                                    <span class="market_price">${item.popularMRP}</span>
+                                </p>
+                                <button class="item_add_btn">Add</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''
+                        ).join('')}
+
+        </div>
+    </div>
+</section>
+`;
+
+                        // Get the grocery-sections container
+                        const groceryContainer = document.getElementById('grocery-sections');
+                        const loadMoreTrigger = document.getElementById('load-more-trigger');
+
+                        if (groceryContainer && loadMoreTrigger) {
+                            // Insert the new categoryHTML just before the load-more-trigger (at the bottom)
+                            groceryContainer.insertBefore(loadMoreTrigger, groceryContainer.lastElementChild);
+                            groceryContainer.appendChild(loadMoreTrigger); // Reattach load-more-trigger at the bottom
+                            groceryContainer.insertAdjacentHTML('beforeend', categoryHTML); // Append the new categoryHTML at the end
+
+                            attachVolumeOptionListeners(document.querySelectorAll('.item_volume'));
+                            attachAddButtonListeners(document.querySelectorAll('.item_add_btn'));
+                            // sectionSubCategories[category.id][subcategory.id] = document.querySelector(`div[data-subCategory="${subcategory.id}"]`);
+                            console.log(`document.querySelector(section[data-category="${category.id}"]) : ` + document.querySelector(`section[data-category="${category.id}"]`))
+                            initializeSubCategories(document.querySelector(`section[data-category="${category.id}"]`));
+                            initializeScrollFunctionality(document.querySelector(`section[data-category="${category.id}"]`));
+                        }
+                    }
+                });
+
+            </script>
+
+            <!-- footer -->
+            <%- include('partials/footer') %>
+
+    <!--addToCartAndVolumeListener  -->
+    <script nonce="<%-nonce%>" src="../public/js/addToCartAndVolumeListener.js"></script>
+</body>
+
+</html>
