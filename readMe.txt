@@ -1,0 +1,1 @@
+1. If you change the domain then you need to change that domain in index.js file, from recapta website https://www.google.com/u/6/recaptcha/admin/site/715337705

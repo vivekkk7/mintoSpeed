@@ -13,7 +13,7 @@ const admin = require('firebase-admin');
 const cors = require('cors');
 
 app.use(cors({
-    origin: "https://mintospeed.in", // Allow requests from your frontend
+    origin: "https://mintospeed-fnb5.onrender.com", // Allow requests from your frontend
     methods: ["GET", "POST"],
     credentials: true // Allow sending cookies and authentication headers
 }));
@@ -27,7 +27,7 @@ const server = http.createServer(app);
 // const io = new Server(server, { transports: ['websocket'] });
 const io = new Server(server, {
     cors: {
-        origin: "https://mintospeed.in", // Replace with your frontend domain
+        origin: "https://mintospeed-fnb5.onrender.com", // Replace with your frontend domain
         methods: ["GET", "POST"],
         credentials: true
     },
@@ -45,7 +45,7 @@ app.use((req, res, next) => {
         script-src 'self' https://kit.fontawesome.com https://ajax.googleapis.com https://cdnjs.cloudflare.com 'nonce-${nonce}' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net/npm/algoliasearch https://algolia.com https://08vh7s7two.algolia.net https://08vh7s7two-dsn.algolia.net https://08vh7s7two-2.algolianet.com https://08vh7s7two-3.algolianet.com https://08vh7s7two-1.algolianet.com;
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
         font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://ka-f.fontawesome.com;
-        connect-src 'self' https://ka-f.fontawesome.com https://www.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://algolia.com https://08vh7s7two.algolia.net https://08vh7s7two-dsn.algolia.net https://08vh7s7two-2.algolianet.com https://08vh7s7two-3.algolianet.com https://08vh7s7two-1.algolianet.com https://maps.googleapis.com wss://mintospeed.in;
+        connect-src 'self' https://ka-f.fontawesome.com https://www.googleapis.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://algolia.com https://08vh7s7two.algolia.net https://08vh7s7two-dsn.algolia.net https://08vh7s7two-2.algolianet.com https://08vh7s7two-3.algolianet.com https://08vh7s7two-1.algolianet.com https://maps.googleapis.com wss://mintospeed-fnb5.onrender.com;
         img-src 'self' data: https://storage.googleapis.com https://firebasestorage.googleapis.com https://www.gstatic.com https://maps.gstatic.com https://maps.googleapis.com https://mapsresources-pa.googleapis.com;
         frame-src 'self' https://www.google.com https://www.gstatic.com;
         frame-ancestors 'self' https://www.google.com;    
