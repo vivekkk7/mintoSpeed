@@ -323,11 +323,12 @@
 
               try {
                 this.disabled = true;
-                document.getElementById("loader_container").style.display = "flex";
 
                 if (!window.recaptchaVerifier) {
                   await initializeRecaptcha();
                 }
+
+                document.getElementById("loader_container").style.display = "flex";
 
                 const appVerifier = window.recaptchaVerifier;
 
